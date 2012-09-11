@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         MooseX-ClassAttribute 0.26
+revision            2
+platforms           darwin
+maintainers         l2g openmaintainer
+license             Artistic-2+
+supported_archs     noarch
+
+description         MooseX::ClassAttribute - Declare class attributes \
+                    Moose-style
+
+long_description    This module allows you to declare class attributes in \
+                    exactly the same way as object attributes, using \
+                    class_has() instead of has(). 
+
+checksums           sha1    a6cdb29959dba4c9d3211f17af80847c3bcb80e0 \
+                    rmd160  0bb7054d01fcdac4430f423664cbf110cd9da9a4
+
+if {${perl5.major} != ""} {
+depends_lib-append  port:p${perl5.major}-moose \
+                    port:p${perl5.major}-namespace-autoclean \
+                    port:p${perl5.major}-namespace-clean
+
+# This is only needed for testing:
+#
+#depends_build-append    port:p${perl5.major}-moosex-role-strict
+}

@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                kdepim4
+version             4.8.3
+categories          kde kde4
+maintainers         sharky intevation.de:bjoern.ricks
+description         KDE4 groupware suite
+long_description    KDE4 groupware suite including a Mail client, \
+                    addressbook, organizer and groupware integration.
+platforms           darwin
+homepage            http://www.kde.org
+master_sites        kde:stable/${version}/src/
+use_xz              yes
+distname            kdepim-${version}
+
+checksums           rmd160  5b2b340dad9f4af13c5e91cc507e1f575b3f01a3 \
+                    sha256  995e548bcd0fbcc8ea3c69a4bb20da02956a4379e519f8ade7852eaa0bd02639
+
+depends_lib-append  port:kde4-runtime \
+                    port:kdelibs4 port:dblatex \
+                    port:kdepimlibs4 path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:shared-desktop-ontologies port:libassuan \
+                    port:kdepim4-runtime
+
+configure.args-append   ../${distname} \
+                        -DWITH_IndicateQt=OFF
+
+universal_variant   no
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/${version}/src/
+livecheck.regex     kdepim-(\\d+(\\.\\d+)+)

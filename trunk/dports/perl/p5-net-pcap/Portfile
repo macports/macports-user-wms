@@ -1,0 +1,23 @@
+# $Id$
+
+PortSystem                      1.0
+PortGroup                       perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup                     Net-Pcap 0.16
+revision                        3
+maintainers                     email.arc.nasa.gov:sal
+description                     Interface to pcap(3) LBL packet capture library
+long_description                Net::Pcap is a Perl binding to the LBL pcap(3) \
+				library, version 0.4. The README for libpcap describes \
+				itself as: a system-independent interface for user-level \
+				packet capture. libpcap provides a portable framework \
+				for low-level network monitoring.  Applications \
+				include network statistics collection, security \
+				monitoring, network debugging, etc.
+platforms                       darwin
+checksums                       md5 b150d8e0a40137fad2a7df792d80cab4 \
+                                sha1 19093760cce2830c16c1a081a7dc324cfe043c9b
+if {${perl5.major} != ""} {
+depends_lib-append              port:libpcap
+}

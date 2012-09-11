@@ -1,0 +1,36 @@
+# $Id$
+
+PortSystem 1.0
+
+name			openntpd
+version			3.9p1
+categories		net
+platforms		darwin
+maintainers		nomaintainer
+description		free, easy to use implementation of the Network Time Protocol
+long_description	OpenNTPD is a free, easy to use implementation of the \
+				Network Time Protocol. It provides the ability to sync the \
+				local clock to remote NTP servers and can act as NTP server \
+				itself, redistributing the local clock.
+
+homepage		http://www.openntpd.org/
+master_sites	openbsd:OpenNTPD
+checksums		sha1 098a435d02886a9e4d34afb15b15fde795eda1e9
+
+configure.args	--mandir=${prefix}/share/man
+
+pre-destroot {
+	addgroup _ntp gid=[nextgid] users="_ntp"
+	set gid [existsgroup _ntp]
+	adduser _ntp gid=${gid} password={\*} uid=[nextuid] \
+		home=${prefix}/var/db/ntpd shell=/usr/bin/false \
+		realname=OpenNTPD\ Server
+}
+
+post-destroot	{
+	file rename ${destroot}${prefix}/etc/ntpd.conf \
+		${destroot}${prefix}/etc/ntpd.conf.sample
+	xinstall -m 755 -d ${destroot}${prefix}/var/db/ntpd
+}
+destroot.keepdirs	${destroot}${prefix}/var/db/ntpd
+

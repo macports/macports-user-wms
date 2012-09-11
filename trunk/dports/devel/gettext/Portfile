@@ -1,0 +1,82 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               muniversal 1.0
+PortGroup               archcheck 1.0
+
+name                    gettext
+version                 0.18.1.1
+revision                2
+categories              devel
+maintainers             ryandesign
+# libs are LGPL and executables are GPL
+license                 {LGPL-2.1+ GPL-3+}
+homepage                http://www.gnu.org/software/gettext/
+master_sites            gnu
+platforms               darwin freebsd linux
+use_parallel_build      yes
+
+description             GNU internationalization (i18n) and localization (l10n) library
+
+long_description        ${name} is the ${description}, used for writing multilingual programs.
+
+checksums               md5     3dd55b952826d2b32f51308f2f91aa89 \
+                        sha1    5009deb02f67fc3c59c8ce6b82408d1d35d4e38f \
+                        rmd160  0ca0b6bf0219440404a86f0c16cbac3d1a2ecd37
+
+patchfiles              patch-gettext-tools-Makefile.in stpncpy.patch
+
+configure.cppflags      -no-cpp-precomp
+
+configure.args          ac_cv_prog_AWK=/usr/bin/awk \
+                        ac_cv_path_GREP=/usr/bin/grep \
+                        ac_cv_path_SED=/usr/bin/sed \
+                        --disable-csharp \
+                        --disable-native-java \
+                        --without-emacs \
+                        --with-included-gettext \
+                        --with-included-glib \
+                        --with-included-libcroco \
+                        --with-included-libxml
+
+# Don't use git (if it's installed) nor cvs to create the autopoint archive
+# because the archives they create for each architecture under muniversal
+# will differ and cannot be merged.
+configure.args-append   --without-git \
+                        --without-cvs
+
+depends_lib             port:libiconv \
+                        port:ncurses \
+                        port:expat
+
+archcheck.files         lib/libiconv.dylib \
+                        lib/libncurses.dylib \
+                        lib/libexpat.dylib
+
+test.run                yes
+test.target             check
+
+post-destroot {
+    if {[file exists ${destroot}${prefix}/lib/charset.alias]} {
+        delete ${destroot}${prefix}/lib/charset.alias
+    }
+    if {[file exists ${destroot}${prefix}/share/locale/locale.alias]} {
+        delete ${destroot}${prefix}/share/locale/locale.alias
+    }
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS \
+        COPYING \
+        ChangeLog \
+        ChangeLog.0 \
+        DEPENDENCIES \
+        HACKING \
+        NEWS \
+        README \
+        THANKS \
+        ${destroot}${prefix}/share/doc/${name}
+}
+
+livecheck.type          regex
+livecheck.url           http://ftp.gnu.org/gnu/gettext/?C=M&O=D
+livecheck.regex         ${name}-(\[0-9.\]+)\\.tar

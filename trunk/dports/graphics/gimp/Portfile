@@ -1,0 +1,76 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name            gimp
+version         2.8.0
+set branch      [join [lrange [split ${version} .] 0 1] .]
+categories      graphics
+maintainers     devans
+homepage        http://www.gimp.org/
+platforms       darwin
+supported_archs noarch
+
+description     The Gimp - Batteries Included
+long_description \
+    "This is a META port for the gimp2 which includes help and documentation, \
+        support for icns, jp2000 and RAW formats, content-aware rescaling \
+        Gutenprint and scanner frontends and even a nice theme (Nodoka). \
+    Mac OS X users also get a Gimp.app bundle, a \"Show in Finder\" menu \
+        and clipboard integration."
+
+depends_lib     port:icns-gimp \
+                port:gimp-jp2 \
+                port:gimp-lqr-plugin \
+                port:gtk-nodoka-engine \
+                port:gutenprint \
+                port:ufraw \
+                port:xsane
+
+platform macosx {
+    depends_lib-append  port:gimp-app
+    #
+    # these use the deprecated QuickDraw API that is not available
+    # in a 64-bit version - ticket #21391
+    #
+    # if +quartz is set, remove ufraw which uses CMFlattenProfile if gtk2 is
+    # built with Quartz support and is also not available in a 64-bit version
+    # ticket #23675
+    #
+    if { "darwin" == ${os.platform} } {
+        if { ![string match *64* $build_arch] } {
+            depends_lib-append  port:macclipboard-gimp \
+                                port:macfile-gimp
+        } else {
+            if {[variant_isset quartz]} {
+                depends_lib-delete port:ufraw
+            }
+        }
+    }
+}
+
+distfiles
+use_bzip2       yes
+use_configure   no
+build           {}
+
+destroot {
+    xinstall -d ${destroot}${prefix}/share/gimp/2.0/themes/Nodoka
+    system "cd ${destroot}${prefix}/share/gimp/2.0/themes/Nodoka &&
+        ln -s ${prefix}/share/themes/Nodoka/gtk-2.0/gtkrc"
+}
+
+variant animation description "Include the Gimp Animation Package (gimp-gap)." {
+    depends_lib-append  path:lib/gimp/2.0/plug-ins/gap_plugins:gimp-gap
+}
+
+variant manual description {Include help files.} {
+    depends_lib-append  port:gimp-help-en
+}
+
+variant quartz {}
+
+livecheck.type  regex
+livecheck.url   ftp://ftp.gtk.org/pub/gimp/v${branch}/
+livecheck.regex "gimp-(${branch}(?:\\.\\d+)*)${extract.suffix}"

@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; truncate-lines: t; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem        1.0
+
+name              kmymoney
+version           1.0.5
+revision          1
+
+replaced_by       kmymoney4
+
+categories        kde finance
+maintainers       mk pixilla
+platforms         darwin
+license           GPL-2+
+
+description       a personal finance manager
+long_description  ${description}
+homepage          http://kmymoney2.sourceforge.net/index-home.html
+master_sites      sourceforge:kmymoney2
+
+livecheck.type    none
+
+pre-configure {
+    ui_error "Please do not install this port since it has been replaced by 'kmymoney4'."
+    return -code error
+}
+
+distfiles

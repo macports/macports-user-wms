@@ -1,0 +1,62 @@
+# $Id$
+
+PortSystem 1.0
+
+name                mrxvt
+version             0.5.3
+revision            3
+categories          x11
+platforms           darwin
+maintainers         nomaintainer
+description         A multi-tabbed terminal emulator for the X Window System.
+long_description \
+    Mrxvt is a multi-tabbed (like gnome-terminal/konsole) terminal emulator \
+    for the X Window System. It targets to be light-weight, so the desktop \
+    environment, like CDE, KDE or GTK is not required in order to run it. It \
+    achieves this without losing the common useful features, like tab, image \
+    and pseudo-transparent background, multi-style scrollbars, XIM and CJK \
+    support, etc.
+# Yes, the homepage name is correct; the project changed names.
+homepage            http://materm.sourceforge.net/
+master_sites        sourceforge:materm
+patch_sites         ${master_sites}
+patchfiles          patch-src__rxvt.h.diff no-scroll-with-buffer-mrxvt-0.5.3.patch
+checksums           [suffix ${distname}] \
+                        md5     0dac39bef63a4a69eab35c027e8c5bdf \
+                        sha1    442006f1d797ea5464c5c49d26d0cdecf79160f4 \
+                        rmd160  76fbbd5ba20215dd7785eafa07dae909029194ec \
+                    no-scroll-with-buffer-mrxvt-0.5.3.patch \
+                        md5     9032af5f981b91462ed916d27ae286b9 \
+                        sha1    303de6d33aa76892f24c6fac7b93ac21a945fda5 \
+                        rmd160  0b05e382fe8736617961d8790786ba0341945caf
+depends_lib \
+	port:xorg-libsm \
+	port:Xft2 \
+	port:xpm \
+	port:libpng \
+	port:ncurses
+configure.args      --mandir=${prefix}/share/man \
+                    --infodir=${prefix}/share/info \
+                    --enable-mouseslipwheel \
+                    --enable-24bits \
+                    --enable-text-shadow \
+                    --enable-menubar \
+                    --enable-xft \
+                    --enable-xim
+
+variant cjk description {Adds CJK language support} {
+    configure.args-append   --enable-cjk
+}
+
+variant greek description {Adds support for Greek keyboards} {
+    configure.args-append   --enable-greek
+}
+
+variant minimal conflicts cjk greek \
+        description {Builds mrxvt with minimal features} {
+    configure.args-append   --enable-minimal
+}
+
+livecheck.type  md5
+livecheck.url   ftp://invisible-island.net/${name}/
+livecheck.md5   efde483a951b0f06657da72570fc98c9

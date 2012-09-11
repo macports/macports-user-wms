@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup			BerkeleyDB 0.31
+revision            3
+maintainers			email.arc.nasa.gov:sal
+description			Perl extension for Berkeley DB version 2, 3, 4
+long_description		This Perl module provides an interface to most \
+    of the functionality available in Berkeley DB versions 2, 3 and \
+    4. In general it is safe to assume that the interface provided \
+    here to be identical to the Berkeley DB interface. The main \
+    changes have been to make the Berkeley DB API work in a Perl \
+    way. Note that if you are using Berkeley DB 2.x, the new features \
+    available in Berkeley DB 3.x or DB 4.x are not available via this \
+    module.
+platforms			darwin
+checksums			md5 48e2cf29d37f457a35eedc3104c41eac
+if {${perl5.major} != ""} {
+    depends_lib-append		port:db44
+    configure.env			BERKELEYDB_INCLUDE=${prefix}/include/db44 \
+                    BERKELEYDB_LIB=${prefix}/lib/db44 \
+                    DBNAME=-ldb
+}

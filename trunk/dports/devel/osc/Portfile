@@ -1,0 +1,38 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           python25 1.0
+
+name                osc
+version             0.130.1
+
+categories          devel python
+platforms           darwin
+maintainers         tommyd openmaintainer
+
+description         A command line client for the openSUSE build service
+long_description    osc is a subversion-like client written in Python. \
+                    It serves as client for the source code repository part \
+                    of the openSUSE build service, and is used to edit \
+                    metadata or query about build results.
+
+homepage            http://en.opensuse.org/Build_Service/CLI
+
+depends_lib-append  port:curl-ca-bundle \
+                    port:py25-elementtree \
+                    port:py25-urlgrabber \
+                    port:py25-m2crypto
+
+fetch.type          git
+git.url             git://gitorious.org/opensuse/osc.git
+git.branch          3547326982aa6858d2aea80fbdd71d09341d9c9d
+
+post-patch {
+    reinplace "s|/etc/pki/tls/cert.pem|${prefix}/share/curl/curl-ca-bundle.crt|g" \
+        ${worksrcpath}/osc/conf.py \
+}
+
+post-destroot {
+    ln -s osc-wrapper.py ${destroot}${prefix}/bin/osc
+}
+

@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+PortGroup       kde4 1.1
+
+name            kde-l10n-lt
+version         4.8.3
+categories      kde kde4
+maintainers     nomaintainer
+license         {LGPL-2.1 LGPL-3+ GPL-2+ MIT BSD}
+description     KDE lithuanian language files.
+long_description \
+                ${description}
+platforms       darwin
+homepage        http://www.kde.org/
+
+master_sites    kde:stable/${version}/src/kde-l10n/
+use_xz          yes
+
+supported_archs noarch
+depends_lib     port:kdelibs4
+
+checksums           rmd160  a7c186f263e1771ac4befd9303f05d2da3988b64 \
+                    sha256  3442dd3d1ec313c5b25033b9dd732c49c11960c225aef538e609db23cf3d3050
+
+post-destroot {
+    xinstall -d -m 755 ${destroot}${prefix}/share/doc/kde-installed-packages
+    system "touch ${destroot}${prefix}/share/doc/kde-installed-packages/kde-l10n-lithuanian"
+}
+
+livecheck.type  none

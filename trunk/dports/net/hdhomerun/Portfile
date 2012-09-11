@@ -1,0 +1,82 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                hdhomerun
+version             20110925a
+set firm_version    ${version}
+categories          net multimedia
+platforms           darwin
+license             LGPL-3+
+maintainers         ecronin openmaintainer
+description         HDHomeRun Software and Firmware
+long_description    ${description}
+homepage            http://www.silicondust.com/
+
+master_sites        http://download.silicondust.com/hdhomerun
+distname            lib${name}_${version}
+patchfiles          patch-01-Makefile-libpath.diff patch-02-Makefile-universal.diff
+patch.args          -p1
+extract.suffix      .tgz
+distfiles-append    ${name}_atsc_firmware_${firm_version}.bin \
+                    ${name}_dvbt_firmware_${firm_version}.bin
+extract.only        ${distname}${extract.suffix}
+worksrcdir          lib${name}
+checksums           ${distname}${extract.suffix} \
+                        rmd160 abf158108ceeef64fe8fe3d36f6a42158594a4e3 \
+                        sha256 3d4bf9982a77876b420e93ad2b9af335f19fd83221ff2a0670f6473394213c8e \
+                    ${name}_atsc_firmware_${firm_version}.bin \
+                        rmd160 28bf8be776516a5b1a6ddb85d07f6cef2154dc2f \
+                        sha256 f3cabc4a18c4715b585dfcb6a72d9f49dcee168ac5f3d1ee66d83bd5407d1b94 \
+                    ${name}_dvbt_firmware_${firm_version}.bin \
+                        rmd160 53e292de6e4a1dea98e06912cd191a72c26d267d \
+                        sha256 1916ddd8414a5e2ddc6c13e85b0cc96de55b5159471653732d46d2584282e8d5
+livecheck.type      regex
+livecheck.url       http://www.silicondust.com/support/hdhomerun/downloads/
+livecheck.regex     Current release: (\[0-9\]+)
+
+use_configure       no
+
+post-patch {
+    reinplace "s|@PREFIX@|${prefix}|g" ${worksrcpath}/Makefile
+}
+
+build.args-append   CC=${configure.cc} \
+                    CXX=${configure.cxx} \
+                    CPP=${configure.cpp}
+if {[variant_isset universal]} {
+    build.args-append   CFLAGS="${configure.universal_cflags}"
+} else {
+    build.args-append   CFLAGS="${configure.cc_archflags}"
+}
+
+destroot {
+    xinstall -m 0755 ${worksrcpath}/hdhomerun_config \
+        ${destroot}${prefix}/bin/hdhomerun_config
+    xinstall -m 0755 ${worksrcpath}/libhdhomerun.dylib \
+        ${destroot}${prefix}/lib/libhdhomerun.dylib
+    xinstall -m 0644 -W ${worksrcpath} \
+            hdhomerun.h hdhomerun_os.h hdhomerun_os_posix.h \
+            hdhomerun_types.h hdhomerun_pkt.h hdhomerun_sock.h \
+            hdhomerun_debug.h hdhomerun_discover.h hdhomerun_control.h \
+            hdhomerun_video.h hdhomerun_channels.h hdhomerun_channelscan.h \
+            hdhomerun_device.h hdhomerun_device_selector.h \
+        ${destroot}${prefix}/include/
+    xinstall -d -m 0755 ${destroot}${prefix}/share/${name}/
+    xinstall -m 0644 ${distpath}/${name}_atsc_firmware_${firm_version}.bin \
+        ${destroot}${prefix}/share/${name}/${name}_atsc_firmware_${firm_version}.bin
+    xinstall -m 0644 ${distpath}/${name}_dvbt_firmware_${firm_version}.bin \
+        ${destroot}${prefix}/share/${name}/${name}_dvbt_firmware_${firm_version}.bin
+    xinstall -d -m 0755 ${destroot}${prefix}/share/doc/${name}/
+    xinstall -m 0644 ${worksrcpath}/README \
+        ${destroot}${prefix}/share/doc/${name}/README
+}
+
+notes   "
+To upgrade device to newest firmware run:
+    hdhomerun_config <id> upgrade ${prefix}/share/${name}/<firmware>
+where <firmware> is ${name}_atsc_firmware_${firm_version}.bin for US/CA or
+${name}_dvbt_firmware_${firm_version}.bin for EU/AU/NZ.
+"
+

@@ -1,0 +1,37 @@
+# $Id$
+
+PortSystem 1.0
+
+name		libmatheval
+version		1.1.8
+categories	math devel
+platforms	darwin
+license		GPL-3
+maintainers	mww
+description	in-memory tree representations of mathematical functions
+long_description	GNU libmatheval is comprised of several procedures \
+			that make it possible to create in-memory tree \
+			representations of mathematical functions over single \
+			or multiple variables and later use them to evaluate \
+			function for specified variable values, to create a \
+			corresponding tree for function derivatives over a \
+			specified variable, or to print a textual \
+			representation of the in-memory tree to a specified \
+			string. The library supports arbitrary variable names \
+			in expressions, decimal constants, basic unary and \
+			binary operators, and elementary mathematical functions.
+
+homepage		http://www.gnu.org/software/libmatheval/
+master_sites	gnu
+checksums           md5     02da702f933a9d6554e27d1b33a89b60 \
+                    rmd160  f8b1212984f5b4e50aea0573b0ff9eeaa7537054 \
+                    sha256  a124f14ce125aa76c8f82b806b6097dcc8d59342f0978a02be88491b6dde2320
+patchfiles		patch-config.h.in.diff
+
+depends_build	port:guile
+
+configure.args	--infodir=${prefix}/share/info
+configure.env-append	GUILE=${prefix}/bin/guile GUILE_CONFIG=${prefix}/bin/guile-config GUILE_TOOLS=${prefix}/bin/guile-tools
+
+test.run		yes
+test.target		check

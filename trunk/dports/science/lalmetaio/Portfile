@@ -1,0 +1,39 @@
+# $Id$
+
+PortSystem    1.0
+
+name          lalmetaio
+version       1.0.4
+categories    science
+platforms     darwin
+maintainers   ram
+license       GPL
+
+description   LSC Algorithm Library - MetaIO
+long_description \
+  LIGO Scientific Collaboration Algorithm Library - MetaIO containing \
+  routines for reading/writing LIGO_LW XML files.
+
+homepage      https://www.lsc-group.phys.uwm.edu/daswg/projects/lalsuite.html
+master_sites  http://www.lsc-group.phys.uwm.edu/daswg/download/software/source/lalsuite
+
+checksums     rmd160 b8f789299f97638606f4423051c50f64f98423a1 \
+              sha256 c3092b64cb3e7034d8c86f5ff99f0580252affa0588d6df7abe46204ff43f050
+
+depends_build port:pkgconfig \
+              port:python27
+
+depends_lib   port:lal \
+              port:metaio
+
+configure.python ${prefix}/bin/python2.7
+configure.args --mandir=${prefix}/share/man \
+               --disable-silent-rules \
+               --disable-gcc-flags \
+               --disable-debug
+
+use_parallel_build yes
+
+livecheck.type   regex
+livecheck.url    ${master_sites}
+livecheck.regex  {lalmetaio-(\d+(?:\.\d+)*).tar.gz}

@@ -1,0 +1,53 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        fletcher peg-multimarkdown 3.6
+name                multimarkdown
+revision            0
+categories          textproc
+license             GPL-2+ MIT
+maintainers         singingwolfboy openmaintainer
+installs_libs       no
+
+description         turn minimally marked-up plain text into well formatted documents
+long_description    \
+    MultiMarkdown, or MMD, is a tool to help turn minimally marked-up plain \
+    text into well formatted documents, including HTML, PDF (by way of \
+    LaTeX), OPML, or OpenDocument. MMD is a superset of the Markdown syntax, \
+    originally created by John Gruber. It adds multiple syntax features \
+    (tables, footnotes, and citations, to name a few), in addition to the \
+    various output formats listed above (Markdown only creates HTML). \
+    Additionally, it builds in “smart” typography for various languages \
+    (proper left- and right-sided quotes, for example).
+
+homepage            http://fletcherpenney.net/multimarkdown/
+platforms           darwin
+
+fetch.type          git
+
+post-fetch {
+    system -W ${worksrcpath} "git submodule init"
+    reinplace "s|git://|https://|" ${worksrcpath}/.git/config
+    system -W ${worksrcpath} "git submodule update"
+}
+
+use_configure       no
+
+variant universal {}
+build.args          CC="${configure.cc} [get_canonical_archflags]"
+
+# "make docs" builds multimarkdown as a dependency
+build.target        docs
+
+destroot {
+    xinstall ${worksrcpath}/${name} ${destroot}${prefix}/bin/
+    # documentation
+    xinstall -d ${destroot}${prefix}/share/doc
+    delete ${worksrcpath}/documentation/.git
+    move ${worksrcpath}/documentation ${destroot}${prefix}/share/doc/${name}
+}
+
+depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 port:gettext
+depends_build       port:pkgconfig

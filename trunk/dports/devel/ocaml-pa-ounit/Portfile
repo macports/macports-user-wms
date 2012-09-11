@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup ocaml 1.0
+
+name                ocaml-pa-ounit
+version             108.00.02
+revision            1
+categories          devel ml
+platforms           darwin
+license             LGPL-2.1
+maintainers         mww openmaintainer
+description         OCaml inline testing
+long_description    ${description}
+
+homepage            https://ocaml.janestreet.com/code
+master_sites        https://ocaml.janestreet.com/ocaml-core/${version}/individual/
+distname            pa_ounit-${version}
+
+checksums           rmd160  739b941e7d2b46ee77e8a1ad6eb134caa65f1f26 \
+                    sha256  cc74edc155939320dc21046622af6aea7a4b2f6125b07e7cae9157b05cd61287
+
+depends_lib         port:ocaml port:ocaml-findlib port:ocaml-type-conv
+
+use_oasis           yes
+
+livecheck.type      regex
+livecheck.url       https://ocaml.janestreet.com/ocaml-core/
+livecheck.regex     (\[0-9\]+\\\.\[0-9\\\.\]+)
+

@@ -1,0 +1,34 @@
+# $Id$
+
+PortSystem 1.0
+
+name             ii
+version          1.6
+categories       irc
+maintainers      toby
+description      minimalist FIFO and filesystem-based IRC client
+long_description \
+	ii is a minimalist FIFO and filesystem-based IRC client. \
+	It creates an irc directory tree with server, channel and \
+	nick name directories. In every directory a FIFO in file \
+	and a normal out file is created.
+homepage         http://tools.suckless.org/ii
+platforms        darwin
+license          MIT
+master_sites     http://dl.suckless.org/tools/
+checksums        md5    ca183a993690cbe3b78edd1bc8c8bed5 \
+                 sha1   cd6c2a6c97d1e4d46018709bb25ff96fbdb47d33 \
+                 rmd160 2236192d79a0883ec38b20998ec716dedda93c2e
+
+patchfiles       patch-config.mk
+
+configure {
+	reinplace "s|__PREFIX__|${prefix}|" ${worksrcpath}/config.mk
+	reinplace "s|__CC__|${configure.cc}|" ${worksrcpath}/config.mk
+	reinplace "s|__CFLAGS__|${configure.cflags}|" ${worksrcpath}/config.mk
+	reinplace "s|__LDFLAGS__|${configure.ldflags}|" ${worksrcpath}/config.mk
+}
+
+livecheck.type   regex
+livecheck.url    [lindex ${master_sites} 0]
+livecheck.regex  href=\"ii-(.*)\\.tar\\.gz\"

@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           XML-SAX-Expat 0.40
+revision              4
+maintainers           email.arc.nasa.gov:sal
+license               {Artistic GPL}
+description           SAX2 Driver for Expat (XML::Parser)
+long_description      This is an implementation of a SAX2 driver \
+                      sitting on top of Expat (XML::Parser)
+
+platforms             darwin
+supported_archs       noarch
+
+checksums             md5 ca58d1e26c437b31c52456b4b4ae5c4a \
+                      sha1 3fdbd7b5e83216bb24d1e83ff3a6c17fcde9ba3f \
+                      rmd160 fd0452bc817b55607ebbb4e8de017c6fd99ecaea
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-xml-parser \
+                      port:p${perl5.major}-xml-sax \
+                      port:p${perl5.major}-xml-namespacesupport
+
+post-activate {
+    system "${perl5.bin} -I${perl5.lib} -MXML::SAX -e \"XML::SAX->add_parser(q(XML::SAX::Expat))->save_parsers()\""
+}
+}

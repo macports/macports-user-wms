@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               github 1.0
+
+github.setup            w3c tidy-html5 c63cc3924b2aa52aaac2faa73b1fd42c258e210c
+name                    tidy
+version                 20120720
+categories              www
+platforms               darwin
+maintainers             ryandesign openmaintainer
+license                 MIT
+
+description             Fixes and tidies up HTML files
+
+long_description        Tidy is a utility to clean up and fix broken HTML files.
+
+homepage                http://w3c.github.com/tidy-html5/
+
+fetch.type              git
+
+depends_build           port:autoconf \
+                        port:automake \
+                        port:libtool
+
+pre-configure {
+    system -W ${worksrcpath} "/bin/sh ${worksrcpath}/build/gnuauto/setup.sh"
+}
+
+use_parallel_build      yes
+
+livecheck.type          regex
+livecheck.url           ${github.raw}/master/src/version.h
+livecheck.regex         {tree/(.*)"}
+livecheck.version       [string range ${git.branch} 0 6]

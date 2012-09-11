@@ -1,0 +1,35 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xev
+version             1.2.0
+categories          x11
+maintainers         jeremyhu openmaintainer
+description         Print contents of X11 events
+long_description \
+   xev creates a window and then asks the X server to send it events \
+   whenever anything happens to the window (such as it being moved, resized, \
+   typed in, clicked in, etc.).  You can also attach it to an existing \
+   window.  It is useful for seeing what causes events to occur and to \
+   display the information that they contain.  It is essentially a debugging \
+   and development tool, and should not be needed in normal usage.
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           sha1    6b05706ed39382b5d08c5351c00ba7e127709eec \
+                    rmd160  c1fe193a888b0b52ec3ea144e75b1b28d2a45db3 \
+                    sha256  3786a77dab17741d508d5d117a0ff33bb6eabf93e0935388b5f920bfcf2fb38f
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libX11 \
+                    port:xorg-libXrandr
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

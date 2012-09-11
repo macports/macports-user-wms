@@ -1,0 +1,31 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xkeyboard-config
+version             2.3
+categories          x11
+platforms           darwin
+maintainers          jeremyhu openmaintainer
+description         X11 XKB keyboard descriptions
+long_description    ${description}
+
+homepage            http://www.x.org
+master_sites        xorg:individual/data/${name}
+
+checksums           md5     0be9fbddcb19ac62a23e08fead5df8be \
+                    sha1    a49c4cce9cfb7003aa04a32114f369c6bd7a9077 \
+                    rmd160  a89d10bfbab88c8c1f1330bcfe82cb38f32918f8
+
+use_bzip2	    yes
+use_parallel_build  yes
+
+depends_build \
+	port:pkgconfig \
+	port:gettext \
+	port:intltool \
+	port:xkbcomp
+
+livecheck.type  regex
+livecheck.url   http://xorg.freedesktop.org/releases/individual/data/${name}/?C=M&O=D
+livecheck.regex ${name}-(\\d+(?:\\.\\d+)*)

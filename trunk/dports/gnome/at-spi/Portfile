@@ -1,0 +1,91 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name                at-spi
+version             1.30.1
+revision            3
+license             LGPL
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         Gnome Accesibility Technology Service
+long_description \
+   'at-spi' is a part of the Gnome Accessibility Project.  It provides a \
+   Service Provider Interface for the Assistive Technologies available on \
+   the GNOME platform, and a library against which applications can be linked.
+maintainers         devans openmaintainer
+categories          gnome
+platforms           darwin
+homepage            http://developer.gnome.org/projects/gap/
+master_sites        gnome:sources/${name}/${branch}/
+
+checksums           md5     29fdf7934e98efda5fe0ab74ab4d3f29 \
+                    sha1    d7bf78555e8025e42325437d7809e1c98a35389e \
+                    rmd160  f317c5ad38a6f79b1917f3173e77e4746f79408b
+
+depends_build       port:intltool \
+                    port:pkgconfig
+
+depends_lib         port:atk \
+                    port:gtk2 \
+                    port:libbonobo \
+                    port:xorg-libXtst
+
+use_bzip2           yes
+
+patchfiles          patch-pyatspi-Makefile.in.diff
+
+configure.args      --enable-static \
+                    --disable-xevie \
+                    --with-x \
+                    --x-includes=${prefix}/include \
+                    --x-libraries=${prefix}/lib \
+                    --disable-schemas-install
+ 
+variant no_x11 description {Disable X11 support} {
+   pre-fetch {
+      return -code error "The +no_x11 (was +quartz) variant of ${name} does not work. See http://trac.macports.org/ticket/15013"
+   }
+   configure.args-delete   --with-x \
+                           --x-includes=${prefix}/include \
+                           --x-libraries=${prefix}/lib
+   configure.args-append   --without-x
+   depends_lib-delete      port:xorg-libXtst
+}
+
+variant python25 conflicts python26 python27 description {Use python 2.5} {
+    configure.python        ${prefix}/bin/python2.5
+    depends_lib-append      port:py25-gnome
+    post-patch {
+        reinplace "s|__MP_PYTHON_EXEC_DIR__|${prefix}//Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/site-packages|" ${worksrcpath}/pyatspi/Makefile.in
+    }
+}
+
+variant python26 conflicts python25 python27 description {Use python 2.6} {
+    configure.python        ${prefix}/bin/python2.6
+    depends_lib-append      port:py26-gnome
+    post-patch {
+        reinplace "s|__MP_PYTHON_EXEC_DIR__|${prefix}//Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/site-packages|" ${worksrcpath}/pyatspi/Makefile.in
+    }
+}
+
+variant python27 conflicts python25 python26 description {Use python 2.7} {
+    configure.python        ${prefix}/bin/python2.7
+    depends_lib-append      port:py27-gnome
+    post-patch {
+        reinplace "s|__MP_PYTHON_EXEC_DIR__|${prefix}//Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages|" ${worksrcpath}/pyatspi/Makefile.in
+    }
+}
+
+if {![variant_isset python25] && ![variant_isset python26]} {
+    default_variants +python27
+}
+
+post-activate {
+   system "export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` && \
+        gconftool-2 --makefile-install-rule ${prefix}/etc/gconf/schemas/*.schemas"
+}
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

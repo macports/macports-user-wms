@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xinput
+version             1.6.0
+categories          x11
+maintainers         jeremyhu openmaintainer
+description         Utility to configure and test XInput devices
+long_description    ${description}
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           sha1    958b77a2acf52197b9a1e3e3d11e9bc57fbb1e6c \
+                    rmd160  d5fccf7e6d91902519a08dc6b907b4c78c2acb62 \
+                    sha256  4ab007d952c76665603bcb82ceb15fd3929d10faf0580fc4873ac16f5f63847e
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libXi
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

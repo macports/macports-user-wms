@@ -1,0 +1,65 @@
+# $Id$
+
+PortSystem      1.0
+
+name            imlib2
+version         1.4.5
+revision	1
+categories      graphics devel
+license         Permissive
+platforms       darwin
+maintainers     nomaintainer
+description     Image loading and rendering library
+
+long_description \
+   Imlib is a general Image loading and rendering library designed to make \
+   the task of loading images, and obtaining X-Windows drawables a simple \
+   task, as well as a quick one. It also aims to provide simple \
+   manipulation routines that might be desired for common operations.
+
+
+homepage        http://docs.enlightenment.org/api/imlib2/html/
+master_sites    sourceforge:enlightenment
+
+checksums           md5     8406786d3852b1b1322c2e4bee3c9e5c \
+                    sha1    a4c0329d152fff9cb87463709f0e4b54cf1f6121 \
+                    rmd160  efc669592971c9b5dd3cd8959bdcafa41c9f1ece
+
+depends_build \
+    port:pkgconfig
+
+depends_lib \
+    port:bzip2 \
+    port:giflib \
+    port:libid3tag \
+    port:libpng \
+    port:jpeg \
+    port:freetype \
+    port:tiff \
+    port:xorg-libsm \
+    port:xorg-libX11 \
+    port:xorg-libXext \
+    port:zlib
+
+use_autoreconf  yes
+autoreconf.args -fv
+
+configure.args \
+    --disable-amd64
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 -W ${worksrcpath} AUTHORS COPYING ChangeLog README \
+        TODO ${destroot}${docdir}
+
+    xinstall -d ${destroot}${docdir}/html
+    eval xinstall -m 644 [glob -directory ${worksrcpath}/doc *.{html,gif}] \
+        ${destroot}${docdir}/html
+}
+
+platform darwin 8 {
+    configure.args-append --disable-mmx
+}
+
+livecheck.distname ${name}-src

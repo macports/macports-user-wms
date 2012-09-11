@@ -1,0 +1,120 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                freeimage
+version             3.15.3
+set major           [lindex [split ${version} .] 0]
+revision            1
+license             {FreeImage-1 GPL-2 GPL-3}
+categories          graphics
+platforms           macosx
+
+maintainers         nomaintainer
+
+description         Library for FreeImage, a dependency-less graphics library
+long_description    FreeImage is a library for developers who would like to \
+                    support most popular graphics image formats. Some \
+                    highlights are: extremely simple in use, not limited to \
+                    the local PC (unique FreeImageIO) and Plugin driven!
+
+homepage            http://freeimage.sourceforge.net/
+master_sites        sourceforge:project/freeimage/Source%20Distribution/${version}
+distname            FreeImage[strsed ${version} {g/\.//}]
+use_zip             yes
+worksrcdir          FreeImage
+
+checksums           rmd160  f788023f12969b576630deff4a4daf741d10ae0f \
+                    sha256  4618d59f2d9a20583b0f5fec99dcf832ccc3f317897b10592b85e7648375c044
+
+set libfreeimage libfreeimage.${major}.dylib
+set libfreeimageplus libfreeimageplus.${major}.dylib
+
+patchfiles          patch-Makefile.fip.diff
+
+post-patch {
+    # Libraries extension is ".dylib" on Darwin, not ".so"
+    reinplace {s/\.so/.dylib/} ${worksrcpath}/Makefile.gnu \
+        ${worksrcpath}/Makefile.fip
+
+    # A dot separates the library name from its version on Darwin
+    reinplace /^SHAREDLIB/s/-/./ ${worksrcpath}/Makefile.gnu \
+        ${worksrcpath}/Makefile.fip
+
+    # Use libtool(1) instead of ar(1)
+    reinplace {s/\$(AR) r/libtool -o/} ${worksrcpath}/Makefile.gnu \
+        ${worksrcpath}/Makefile.fip
+
+    # Do not force installation as root
+    reinplace {s/-o root -g root//} ${worksrcpath}/Makefile.gnu \
+        ${worksrcpath}/Makefile.fip
+    
+    # Darwin requires different arguments to build dynamic libraries
+    reinplace "s|-Wl,-soname,\$(VERLIBNAME)|-dynamiclib -install_name \$(PREFIX)/lib/\$(VERLIBNAME) -compatibility_version \$(VER_MAJOR) -current_version \$(VER_MAJOR).\$(VER_MINOR)|g" ${worksrcpath}/Makefile.gnu \
+        ${worksrcpath}/Makefile.fip
+
+    # Darwin does not have a command ldconfig
+    reinplace "s|ldconfig||g" ${worksrcpath}/Makefile.gnu
+    # FreeImagePlus doesn't use ldconfig
+}
+
+use_configure       no
+
+variant universal {}
+
+build.args          -f Makefile.gnu \
+                    PREFIX=${prefix} \
+                    VERLIBNAME=${libfreeimage} \
+                    CC="${configure.cc} ${configure.cflags} [get_canonical_archflags cc]" \
+                    CXX="${configure.cxx} ${configure.cxxflags} [get_canonical_archflags cxx]" \
+                    LDFLAGS="${configure.ldflags}"
+
+post-build {
+    # build FreeImagePlus
+    system -W ${worksrcpath} "${build.cmd} -f Makefile.fip \
+        PREFIX=${prefix} \
+        VERLIBNAME=${libfreeimageplus} \
+        CC='${configure.cc} ${configure.cflags} [get_canonical_archflags cc]' \
+        CXX='${configure.cxx} ${configure.cxxflags} [get_canonical_archflags cxx]' \
+        LDFLAGS='${configure.ldflags}'"
+}
+
+destroot.args       -f Makefile.gnu \
+                    INCDIR=${destroot}${prefix}/include \
+                    INSTALLDIR=${destroot}${prefix}/lib \
+                    PREFIX=${prefix} \
+                    VERLIBNAME=${libfreeimage}
+
+post-destroot {
+    # install FreeImagePlus
+    system -W ${worksrcpath} "${destroot.cmd} -f Makefile.fip install \
+        VERLIBNAME=${libfreeimageplus} \
+        CC='${configure.cc} ${configure.cflags} [get_canonical_archflags cc]' \
+        CXX='${configure.cxx} ${configure.cxxflags} [get_canonical_archflags cxx]' \
+        LDFLAGS='${configure.ldflags}' \
+        INCDIR='${destroot}${prefix}/include' \
+        INSTALLDIR='${destroot}${prefix}/lib'"
+
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 -W ${worksrcpath} Whatsnew.txt license-fi.txt \
+        license-gplv2.txt license-gplv3.txt ${destroot}${docdir}
+    copy ${worksrcpath}/Examples ${destroot}${docdir}/examples
+}
+
+test.run            yes
+test.cmd            ./testAPI
+test.dir            ${worksrcpath}/TestAPI
+test.target
+
+pre-test {
+    # Use correct compiler and flags when compiling test
+    reinplace "s:g++:${configure.cxx} ${configure.cxxflags} [get_canonical_archflags cxx]:" ${test.dir}/Makefile
+
+    # Build the test
+    system "make -C ${test.dir}"
+}
+
+livecheck.type      regex
+livecheck.regex     {FreeImage (\d+(?:\.\d+)*) released}

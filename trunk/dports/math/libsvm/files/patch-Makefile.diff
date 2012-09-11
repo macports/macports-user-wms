@@ -1,0 +1,26 @@
+--- Makefile.orig	2011-06-26 04:55:06.000000000 +0900
++++ Makefile	2011-12-18 20:24:32.000000000 +0900
+@@ -2,7 +2,7 @@
+ CFLAGS = -Wall -Wconversion -O3 -fPIC
+ SHVER = 2
+ 
+-all: svm-train svm-predict svm-scale
++all: svm-train svm-predict svm-scale libsvm.a libsvm.dylib
+ 
+ lib: svm.o
+ 	$(CXX) -shared -dynamiclib -Wl,-soname,libsvm.so.$(SHVER) svm.o -o libsvm.so.$(SHVER)
+@@ -15,5 +15,14 @@
+ 	$(CXX) $(CFLAGS) svm-scale.c -o svm-scale
+ svm.o: svm.cpp svm.h
+ 	$(CXX) $(CFLAGS) -c svm.cpp
++libsvm.a: svm.o
++	ar rc libsvm.a svm.o
++	ranlib libsvm.a
++libsvm.dylib: svm.o
++	$(CXX) $(CFLAGS) -dynamiclib -install_name $(PREFIX)/lib/libsvm.dylib \
++                         -current_version $(VERSION) \
++                         -compatibility_version $(VERSION) \
++                         -o libsvm.$(VERSION).dylib svm.o
+ clean:
+ 	rm -f *~ svm.o svm-train svm-predict svm-scale libsvm.so.$(SHVER)
++	rm -f *.a *.dylib

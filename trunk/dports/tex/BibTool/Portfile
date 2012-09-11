@@ -1,0 +1,34 @@
+# $Id$
+
+PortSystem			1.0
+name				BibTool
+version				2.53
+categories			tex
+license				GPL
+maintainers			nomaintainer
+description			Tool for manipulating BibTeX databases.
+long_description \
+	BibTeX provides an easy to use means to integrate citations and \
+	bibliographies into LaTeX documents. But the user is left alone \
+	with the management of the BibTeX files. The program BibTool is \
+	intended to fill this gap. BibTool allows the manipulation of \
+	BibTeX files which goes beyond the possibilities---and \
+	intentions---of BibTeX. 
+
+platforms			darwin
+
+homepage			http://www.gerd-neugebauer.de/software/TeX/BibTool/index.en.html
+master_sites		http://tug.ctan.org/tex-archive/biblio/bibtex/utils/bibtool/ \
+					ftp://cam.ctan.org/tex-archive/biblio/bibtex/utils/bibtool/ \
+					ftp://ftp.dante.de/tex-archive/biblio/bibtex/utils/bibtool/
+
+checksums           rmd160  133b5e56cecdc1ef3da40ae320a7c2363bb1518f \
+                    sha256  1062aa2eaafef26ab381888f7936ac896a19f25f357bda7109928d3be4f41ae9
+
+worksrcdir          ${name}
+
+destroot.destdir	BINDIR=${destroot}${prefix}/bin LIBDIR=${destroot}${prefix}/lib/${name}
+
+livecheck.type		regex
+livecheck.url		[lindex ${master_sites} 0]
+livecheck.regex		${name}-(\[0-9.\]+)${extract.suffix}

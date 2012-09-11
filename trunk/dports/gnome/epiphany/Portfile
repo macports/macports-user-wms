@@ -1,0 +1,76 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name		epiphany
+version		2.30.6
+revision        7
+license         GPL-2+
+set branch      [join [lrange [split ${version} .] 0 1] .]
+description	A GNOME Web browser.
+long_description	A web browser is more than an application, it is a \
+			way of thinking, it is a way of seeing the world. \
+			Epiphany's principles are simplicity and standards \
+			compliance.
+maintainers	devans openmaintainer
+categories	gnome www
+platforms	darwin
+homepage	http://www.gnome.org/projects/${name}
+master_sites    gnome:sources/${name}/${branch}/
+use_bzip2	yes
+
+checksums       md5     0c566b3ffd428d2135e3c8cb65352d64 \
+                sha1    a4bde975f9b2b97d6aad14b4b8a715b40d19a155 \
+                rmd160  60f2c7d699dd8728dc79cce012475972943c4007
+
+depends_build   port:pkgconfig \
+                port:intltool \
+                port:gnome-common \
+                port:gnome-doc-utils
+
+depends_lib	port:gconf \
+                port:webkit-gtk \
+                port:startup-notification \
+                port:libnotify \
+                port:nss \
+                port:iso-codes
+
+configure.args  --with-distributor-name=MacPorts \
+                --enable-introspection=no \
+                --disable-zeroconf \
+                --disable-network-manager \
+                --disable-schemas-install \
+                --disable-scrollkeeper \
+                --disable-tests \
+                --without-ca-file
+
+pre-configure {
+    reinplace "s|--rpath=|-rpath |g" ${worksrcpath}/configure
+}
+
+post-activate {
+        system "${prefix}/bin/gtk-update-icon-cache -f -t ${prefix}/share/icons/hicolor"
+        system "${prefix}/bin/scrollkeeper-update; true"
+        system "${prefix}/bin/update-desktop-database -q ${prefix}/share/applications; true"
+        system "${prefix}/bin/update-mime-database ${prefix}/share/mime; true"
+        system "export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` && \
+            gconftool-2 --makefile-install-rule ${prefix}/etc/gconf/schemas/*.schemas"
+}
+
+#
+# nss is not universal
+#
+
+universal_variant no
+
+# libnotify cannot be installed on Mac OS X 10.7 Lion, #30283
+platform darwin 11 {
+    depends_lib-delete  port:libnotify
+    patchfiles-append   patch-remove-libnotify.diff
+    use_autoreconf yes
+}
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

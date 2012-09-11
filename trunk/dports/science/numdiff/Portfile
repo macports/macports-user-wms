@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem 1.0
+
+name                numdiff
+version             5.2.1
+categories          science math
+maintainers         cerfacs.fr:dechaume
+
+description         Compare files containing numerical fields.
+long_description    When you compare a couple of such files, what you want to \
+obtain usually is a list of the numerical fields in the second file which \
+numerically differ from the corresponding fields in the first file. Well known \
+tools like diff, cmp or wdiff can not be used to this purpose: they can not \
+recognize whether a difference between two numerical fields is only due to the \
+notation or is actually a difference of numerical values.
+
+homepage            http://www.nongnu.org/numdiff/
+platforms           darwin
+master_sites        http://savannah.nongnu.org/download/numdiff/
+
+checksums           md5 a8f4c3347a20b4effd8a38511729dd55 \
+                    sha1 7e1157af1481dcc9edcb9dbf0afa9f288ac3a802
+
+depends_lib         port:gmp
+
+# do not install the natural language support
+configure.args      --disable-nls
+
+destroot.destdir    prefix=${destroot}${prefix}

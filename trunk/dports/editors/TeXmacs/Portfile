@@ -1,0 +1,83 @@
+# $Id$
+
+PortSystem 1.0
+
+name		TeXmacs
+version		1.0.7.10
+distname	${distname}-src
+categories	editors
+maintainers	gwright
+platforms	darwin
+
+description	GNU TeXmacs: A Scientific Text Editor
+long_description	\
+		GNU TeXmacs is a free scientific text editor,		\
+		which was both inspired by TeX and GNU Emacs.		\
+		The editor allows you to write structured documents	\
+		via a wysiwyg (what-you-see-is-what-you-get) and	\
+		user friendly interface. New styles may be created by	\
+		the user. The program implements high-quality		\
+		typesetting algorithms and TeX fonts, which help you	\
+		to produce professionally looking documents.		\
+									\
+		The high typesetting quality still goes through for	\
+		automatically generated formulas, which makes TeXmacs	\
+		suitable as an interface for computer algebra systems.	\
+		TeXmacs also supports the Guile/Scheme extension	\
+		language, so that you may customize the interface and	\
+		write your own extensions to the editor.
+
+#user_notes	If texmacs can't find guile's modules, you will have to \
+#		set GUILE_LOAD_PATH explicitly (usually			\
+#		${prefix}/share/guile/1.8).				\
+#									\
+#		Also, you may need to set DISPLAY to localhost:0.0 if	\
+#		launching TeXmacs from a non-X11 terminal.
+
+#bugs		Some of the computer algebra system sessions (e.g.,	\
+#		maxima) will hang if you try to use the online help	\
+#		function.
+
+homepage	http://www.texmacs.org/
+master_sites	ftp://ftp.texmacs.org/pub/${name}/targz/:source	\
+		ftp://ftp.texmacs.org/pub/${name}/fonts/:fonts
+
+distfiles	${name}-${version}-src${extract.suffix}:source \
+		${name}-extra-fonts-1.0-noarch${extract.suffix}:fonts
+
+checksums       ${name}-${version}-src.tar.gz \
+		md5     ad1ba010be2d7149f25be43178728bbf \
+		sha1    12491496e68b62aa07369748770771a8c2378129 \
+		rmd160  972d225bc2ce8836de02d7312b822ed6d248e91a \
+		${name}-extra-fonts-1.0-noarch.tar.gz \
+		md5     4666d29252da18bbc3fa7e162bb00b17 \
+		sha1    c7a1af56b1af4c18c0792cec69330bd6daea002b \
+		rmd160  ae539c873f16463a3c19fcaf69fd338a1eadd7ce
+
+patchfiles	patch-Makefile.9.diff \
+            patch-configure.in.diff
+
+depends_lib	port:guile		\
+		port:libiconv		\
+		port:texlive		\
+		port:xorg-libXext	\
+		port:freetype
+depends_run	bin:gs:ghostscript
+
+extract.only	${name}-${version}-src${extract.suffix}
+
+post-extract	{ system "${extract.cmd} ${extract.pre_args} ${distpath}/${name}-extra-fonts-1.0-noarch${extract.suffix} ${extract.post_args} -C ${worksrcpath}/${name}"
+		}
+
+use_autoconf    yes
+configure.args	--mandir=${prefix}/share/man
+
+# TeXmacs is ignorant of "make all", so we just "make" with no target:
+build.target	{ }
+
+post-destroot	{ file mkdir ${destroot}${prefix}/share/${name}
+                  system "chown -R root:admin ${destroot}${prefix}/share/${name}"
+
+		  file rename ${destroot}${prefix}/share/${name}/plugins/cadabra \
+			      ${destroot}${prefix}/share/${name}/plugins/cadabra.texmacs
+                }

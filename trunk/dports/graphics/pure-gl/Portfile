@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                      1.0
+PortGroup                       pure 1.0
+
+pure.setup                      gl 0.8
+revision                        4
+categories                      graphics
+platforms                       macosx
+maintainers                     ryandesign
+license                         BSD
+
+description                     an interface to access OpenGL functions from \
+                                Pure
+
+long_description                ${name} provides ${description}.
+
+# 0.8 was stealth-updated 2011-10-20
+dist_subdir                     ${name}/${version}_1
+
+checksums                       rmd160  85ba8e44b0bf17f4b25677193b01f11ff2577985 \
+                                sha256  93554873c1b0604f6686ba45e19e947d3fcb14d7e069e9280a3dd49fb753b739
+
+depends_lib-append              port:freeglut
+
+patchfiles                      patch-Makefile.diff
+
+post-patch {
+    reinplace -E "s,#include <(OpenGL|GLUT)/,#include <GL/,g" \
+        ${worksrcpath}/GL.c \
+        ${worksrcpath}/GL_ARB.c \
+        ${worksrcpath}/GL_ATI.c \
+        ${worksrcpath}/GL_EXT.c \
+        ${worksrcpath}/GL_NV.c \
+        ${worksrcpath}/GLU.c \
+        ${worksrcpath}/GLUT.c
+}

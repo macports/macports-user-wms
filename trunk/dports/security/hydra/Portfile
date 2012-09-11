@@ -1,0 +1,67 @@
+# $Id$
+
+PortSystem              1.0
+
+name                    hydra
+version                 5.4
+revision                3
+distname                ${name}-${version}-src
+categories              security net
+platforms               darwin
+maintainers             nomaintainer
+
+description \
+    A very fast network logon cracker which support many services
+
+long_description \
+    Hydra is a parallelized logon cracker utility. Hydra can \
+    brute force attack on FTP, POP3, IMAP, Telnet, HTTP Auth, \
+    NNTP, VNC, ICQ, Socks5, PCNFS and more services within SSL \
+    support.
+
+homepage                http://www.thc.org/thc-hydra
+master_sites            http://freeworld.thc.org/releases
+checksums               md5 fa08b465d19321e77b1a0ef912eeecc1
+
+depends_lib             port:openssl port:libssh01
+
+patchfiles              patch-configure.diff
+
+post-patch {
+    reinplace "s|SSL_PATH=\"\"|SSL_PATH=\"${prefix}/lib\"|" ${worksrcpath}/configure
+    reinplace "s|SSL_IPATH=\"\"|SSL_IPATH=\"${prefix}/include\"|" ${worksrcpath}/configure
+    reinplace "s|CRYPTO_PATH=\"\"|CRYPTO_PATH=\"${prefix}/lib\"|" ${worksrcpath}/configure
+    reinplace "s|SSH_PATH=\"\"|SSH_PATH=\"${prefix}/lib/libssh01\"|" ${worksrcpath}/configure
+    reinplace "s|SSH_IPATH=\"\"|SSH_IPATH=\"${prefix}/include/libssh01\"|" ${worksrcpath}/configure
+}
+
+configure.args          --disable-xhydra
+
+post-configure {
+    reinplace "s|CC=gcc|CC=${configure.cc}|" ${worksrcpath}/Makefile
+}
+
+build.args              XIPATHS="-I${prefix}/include/libssh01 -I${prefix}/include" \
+                        XLIBPATHS="-L${prefix}/lib/libssh01 -L${prefix}/lib"
+
+pre-destroot {
+    reinplace "s|PREFIX=${prefix}|PREFIX=${destroot}${prefix}|" ${worksrcpath}/Makefile
+    set docdir ${destroot}${prefix}/share/doc/${name}-${version}
+    xinstall -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        CHANGES \
+        LICENCE.HYDRA \
+        LICENSE.GNU \
+        README \
+        TODO \
+        ${docdir}
+}
+
+variant xhydra description {Add xhydra GUI} {
+    depends_lib-append      port:gtk2
+    configure.args-delete   --disable-xhydra
+}
+
+livecheck.type          regex
+livecheck.url           ${homepage}
+livecheck.regex         "${name}-(.*?)-src"

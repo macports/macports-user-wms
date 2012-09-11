@@ -1,0 +1,56 @@
+# $Id$
+
+PortSystem 1.0
+
+name            xorg-libXcomposite
+version         0.4.3
+categories      x11 devel
+license         X11
+maintainers     jeremyhu openmaintainer
+description     X.org libXcomposite
+homepage        http://www.x.org
+platforms       darwin macosx
+long_description Composite extension
+master_sites     xorg:individual/lib/
+
+distname    libXcomposite-${version}
+checksums           md5     a60e0b5c276d0aa9e2d3b982c98f61c8 \
+                    sha1    081b26b556d55e20d7956c80a2ea2854962aecec \
+                    rmd160  dfeb17e6fc7d48e82655c22d9c98ce79be192d76
+
+use_bzip2   yes
+use_parallel_build      yes
+
+depends_build   port:pkgconfig
+
+depends_lib     port:xorg-libXfixes \
+                port:xorg-libXext \
+                port:xorg-compositeproto
+
+configure.args \
+	--without-xmlto
+
+build.args V=1
+
+# Depending on ghostscript for the PDF documentation creates a dependency
+# loop, so you may want to install first without the docs variant
+variant docs description "Install extra documentation" {
+	depends_build-append \
+		port:xmlto
+
+	depends_skip_archcheck-append \
+		xmlto
+
+	configure.args-delete \
+		--without-xmlto
+
+	configure.args-append \
+		--with-xmlto
+
+	configure.env-append \
+		XMLTO="${prefix}/bin/xmlto"
+}
+
+livecheck.type  regex
+livecheck.url   http://xorg.freedesktop.org/archive/individual/lib/?C=M&O=D
+livecheck.regex libXcomposite-(\\d+(?:\\.\\d+)*)

@@ -1,0 +1,40 @@
+# $Id$
+
+PortSystem		1.0
+PortGroup		perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		Mail-SPF 2.007
+revision        3
+categories-append	mail
+license			BSD
+maintainers		yahoo.com:compconsultant
+description		Object oriented implementation of SPF       
+long_description	Mail-SPF provides an object oriented interface to \
+			the Sender Policy Framework, also knows as SPF.
+
+homepage		http://search.cpan.org/~jmehnle/${distname}
+platforms		darwin
+distname		${perl5.module}-v${perl5.moduleversion}
+
+checksums		md5     67dccdc91e3264679a0e17d493d3cc30 \
+			sha1    df53baf018134481591317baf1b5d3a10702d4e7 \
+			rmd160  343c57f2bb8202838d22bac8162793695ca57f55
+
+if {${perl5.major} != ""} {
+patchfiles		patch-Build.PL.diff
+post-patch {
+	reinplace "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/Build.PL
+}
+
+depends_lib-append	port:p${perl5.major}-error \
+			port:p${perl5.major}-mime-base64\
+			port:p${perl5.major}-net-ip \
+			port:p${perl5.major}-netaddr-ip \
+			port:p${perl5.major}-uri \
+			port:p${perl5.major}-version \
+			port:p${perl5.major}-net-dns-resolver-programmable
+
+supported_archs		noarch
+}
+livecheck.version	v${perl5.moduleversion}

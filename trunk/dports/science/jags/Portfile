@@ -1,0 +1,64 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                jags
+version             3.2.0
+set major           [lindex [split ${version} .] 0]
+categories          science
+platforms           darwin
+maintainers         uchicago.edu:dmeliza
+description         Just Another Gibbs Sampler
+long_description    JAGS is a program for analysis of Bayesian hierarchical \
+                    models using Markov Chain Monte Carlo (MCMC) simulation \
+                    not wholly unlike BUGS.
+homepage            http://www-fis.iarc.fr/~martyn/software/jags/
+master_sites        sourceforge:project/mcmc-jags/JAGS/${major}.x/Source
+distname            JAGS-${version}
+
+checksums           rmd160  cb98619904bf8dd5f9bb0bc667f6a8ecfa6be13a \
+                    sha256  0c8060baf2b8d2e0687b23c190fa88bbbf0fbf0e66d53ef24832fd5c4a486dcf
+
+depends_build       port:bison \
+                    port:libtool
+
+universal_variant   no
+
+configure.args      --with-blas='-framework vecLib' \
+                    --with-lapack='-framework vecLib'
+
+variant gcc43 conflicts gcc44 gcc45 description {Use the gcc43 compiler} {
+    depends_lib-append  port:gcc43
+    configure.compiler  macports-gcc-4.3
+}
+
+variant gcc44 conflicts gcc43 gcc45 description {Use the gcc44 compiler} {
+    depends_lib-append  port:gcc44
+    configure.compiler  macports-gcc-4.4
+}
+
+variant gcc45 conflicts gcc43 gcc44 description {Use the gcc45 compiler} {
+    depends_lib-append  port:gcc45
+    configure.compiler  macports-gcc-4.5
+}
+
+if {![variant_isset gcc43] && ![variant_isset gcc44]} {
+    default_variants +gcc45
+}
+
+pre-build {
+    build.env-append    CC="${configure.cc}" \
+                        CXX="${configure.cxx}" \
+                        F77="${configure.f77}"
+}
+
+pre-destroot {
+    destroot.env-append CC="${configure.cc}" \
+                        CXX="${configure.cxx}" \
+                        F77="${configure.f77}"
+}
+
+livecheck.type          sourceforge
+livecheck.name          mcmc-jags
+livecheck.regex         /JAGS-(\[0-9.\]+)${extract.suffix}

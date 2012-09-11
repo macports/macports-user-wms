@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        miscellaneous 1.0.9
+platforms           darwin
+license             GPL-2+ GPL-3+
+maintainers         nomaintainer
+description         Miscellaneous tools including waitbar, xml tools, etc
+long_description    ${description}
+
+checksums           md5     00064d672bffd831f9feb788fce4b75a \
+                    sha1    acfa52deeb098e4601dd5b906495b2de975983bd \
+                    rmd160  b2fc97f46de6f1031bbf34e74586d759ae3a8bb8

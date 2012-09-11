@@ -1,0 +1,82 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    terminator
+version                 0.96
+
+if {![variant_isset python26] && ![variant_isset python27]} {
+    if {[file exists ${frameworks_dir}/Python.framework/Versions/2.6/lib/python2.6/site-packages/gtk-2.0/vtemodule.so]} {
+        default_variants +python26
+    } else {
+        default_variants +python27
+        variant_set python27
+    }
+}
+
+variant python26 conflicts python27 description {Use Python 2.6} {}
+if {[variant_isset python26]} {
+    PortGroup           python26 1.0
+    pre-configure {
+        if {![file exists ${python.pkgd}/gtk-2.0/vtemodule.so]} {
+            ui_error "To install ${name} with the +python26 variant, vte must be installed with the +python26 variant."
+            return -code error "incompatible vte installation"
+        }
+    }
+}
+
+variant python27 conflicts python26 description {Use Python 2.7} {}
+if {[variant_isset python27]} {
+    PortGroup           python27 1.0
+    pre-configure {
+        if {![file exists ${python.pkgd}/gtk-2.0/vtemodule.so]} {
+            ui_error "To install ${name} with the +python27 variant, vte must be installed with the +python27 variant."
+            return -code error "incompatible vte installation"
+        }
+    }
+}
+
+categories              sysutils
+platforms               darwin
+maintainers             ryandesign openmaintainer
+license                 GPL-2
+supported_archs         noarch
+
+description             multiple terminal emulator
+
+long_description        ${name} lets you open multiple terminal emulators in \
+                        a single window.
+
+homepage                http://www.tenshu.net/p/terminator.html
+master_sites            http://launchpad.net/terminator/trunk/${version}/+download
+dist_subdir             ${name}
+
+checksums               rmd160  376ecd9c6f3d0cfdc4c151ebb2e90a5e118fee93 \
+                        sha256  d708c783c36233fcafbd0139a91462478ae40f5cf696ef4acfcaf5891a843201
+
+depends_build-append    port:intltool
+
+depends_lib-append      port:vte \
+                        port:hicolor-icon-theme
+
+# no suffix since there are not multiple versions of this port
+python.link_binaries_suffix
+
+post-destroot {
+    foreach manpage {man1/terminator.1 man5/terminator_config.5} {
+        ln -s ${python.prefix}/share/man/${manpage} ${destroot}${prefix}/share/man/${manpage}
+    }
+    
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        COPYING \
+        ChangeLog \
+        README \
+        ${docdir}
+}
+
+livecheck.type          regex
+livecheck.url           http://launchpad.net/terminator/+download
+livecheck.regex         /${name}\[-_\](\[0-9.\]+)${extract.suffix}

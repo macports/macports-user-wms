@@ -1,0 +1,32 @@
+# $Id$
+
+PortSystem      1.0
+
+name            xqilla
+version         2.3.0
+license         Apache-2
+categories      textproc devel
+platforms       darwin
+maintainers     gmx.com:arjen
+description     XQuery and XPath 2 library and command line utility
+
+long_description \
+    XQilla is an XQuery and XPath 2 library and command line utility \
+    written in C++, implemented on top of the Xerces-C library.
+
+homepage        http://xqilla.sourceforge.net/HomePage
+master_sites    sourceforge:project/xqilla/xqilla/${version}
+distname        XQilla-${version}
+
+checksums       rmd160  32886123cf910c7d031b526ea010336b465bc80a \
+                sha256  60e163cbbbe2900f999ee863bfa5a63d913b1d6e2ea17376302d565d2e9e1bc7
+
+depends_lib \
+    port:xercesc3 \
+    port:tidy
+
+configure.cppflags  -isystem${prefix}/include
+
+configure.args \
+      --with-xerces=${prefix} \
+      --with-tidy=${prefix}

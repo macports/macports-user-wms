@@ -1,0 +1,33 @@
+# $Id$
+
+PortSystem 1.0
+
+name            am-utils
+version         6.1.5
+categories      sysutils
+platforms       darwin
+maintainers     nomaintainer
+description     The Berkeley Automounter Suite of Utilities
+long_description \
+    the "next generation" of the popular BSD Automounter, Amd. Am-utils \
+    includes many additional updates, ports, programs, features (such as\
+    Autofs support, NFS V.3 support, and shared libraries), bug fixes,  \
+    and more.
+
+homepage        http://www.am-utils.org/
+master_sites    ftp://ftp.fu-berlin.de/unix/network/${name} \
+                ftp://ftp.cise.ufl.edu/pub/mirrors/${name} \
+                ftp://ftp.ring.gr.jp/pub/net/${name} \
+                ftp://ftp.u-aizu.ac.jp/pub/net/amd/${name}
+checksums       md5 bc07514f4316511ace5087b9e6dc3771 \
+                sha1 21185e86a3de1c6fb8bfe922899391b1f46ed899 \
+                rmd160 ab1485aaa65c522cc5db7c7917ec59d3b47e0803
+configure.args  --infodir=${prefix}/share/info \
+                --mandir=${prefix}/share/man
+
+test.run        yes
+test.target     check
+
+livecheck.type  md5
+livecheck.url   ftp://ftp.fu-berlin.de/unix/network/${name}/
+livecheck.md5   10da3598c33c687f3616ae7496b45bc4

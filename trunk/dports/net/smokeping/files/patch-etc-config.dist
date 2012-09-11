@@ -1,0 +1,53 @@
+--- etc/config.dist	2008-01-21 06:02:04.000000000 -0800
++++ etc/config.dist.org	2008-02-04 10:29:48.000000000 -0800
+@@ -3,19 +3,19 @@
+ owner    = Peter Random
+ contact  = some@address.nowhere
+ mailhost = my.mail.host
+-sendmail = /usr/lib/sendmail
++sendmail = /usr/sbin/sendmail
+ # NOTE: do not put the Image Cache below cgi-bin
+ # since all files under cgi-bin will be executed ... this is not
+ # good for images.
+-imgcache = /home/oetiker/public_html/smokeping-ms/cache
+-imgurl   = cache
+-datadir  = /tmp/smokeping-ms/data
+-piddir  = /tmp/smokeping-ms/var
+-cgiurl   = http://some.url/smokeping.cgi
+-smokemail = /home/oetiker/checkouts/smokeping/trunk/software/etc/smokemail.dist
+-tmail = /home/oetiker/checkouts/smokeping/trunk/software/etc/tmail.dist
++imgcache = __PREFIX__/var/smokeping
++imgurl   = http://myhost.mycompany.com/smokeping
++datadir  = __PREFIX__/var/smokeping
++piddir  = /var/run
++cgiurl   = http://myhost.mycompany.com/smokeping/smokeping.cgi
++smokemail = __PREFIX__/etc/smokeping/smokemail
++tmail = __PREFIX__/etc/smokeping/tmail
+ # specify this to get syslog logging
+-syslogfacility = local0
++syslogfacility = local1
+ # each probe is now run in its own process
+ # disable this to revert to the old behaviour
+ # concurrentprobes = no
+@@ -47,7 +47,7 @@
+ 
+ *** Presentation ***
+ 
+-template = /home/oetiker/checkouts/smokeping/trunk/software/etc/basepage.html.dist
++template = __PREFIX__/etc/smokeping/basepage.html
+ 
+ + charts
+ 
+@@ -105,10 +105,10 @@
+ 
+ + FPing
+ 
+-binary = /usr/sbin/fping
++binary = __PREFIX__/sbin/fping
+ 
+ *** Slaves ***
+-secrets=/home/oetiker/checkouts/smokeping/trunk/software/etc/smokeping_secrets.dist
++secrets=__PREFIX__/etc/smokeping/smokeping_secrets.dist
+ +boomer
+ display_name=boomer
+ color=0000ff

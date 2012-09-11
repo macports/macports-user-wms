@@ -1,0 +1,12 @@
+--- doc/man/Makefile.in.orig	2012-05-16 14:31:38.000000000 -0700
++++ doc/man/Makefile.in	2012-07-24 23:42:25.000000000 -0700
+@@ -280,8 +280,7 @@
+ top_srcdir = @top_srcdir@
+ @MAN_PAGES_ENABLED_TRUE@man_MANS = \
+ @MAN_PAGES_ENABLED_TRUE@	upower.1			\
+-@MAN_PAGES_ENABLED_TRUE@	upowerd.8			\
+-@MAN_PAGES_ENABLED_TRUE@	UPower.7
++@MAN_PAGES_ENABLED_TRUE@	upowerd.8
+ 
+ @MAN_PAGES_ENABLED_TRUE@MAINTAINERCLEANFILES = $(man_MANS)
+ EXTRA_DIST = \

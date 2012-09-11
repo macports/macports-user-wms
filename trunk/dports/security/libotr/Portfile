@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem 1.0
+
+name             libotr
+version          3.2.0
+categories       security
+license          LGPL-2+ GPL-2+
+maintainers      reifferscheid.org:rsync openmaintainer
+description      Off-the-Record Messaging Library
+long_description \
+	Off-the-Record (OTR) Messaging allows you to have \
+	private conversations over instant messaging.
+homepage         http://www.cypherpunks.ca/otr/
+platforms        darwin
+
+master_sites     ${homepage}
+checksums        md5 faba02e60f64e492838929be2272f839 \
+                 sha1 e5e10b8ddaf59b0ada6046d156d0431cd2790db9 \
+                 rmd160 937f512415eb3b82d5730b1aafbe5d55f4f153da
+
+depends_lib      port:libgcrypt
+
+configure.args   --mandir=${prefix}/share/man
+
+livecheck.type   regex
+livecheck.url    ${homepage}
+livecheck.regex  "${name}-(\\d+(?:\\.\\d+)*)" \

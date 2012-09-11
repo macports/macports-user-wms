@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                autossh
+version             1.4c
+categories          net sysutils
+platforms           darwin freebsd
+license             Permissive BSD
+maintainers         nomaintainer
+
+description         tool to restart terminated ssh sessions
+
+long_description    autossh is a program to start a copy of ssh and monitor \
+                    it, restarting it as necessary should it die or stop \
+                    passing traffic.
+
+homepage            http://www.harding.motd.ca/autossh/
+master_sites        ${homepage}
+extract.suffix      .tgz
+
+checksums           rmd160  894a841c9a079aaaecff5d6e6b148b6f7746dd5e \
+                    sha256  6fcaba6a409a46bdf832086736bb8f09d245ebce11027f41d39588a95dc7fd1d
+
+patchfiles          patch-Makefile.in.diff
+
+destroot.destdir    prefix=${destroot}${prefix} \
+                    bindir=${destroot}${prefix}/bin \
+                    mandir=${destroot}${prefix}/share/man \
+                    datadir=${destroot}${prefix}/share
+
+variant macports_ssh description {Use ssh from the openssh port} {
+    depends_run-append port:openssh
+    configure.args-append --with-ssh=${prefix}/bin/ssh
+}

@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xprop
+version             1.2.1
+categories          x11
+maintainers         jeremyhu openmaintainer
+description         Property displayer for X11
+long_description    ${description}
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           md5     d5529dc8d811efabd136ca2d8e857deb \
+                    sha1    d531be0f5f2b7758216ea4d7890f88c42c5fa3fd \
+                    rmd160  562e7b905b6ab10338a7285e211edb483d45b948
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libX11
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Test-Output 1.01
+revision            2
+platforms           darwin
+maintainers         l2g openmaintainer
+license             Artistic GPL
+supported_archs     noarch
+
+description         Utilities to test STDOUT and STDERR messages
+
+long_description    Test::Output provides a simple interface for testing \
+                    output sent to STDOUT or STDERR. A number of different \
+                    utilities are included to try and be as flexible as \
+                    possible to the tester.
+
+checksums           sha1    d399e7207d30132b361d685eb169cf8f8fa380ff \
+                    rmd160  b258dc9c930d7a973ed7468e1f94751bc5ba4897
+
+if {${perl5.major} != ""} {
+depends_lib-append  port:p${perl5.major}-sub-exporter
+
+# Only required for testing:
+#depends_build-append port:p${perl5.major}-test-tester
+}

@@ -1,0 +1,29 @@
+# $Id$
+
+PortSystem 1.0
+
+name            libusb-compat
+version         0.1.4
+categories      devel
+
+description     library for USB device access
+long_description \
+    library for use by user level applications to \
+    access USB devices regardless of OS
+homepage        http://www.libusb.org/
+
+platforms       darwin
+license         LGPL-2+
+maintainers     toby
+
+master_sites    sourceforge:libusb
+checksums       md5     2ca521fffadd0c28fdf174e6ec73865b \
+                sha1    fdc1df6f5cf7b71de7a74292aeea1aa2a39552ae \
+                rmd160  84a7aa3a294a6065838fcb464935926b659e4fee
+
+use_bzip2       yes
+
+depends_build   port:pkgconfig
+depends_lib     port:libusb
+
+livecheck.regex ${name}-(\[0-9\]\[^ \]+) released

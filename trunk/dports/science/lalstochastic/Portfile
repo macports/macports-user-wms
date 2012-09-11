@@ -1,0 +1,41 @@
+# $Id$
+
+PortSystem    1.0
+
+name          lalstochastic
+version       1.1.5
+categories    science
+platforms     darwin
+maintainers   ram
+license       GPL
+
+description   LSC Algorithm Library - Stochastic
+long_description \
+  LIGO Scientific Collaboration Algorithm Library  - Stochastic, \
+  containing routines for stochastic gravitational wave background \
+  data analysis.
+
+homepage      https://www.lsc-group.phys.uwm.edu/daswg/projects/lalsuite.html
+master_sites  http://www.lsc-group.phys.uwm.edu/daswg/download/software/source/lalsuite
+
+checksums     rmd160  4d1078113265efc4ae20b9d3ef8ff19aafa62843 \
+              sha256  aa49f0730501ebf3a49d76a5a42fb71ca79c8b5dee0dcab2625a45b76a5ed6a5
+
+depends_build port:pkgconfig \
+              port:python27
+
+depends_lib   port:lal \
+              port:lalmetaio \
+              port:metaio
+
+configure.python ${prefix}/bin/python2.7
+configure.args --mandir=${prefix}/share/man \
+               --disable-silent-rules \
+               --disable-gcc-flags \
+               --disable-debug
+
+use_parallel_build yes
+
+livecheck.type   regex
+livecheck.url    ${master_sites}
+livecheck.regex  {lalstochastic-(\d+(?:\.\d+)*).tar.gz}

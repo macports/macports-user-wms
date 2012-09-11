@@ -1,0 +1,17 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        financial 0.3.2
+platforms           darwin
+license             GPL-2 GPL-3+
+maintainers         nomaintainer
+description         Financial manipulation and plotting functions
+long_description    ${description}
+
+checksums           md5     ea871683241da80f766b9af006b78865 \
+                    sha1    b51db6769f6591ce49a8a1060a06744dceab66cf \
+                    rmd160  1f9f087ed2c8053055e4e2938a1fd23079673c25
+
+depends_lib-append  port:octave-time

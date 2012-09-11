@@ -1,0 +1,43 @@
+# $Id$
+
+PortSystem 1.0
+
+name			fireworkx
+version			1.4
+categories		x11
+license			GPL-2+
+platforms		darwin
+maintainers		nomaintainer
+description		pyrotechnic simulation eye-candy for X11
+long_description	${description}
+
+homepage		http://www.ronybc.com/fireworkx.php
+master_sites	http://www.ibiblio.org/pub/Linux/X11/colors/
+extract.suffix	.src${extract.suffix}
+checksums		rmd160 5c18e645f93ef8416c79b64664f0d9dc017cc86e \
+			sha256 61dfee222b9216a542b8ab3dd8b6c3f17daca09da962fe17b4e295d4dae02aef
+patchfiles		Makefile.patch
+
+depends_lib \
+	port:xorg-libX11
+
+post-patch {
+    system -W ${worksrcpath} {echo "#define HAVE_X86_MMX 0" > config.h}
+}
+
+use_configure	no
+
+destroot	{
+	xinstall -m 755 -s ${worksrcpath}/fireworkx ${destroot}${prefix}/bin
+	xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+	xinstall -m 644 -W ${worksrcpath} ChangeLog.txt LICENSE README.src \
+		${destroot}${prefix}/share/doc/${name}
+}
+
+variant universal {}
+build.args CFLAGS="${configure.cflags} [get_canonical_archflags cc] ${configure.cppflags}" \
+           LDFLAGS="${configure.ldflags} [get_canonical_archflags ld]" \
+           CC="${configure.cc}"
+
+livecheck.type	regex
+livecheck.regex	${name}-(\[0-9.\]+)${extract.suffix}

@@ -1,0 +1,61 @@
+# $Id$
+
+PortSystem            1.0
+
+name                  libxml2
+version               2.8.0
+categories            textproc
+description           gnome xml library
+platforms             darwin
+license               MIT
+maintainers           gmail.com:cedric.luthi
+homepage              http://xmlsoft.org/
+
+master_sites          ftp://fr.rpmfind.net/pub/libxml/ \
+                      ftp://gd.tuwien.ac.at/pub/libxml/ \
+                      ${homepage}sources/ \
+                      ftp://xmlsoft.org/${name}/
+
+checksums             rmd160 45820c9f4939f642a87be9259c55fd081ea6759a \
+                      sha256 f2e2d0e322685193d1affec83b21dc05d599e17a7306d7b90de95bb5b9ac622a
+
+depends_lib           port:libiconv port:zlib port:xz
+
+post-extract {
+    reinplace -locale C "s|/etc|${prefix}/etc|g" \
+        ${worksrcpath}/catalog.c \
+        ${worksrcpath}/runtest.c \
+        ${worksrcpath}/xmlcatalog.c \
+        ${worksrcpath}/xmllint.c \
+        ${worksrcpath}/doc/xmlcatalog.1 \
+        ${worksrcpath}/doc/xmllint.1
+
+}
+
+configure.args          --enable-static \
+                        --without-python
+
+use_parallel_build      yes
+
+destroot.keepdirs       ${destroot}${prefix}/etc/xml
+post-destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/etc/xml
+}
+
+test.run              yes
+test.target           check
+
+variant debug description {Enable debug build} {
+        configure.optflags -O0 -g -Wno-uninitialized
+	configure.args-append --with-run-debug
+}
+
+long_description \
+Libxml is the XML C library developed for the Gnome project.  \
+XML itself is a metalanguage to design markup languages. \
+Though the library is written in C, a variety of language bindings make it \
+available in other environments.
+
+livecheck.type  regex
+livecheck.url   ${homepage}news.html
+livecheck.regex {<h3>(\d+(?:\.\d+)*): .*</h3>}

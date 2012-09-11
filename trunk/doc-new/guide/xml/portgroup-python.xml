@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="reference.portgroup.python">
+
+  <title>PortGroup python &amp; python2x</title>
+
+  <para>PortGroup python allows for efficient porting of python-based open
+  source software.</para>
+
+  <section id="reference.portgroup.python.keywords">
+    <title>python PortGroup Specific Keywords</title>
+
+    <para>Portfiles using the python2x PortGroup allow for port authors to
+    set the following keywords in addition to the general Portfile
+    keywords.</para>
+
+    <variablelist>
+      <varlistentry>
+        <term>python.link_binaries</term>
+
+        <listitem>
+          <para>When yes (the default), tells the PortGroup to automatically
+          link any executable binaries installed in the bin/ directory within
+          the framework into
+          <filename>${prefix}/bin</filename>.</para>
+
+          <itemizedlist>
+            <listitem>
+              <para>Type: optional</para>
+            </listitem>
+            <listitem>
+              <para>Example:</para>
+
+              <programlisting>python.link_binaries     no</programlisting>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>python.add_archflags</term>
+        <listitem>
+          <para>When yes (the default), the PortGroup will automatically
+          try to pass the correct arch-specific flags during build time
+          (via the standard CFLAGS, LDFLAGS, etc environment variables).
+          Set this to no and setup those variables in build.env manually
+          if the default does not work.</para>
+          <itemizedlist>
+            <listitem>
+              <para>Type: optional</para>
+            </listitem>
+            <listitem>
+              <para>Example:</para>
+
+              <programlisting>python.add_archflags     no</programlisting>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+
+  <section id="reference.portgroup.python.variables">
+    <title>python PortGroup Specific Variables</title>
+
+    <para>When the python PortGroup is declared within a Portfile, the
+    following variables are provided during port install.</para>
+
+    <variablelist>
+      <varlistentry>
+        <term>python.bin</term>
+
+        <listitem>
+          <para>The MacPorts Python binary location.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>python.lib</term>
+
+        <listitem>
+          <para>The Python dynamic library and path (i.e.,
+          <filename>${prefix}/lib/libpython2.x.dylib</filename>).</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>python.include</term>
+
+        <listitem>
+          <para>Path to the Python include directory.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>python.pkgd</term>
+
+        <listitem>
+          <para>Path to the Python site-packages directory. (i.e.,
+          <filename>${prefix}/lib/python2.4/site-packages</filename>).</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+
+  <section id="reference.portgroup.python.sugar">
+    <title>python PortGroup Sugar</title>
+
+    <para>Portfiles using PortGroup python do not need to define the
+    following variables:</para>
+
+    <variablelist>
+      <varlistentry>
+        <term>categories</term>
+
+        <listitem>
+          <para>Default: python</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>dist_subdir</term>
+
+        <listitem>
+          <para>Default: python</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>depends_lib</term>
+
+        <listitem>
+          <para>Default: port:pythonXY (XY as appropriate for the group)</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>use_configure</term>
+
+        <listitem>
+          <para>Default: no</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>build.cmd</term>
+
+        <listitem>
+          <para>Default: ${python.bin} setup.py --no-user-cfg</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>build.target</term>
+
+        <listitem>
+          <para>Default: build</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>destroot.cmd</term>
+
+        <listitem>
+          <para>Default: ${python.bin} setup.py --no-user-cfg</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>destroot.destdir</term>
+
+        <listitem>
+          <para>Default: --prefix=${prefix} --root=${destroot}</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>pre-destroot</term>
+
+        <listitem>
+          <para>Default: creates
+          ${destroot}${prefix}/share/doc/${name}/examples</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</section>

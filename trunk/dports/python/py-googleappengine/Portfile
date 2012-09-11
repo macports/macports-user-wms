@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               python 1.0
+
+name                    py-googleappengine
+version                 1.7.1
+python.versions         25 27
+python.default_version  27
+categories-append       devel www
+maintainers             snc openmaintainer
+license                 Apache-2 {MPL-1.1 GPL-2+ LGPL-2.1+}
+supported_archs         noarch
+
+description             The Google App Engine Python SDK
+long_description        This is the official Google App Engine SDK for Python.
+platforms               darwin
+
+homepage                http://code.google.com/appengine/
+master_sites            googlecode:googleappengine
+distname                google_appengine_${version}
+use_zip                 yes
+worksrcdir              google_appengine
+
+checksums           rmd160  76f513ad3624abfb678df1f21234832a36f3bb1f \
+                    sha256  40c16a8a5fbd3211fee3fe5761dd42b110c167a5c081ac0a504fdcc7247ddabb
+
+if {$subport != $name} {
+    post-build {
+        eval reinplace "\"s|#!/usr/bin/env python|#!${python.bin}|\"" [glob ${worksrcpath}/*.py]
+    }
+
+    destroot {
+        file rename ${worksrcpath} ${destroot}${prefix}/share/${worksrcdir}
+
+        # add this directory to the python path, so we can `import google`
+        xinstall -d ${destroot}${python.pkgd}
+        set fp [open "${destroot}${python.pkgd}/googleappengine.pth" "w"]
+        puts $fp "${prefix}/share/${worksrcdir}"
+        close $fp
+    }
+    build {}
+    livecheck.type          none
+} else {
+    livecheck.name          googleappengine
+    livecheck.regex         google_appengine_(\\d+(\\.\\d+)+)${extract.suffix}
+}

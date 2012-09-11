@@ -1,0 +1,72 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                kstars
+version             4.8.3
+categories          kde kde4
+platforms           darwin
+license             GPL-2+
+maintainers         nicos openmaintainer
+
+description         KStars is a Desktop Planetarium for KDE.
+long_description    ${description} It provides an accurate graphical simulation \
+                    of the night sky, from any location on Earth, at any date and time. The display \
+                    includes up to 100 million stars, 13,000 deep-sky objects ,all 8 planets, the Sun \
+                    and Moon, and thousands of comets and asteroids.
+
+homepage            http://edu.kde.org/kstars/
+master_sites        kde:stable/${version}/src/
+distname            ${name}-${version}
+use_xz              yes
+
+checksums           rmd160  db835fe5d4ae0d2931dd14286ef2adf096a7116f \
+                    sha256  fdc77fcd2ae7446f1d2a3fa54a358710e64966e9ac5da79d7152e29f7fb816b5
+
+depends_lib-append  port:kdelibs4 \
+                    port:oxygen-icons \
+                    port:eigen \
+                    port:cfitsio
+
+patchfiles          patch-CMakeLists.txt.diff
+
+variant x11 {
+    depends_lib-append  port:xplanet
+}
+
+variant indi description "Add support for astronomical hardware through indi" {
+    depends_lib-append  port:indi
+}
+
+pre-configure {
+    #Ensure finding openGL
+    reinplace "s|<GL/gl.h>|<gl.h>|g" ${worksrcpath}/kstars/skyglpainter.cpp
+
+    #Path to indi
+    reinplace "s|/usr|${prefix}|g" ${worksrcpath}/kstars/kstars.kcfg
+    #Force deactivation of documentation if no indi variant
+    if {![variant_isset indi]} {
+        reinplace "s|macro_optional_find_package(INDI)|#macro_optional_find_package(INDI)|g" \
+            ${worksrcpath}/CMakeLists.txt
+        reinplace "s|macro_bool_to_01(INDI_FOUND HAVE_INDI_H)|#macro_bool_to_01(INDI_FOUND HAVE_INDI_H)|g" \
+            ${worksrcpath}/CMakeLists.txt
+    }
+
+    #Force deactivation of documentation if no docs variant
+    if {![variant_isset docs]} {
+        reinplace "s|add_subdirectory( doc )|#add_subdirectory( doc )|g" ${worksrcpath}/CMakeLists.txt
+    }
+
+    #Force deactivation of xplanet if no x11 variant
+    if {![variant_isset x11]} {
+        reinplace "s|macro_optional_find_package(Xplanet)|#macro_optional_find_package(Xplanet)|g" \
+            ${worksrcpath}/CMakeLists.txt
+        reinplace "s|macro_bool_to_01(XPLANET_FOUND HAVE_XPLANET)|#macro_bool_to_01(XPLANET_FOUND HAVE_XPLANET)|g" \
+            ${worksrcpath}/CMakeLists.txt
+    }
+}
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/latest/src/
+livecheck.regex     ${name}-(\\d+\\.\\d+\\.\\d+)${extract.suffix}

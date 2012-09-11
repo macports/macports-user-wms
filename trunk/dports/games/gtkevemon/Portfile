@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                gtkevemon
+version             99
+categories          games
+maintainers         gmail.com:jameslpoter
+description         GTK Eve-Online monitor
+long_description    GtkEveMon is a skill monitoring standalone application \
+                    for GNU/Linux systems. With GtkEveMon you can monitor \
+                    your current skills and your skill training process \
+                    without starting EVE-Online.
+
+homepage            http://gtkevemon.battleclinic.com/
+use_parallel_build  yes
+worksrcdir          gtkevemon
+
+depends_lib         port:gtkmm port:libxml2
+
+fetch.type          svn
+svn.url             svn://svn.battleclinic.com/GTKEVEMon/trunk/gtkevemon
+svn.revision        ${version}
+
+destroot {
+    xinstall -W ${worksrcpath}/src -m 755 gtkevemon ${destroot}${prefix}/bin
+}
+
+use_configure       no
+
+platforms           darwin
+

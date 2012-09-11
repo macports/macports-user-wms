@@ -1,0 +1,81 @@
+# $Id$
+
+PortSystem  1.0
+
+name        moreutils
+version     0.47
+categories  sysutils
+maintainers nomaintainer
+license     GPL-2+
+platforms   darwin
+description a collection of the unix tools that nobody thought to write thirty years ago.
+long_description    \
+    moreutils includes the following utilities: \
+ - combine: combine the lines in two files using boolean operations, \
+ - ifne: run a program if the standard input is not empty, \
+ - isutf8: check if a file or standard input is utf-8, \
+ - lckdo: run a program with a lock held. \
+ - mispipe: pipe two commands, returning the exit status of the first, \
+ - parallel: run multiple jobs at once, \
+ - pee: tee standard input to pipes, \
+ - sponge: soak up standard input and write to a file, \
+ - ts: timestamp standard input, \
+ - vidir: edit a directory in your text editor, \
+ - vipe: insert a text editor into a pipe, \
+ - zrun: automatically uncompress arguments to command.
+
+homepage    http://packages.debian.org/unstable/utils/moreutils
+master_sites    http://ftp.debian.org/debian/pool/main/m/moreutils/
+conflicts       parallel
+distname        ${name}_${version}
+worksrcdir      ${name}
+
+checksums       rmd160  1925666f75af7b97b2c64f3d82f056e5a42cdfcd \
+                sha256  277058c99d76c58f850f48dfbc1ad4a7a384f5b95f3569842ec4ce1c9f077266
+
+depends_run     path:bin/perl:perl5
+
+patchfiles      patch-Makefile.diff
+
+post-patch {
+        reinplace "s|/usr/bin/perl|${prefix}/bin/perl|" \
+        ${worksrcpath}/vidir ${worksrcpath}/vipe \
+        ${worksrcpath}/ts ${worksrcpath}/combine \
+        ${worksrcpath}/zrun ${worksrcpath}/chronic
+}
+
+use_configure   no
+
+variant universal {}
+
+build.args-append       CC=${configure.cc} \
+                        CFLAGS="${configure.cflags} [get_canonical_archflags cc]" \
+                        DOCBOOK2XMAN=docbook2man \
+                        PREFIX=${prefix}
+
+destroot.args-append    PREFIX=${prefix}
+
+variant doc description {Install man pages} {
+        depends_build-append    port:docbook-xml-4.4 port:docbook2X
+        build.target-append     doc
+        destroot.target-append  install-doc
+        post-patch {
+            reinplace "s|/usr/share/xml/docbook/schema/dtd/4.4|${prefix}/share/xml/docbook/4.4|" \
+            ${worksrcpath}/ifne.docbook ${worksrcpath}/isutf8.docbook \
+            ${worksrcpath}/mispipe.docbook ${worksrcpath}/pee.docbook \
+            ${worksrcpath}/parallel.docbook \
+            ${worksrcpath}/sponge.docbook ${worksrcpath}/lckdo.docbook
+        }
+}
+
+platform darwin 8 {
+    # ticket #24279
+    pre-fetch {
+        error "$name does not build on Mac OS X 10.4"
+    }
+}
+
+livecheck.type  regex
+livecheck.url   http://packages.debian.org/unstable/utils/${name}
+livecheck.regex ${name} .(\[0-9.\]+)
+

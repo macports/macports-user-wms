@@ -1,0 +1,19 @@
+# $Id$
+
+PortSystem 1.0
+
+name			libsl
+version			0.3.3
+categories		devel
+platforms		darwin
+maintainers		nomaintainer
+description		yet another generic linked list C-library
+long_description	${description}
+
+homepage		http://brautaset.org/software/sl/
+master_sites	http://dev.brautaset.org/sl/download/
+distname		sl-${version}
+checksums		md5 67bfb9a8bfd13e295d84e194d6521e3d
+
+configure.args	--mandir=${prefix}/share/man
+

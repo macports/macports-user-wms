@@ -1,0 +1,22 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         File-Copy-Recursive 0.38
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Perl extension for recursively copying files and directories
+long_description    This module copies and moves directories recursively \
+                    (or single files, well... singley) to an optional depth \
+                    and attempts to preserve each file or directory's mode.
+
+platforms           darwin
+
+checksums           md5 e76dc75ab456510d67c6c3a95183f72f \
+                    sha1 6c3a48c8ba70ad6b1ea97c4aac6b1f2d310a8e8d \
+                    rmd160 b2d3a9f1f9682ae9ca8a74f30c2716bf0220a71c
+
+supported_archs noarch

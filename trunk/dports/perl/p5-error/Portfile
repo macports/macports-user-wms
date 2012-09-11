@@ -1,0 +1,35 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Error 0.17016
+revision            4
+license             {Artistic GPL}
+maintainers         email.arc.nasa.gov:sal
+description         Error/exception handling in an OO-ish way
+long_description    The Error package provides two interfaces.  Firstly \
+                    Error provides a procedural interface to exception \
+                    handling. Secondly Error is a  base class for \
+                    errors/exeptions that can either be thrown, for \
+                    subsequent catch, or can simply be recorded.
+platforms           darwin
+
+checksums           md5     eedcd3c6970568dd32092b5334328eff \
+                    sha1    c861ad15e8533bbbfc6dfb8a984c80c346072bd2 \
+                    rmd160  c19b2a20bd4b8c333c7a91c6444d47538246f3ea
+
+if {${perl5.major} != ""} {
+post-destroot {
+    set docdir ${prefix}/share/doc/${subport}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 -W ${worksrcpath} ChangeLog README ${destroot}${docdir}
+
+    set examplesdir ${prefix}/share/examples/${subport}
+    xinstall -d ${destroot}[file dirname ${examplesdir}]
+    copy ${worksrcpath}/examples ${destroot}${examplesdir}
+}
+
+supported_archs noarch
+}

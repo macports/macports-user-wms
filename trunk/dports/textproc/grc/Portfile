@@ -1,0 +1,48 @@
+# $Id$
+
+PortSystem 1.0
+
+name            grc
+version         1.4
+categories      textproc
+platforms       darwin
+maintainers     aecollins1
+description     Generic Colouriser for colourising logfiles and output of commands.
+
+long_description \
+    Generic Colouriser provides colourised output of logfiles \
+    and commands. It provides the grc and grcat Python scripts \
+    for filtering text output and colourising it.
+
+homepage        http://kassiopeia.juls.savba.sk/~garabik/software/grc.html
+master_sites    http://kassiopeia.juls.savba.sk/~garabik/software/grc
+
+distname        ${name}_${version}
+worksrcdir      ${name}-${version}
+
+checksums       md5     a59267f88b6d2b7e6a4779bc904c3f75 \
+                sha1    79fd504d8291f13486d361611415ae60fa56712a \
+                rmd160  f95da528389d585994d55b49276853bedffbe498
+
+depends_lib     port:python25
+
+use_configure   no
+build           {}
+
+post-destroot   {
+    reinplace "s|#! /usr/bin/python|#!${prefix}/bin/python2.5|" \
+        ${worksrcpath}/grc ${worksrcpath}/grcat
+    reinplace "s|/etc|${prefix}/etc|g" \
+        ${worksrcpath}/grc ${worksrcpath}/grc.1
+    reinplace "s|/usr/local|${prefix}|g" \
+        ${worksrcpath}/grcat ${worksrcpath}/grcat.1
+    xinstall -m 755 -W ${worksrcpath} \
+        grc grcat ${destroot}${prefix}/bin
+    xinstall -m 755 -d ${destroot}${prefix}/share/${name}
+    eval xinstall -m 644 [glob ${worksrcpath}/conf.*] \
+        ${destroot}${prefix}/share/${name}
+    xinstall -m 644 -W ${worksrcpath} \
+        grc.conf ${destroot}${prefix}/etc
+    xinstall -m 644 -W ${worksrcpath} \
+        grc.1 grcat.1 ${destroot}${prefix}/share/man/man1
+}

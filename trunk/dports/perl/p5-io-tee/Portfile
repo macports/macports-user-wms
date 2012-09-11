@@ -1,0 +1,19 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         IO-Tee 0.64
+revision            3
+maintainers         email.arc.nasa.gov:sal
+description         Multiplex output to multiple output handles
+long_description    The `IO::Tee' constructor, given a list of output \
+                    handles, returns a tied handle that can be written to \
+                    but not read from.  When written to (using print or \
+                    printf), it multiplexes the output to the list of \
+                    handles originally passed to the constructor.
+platforms           darwin
+checksums           md5 97d91e38fcadc1f01d8030a8d4f30701
+
+supported_archs noarch

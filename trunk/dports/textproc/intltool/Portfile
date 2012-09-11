@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+
+name            intltool
+version         0.50.2
+maintainers     nomaintainer
+categories      textproc gnome
+license         GPL-2+
+installs_libs   no
+platforms       darwin
+supported_archs noarch
+
+description     a string tool
+
+long_description \
+    The intltool collection can be used to extract translatable \
+    strings from various source files (.xml.in, .glade, .desktop.in, \
+    .server.in, .oaf.in), collect the extracted strings together with \
+    messages from traditional source files (.c, .h) in po/PACKAGE.pot \
+    and merge back the translations from .po files into .xml, .desktop \
+    and .oaf files. This merge step will happen at build or \
+    installation time.
+
+homepage        https://launchpad.net/intltool
+master_sites    ${homepage}/trunk/${version}/+download
+
+checksums       rmd160  52b1c6aae5f5f0069d09cef8d709ab267c460319 \
+                sha256  67f25c5c6fb71d095793a7f895b245e65e829e8bde68c6c8b4c912144ff34406
+
+depends_build   port:gnome-common
+depends_lib     port:expat \
+                port:perl5.12 \
+                port:p5.12-xml-parser \
+                port:p5.12-getopt-long \
+                port:p5.12-pathtools \
+                port:p5.12-scalar-list-utils
+
+configure.perl  ${prefix}/bin/perl5.12
+
+test.run        yes
+test.target     check
+
+livecheck.type  regex
+livecheck.url   ${homepage}/+download
+livecheck.regex ${name}-(\[0-9.\]+)${extract.suffix}

@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup  github 1.0
+
+github.setup    keenerd jshon 20120801
+revision        0
+categories      textproc
+platforms       darwin
+license         MIT
+maintainers     singingwolfboy openmaintainer
+
+description     A JSON parser for the shell
+long_description  ${description}
+homepage        http://kmkeen.com/jshon/
+fetch.type      git
+git.branch      65346091f8
+
+depends_lib     port:jansson
+
+use_configure   no
+
+variant universal {}
+
+build.args      CC="${configure.cc} [get_canonical_archflags cc] -I${prefix}/include ${configure.ldflags}"
+
+destroot {
+    xinstall -m 755 ${worksrcpath}/jshon ${destroot}${prefix}/bin/
+    xinstall -m 644 ${worksrcpath}/jshon.1 ${destroot}${prefix}/share/man/man1/
+}

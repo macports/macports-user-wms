@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim: fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name            libev
+epoch           1
+version         4.11
+categories      devel
+maintainers     nomaintainer
+license         {BSD GPL-2+}
+description     asynchronous event library
+long_description    libev is a full-featured and high-performance event \
+            loop that is loosely modelled after libevent.
+homepage        http://software.schmorp.de/pkg/libev.html
+platforms       darwin
+master_sites        http://dist.schmorp.de/libev/Attic/
+
+checksums           rmd160  524b86e24b45ff01bf79775f9ce9374f792b3c4c \
+                    sha256  9f55f16ff6e4d60a1b1fa7f4962af69768468f0d7c362aab6387f52020938cdf
+
+post-destroot {
+    move ${destroot}${prefix}/include/event.h ${destroot}${prefix}/include/ev-event.h
+}
+
+
+test.run        yes
+test.target     verify
+
+livecheck.type  regex
+livecheck.url   http://dist.schmorp.de/libev/
+livecheck.regex ${name}-(\[0-9.\]+)\\.

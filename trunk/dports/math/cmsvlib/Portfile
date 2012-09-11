@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                cmsvlib
+version             20120524
+categories          math science
+maintainers         takeshi igf.fuw.edu.pl:slayoo
+platforms           darwin
+supported_archs     noarch
+
+description         Read and Write IDL SAVE files
+long_description \
+    allows interactive users and programmers \
+    to read, write and interrogate IDL SAVE files.
+homepage http://www.physics.wisc.edu/~craigm/idl/cmsave.html
+master_sites        http://www.physics.wisc.edu/~craigm/idl/down/
+distfiles           ${name}${extract.suffix}
+dist_subdir         ${name}/${version}
+
+checksums           rmd160  d5934587e4f641b630c271f792c74999c235de14 \
+                    sha256  661b129ba831915fe64709eccc4419b19fbc55a606b13d856ced8d552a7b6c40
+
+extract.mkdir       yes
+use_configure       no
+build {
+}
+
+use_parallel_build  yes
+
+destroot {
+   xinstall -m 755 -d ${destroot}${prefix}/share/cmsvlib
+   eval xinstall -m 644 [glob ${worksrcpath}/*.pro] ${destroot}${prefix}/share/${name}
+   xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+   xinstall -m 644 ${worksrcpath}/LICENSE.RSI ${destroot}${prefix}/share/doc/${name}/
+   eval xinstall -m 644 [glob ${worksrcpath}/*.html] ${destroot}${prefix}/share/doc/${name}/
+   eval xinstall -m 644 [glob ${worksrcpath}/savefmt.*] ${destroot}${prefix}/share/doc/${name}/
+}

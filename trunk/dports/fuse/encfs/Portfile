@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name                encfs
+version             1.7.4
+revision            1
+set branch          [join [lrange [split ${version} .] 0 1] .]
+
+categories          fuse
+platforms           darwin
+license             {GPL-3+ OpenSSLException}
+maintainers         gmail.com:Markus.Ueberall
+description         An encrypted pass-through FUSE filesystem
+
+long_description    EncFS is an encrypted pass-through filesystem which \
+                    runs in userspace, using the FUSE kernel module.  \
+                    Similar in design to CFS and other pass-through \
+                    filesystems, all data is encrypted and stored in the \
+                    underlying filesystem.  Unlike loopback filesystems, \
+                    there is no predetermined or pre-allocated filesystem size.
+
+homepage            http://www.arg0.net/encfs
+
+distname            ${name}-${version}
+master_sites        googlecode
+extract.suffix      .tgz
+worksrcdir          ${name}-${version}
+
+checksums           sha1    3d824ba188dbaabdc9e36621afb72c651e6e2945 \
+                    rmd160  a54bbf1237f7071392cc2a6be11afeee0fcdf5e9
+
+depends_build       path:bin/pkg-config:pkgconfig
+depends_lib         port:rlog port:openssl path:lib/libfuse.dylib:fuse4x port:gettext port:boost
+
+configure.cppflags-append   -D__FreeBSD__=10
+configure.args      --with-boost=${prefix}

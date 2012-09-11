@@ -1,0 +1,27 @@
+--- Makefile.in.orig	2010-09-15 02:55:40.000000000 -0700
++++ Makefile.in	2010-09-15 11:52:04.000000000 -0700
+@@ -253,8 +253,8 @@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ SUBDIRS = data po Alacarte
+-CLEANFILES = alacarte
+-bin_SCRIPTS = alacarte
++CLEANFILES = alacarte.py
++bin_SCRIPTS = alacarte.py
+ DISTCLEANFILES = ChangeLog
+ EXTRA_DIST = \
+ 	alacarte.in \
+@@ -785,11 +785,11 @@
+ 	uninstall uninstall-am uninstall-binSCRIPTS
+ 
+ 
+-alacarte: alacarte.in
++alacarte.py: alacarte.in
+ 	sed -e s!\@PYTHON\@!@PYTHON@!		\
+ 	    -e s!\@PYOPTIONS\@!-OOt!		\
+ 	    < $< > $@
+-alacarte: Makefile
++alacarte.py: Makefile
+ 
+ ChangeLog:
+ 	@echo Creating $@

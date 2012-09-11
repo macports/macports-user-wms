@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                kalgebra
+version             4.8.3
+categories          kde kde4
+maintainers         sharky michaelld
+license             GPL-2
+description         2D and 3D Graph Calculator
+long_description    KDE ${description}
+homepage            http://www.kde.org
+
+platforms           darwin
+depends_lib-append  port:libkdeedu port:analitza
+
+master_sites        kde:stable/${version}/src/
+use_xz              yes
+
+checksums           rmd160  2b8189fcdeb04ab5a5ecf2faa46d3e840ad3cdd1 \
+                    sha256  6191a68f93fb8e68f211b6aa32edd7b6b43aad1c21304ec917b626c7969c03b1
+
+if {![variant_isset doc]} {
+    patchfiles      patch-CMakeLists.txt.diff
+}
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/latest/src/
+livecheck.regex     ${name}-(\\d+(\\.\\d+)+)

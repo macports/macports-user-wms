@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         PadWalker 1.92 ../by-authors/id/R/RO/ROBIN/
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         play with other peoples' lexical variables
+long_description    PadWalker is a module which allows you to inspect \
+                    (and even change!) lexical variables in any subroutine \
+                    which called you.
+
+platforms           darwin
+
+checksums           md5 304722b441c15634bdb048685800ee3a \
+                    sha1 5f1250a7e619c232463f506d36a27a66a9bb6497 \
+                    rmd160 e32303118d6bebe2a7485d16ca470cac5cebb9e4

@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+PortGroup       php5extension 1.0
+
+php5extension.setup geoip 1.0.8 pecl
+license         PHP
+categories      php devel
+platforms       darwin
+maintainers     ryandesign openmaintainer
+description     Map IP address to geographic places
+
+long_description \
+    This PHP extension allows you to find the location of an IP address - \
+    City, State, Country, Longitude, Latitude, and other information as all, \
+    such as ISP and connection type.
+
+checksums           rmd160  cea5d556b2d502f40cc197cb8acec09d8482aac0 \
+                    sha256  08beeb2cbe9ab729d06b026795f5b9084aead6a1762493b0be53c4393d68d08a
+
+depends_lib-append port:libgeoip
+
+use_parallel_build yes
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 -W ${worksrcpath} ChangeLog README \
+        ${destroot}${docdir}
+}
+
+test.run yes

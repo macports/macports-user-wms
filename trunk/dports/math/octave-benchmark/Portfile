@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        benchmark 1.1.1
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         The package contains code used to benchmark speed of Octave.
+long_description    ${description}
+
+checksums           md5     33842f7c32af5eedbbd0af3b8f918b69 \
+                    sha1    247e39c21be6e3b8d373965277bf916f4ca8b80d \
+                    rmd160  a152ed405ce34c8370937c0af449bd98e792e882

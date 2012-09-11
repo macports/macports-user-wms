@@ -1,0 +1,35 @@
+--- Makefile.orig	2011-08-31 07:39:04.000000000 -0500
++++ Makefile	2012-01-11 10:17:56.000000000 -0600
+@@ -72,14 +72,30 @@
+ endif
+ 
+ ifneq ($(POPT_DIR),)
+-    CFLAGS += -I$(POPT_DIR)
+-    LOADLIBES += -L$(POPT_DIR)
++    CFLAGS += -I$(POPT_DIR)/include
++    LOADLIBES += -L$(POPT_DIR)/lib
+ endif
+ 
+ ifneq ($(STATEFILE),)
+     CFLAGS += -DSTATEFILE=\"$(STATEFILE)\"
+ endif
+ 
++ifneq ($(COMPRESS_COMMAND),)
++    CFLAGS += -DCOMPRESS_COMMAND=\"$(COMPRESS_COMMAND)\"
++endif
++
++ifneq ($(COMPRESS_EXT),)
++    CFLAGS += -DCOMPRESS_EXT=\"$(COMPRESS_EXT)\"
++endif
++
++ifneq ($(UNCOMPRESS_COMMAND),)
++    CFLAGS += -DUNCOMPRESS_COMMAND=\"$(UNCOMPRESS_COMMAND)\"
++endif
++
++ifneq ($(DEFAULT_MAIL_COMMAND),)
++    CFLAGS += -DDEFAULT_MAIL_COMMAND=\"$(DEFAULT_MAIL_COMMAND)\"
++endif
++
+ BINDIR = $(BASEDIR)/sbin
+ MANDIR ?= $(BASEDIR)/man
+ 

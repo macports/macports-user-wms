@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup python25 1.0
+
+name			py25-mx-experimental
+version			3.0.0
+revision		1
+categories		python
+platforms		darwin
+maintainers		nomaintainer
+description		eGenix.com mx Extensions for Python - EXPERIMENTAL Package
+long_description	The mx Extension Series is a collection of software \
+				packages which aims at providing professional quality add-ons \
+				for the Open Source Language Python. It consists of mxNumber \
+				(Extended Numeric Types), mxTidy (Interface to HTML Tidy), \
+				mxURL (URL Datatype) and mxUID (UID Datatype).
+
+homepage		http://www.egenix.com/products/python/mxExperimental/
+master_sites	http://www.egenix.com/files/python/
+distname		egenix-mx-experimental-${version}
+checksums		sha1 f697220cf317d968c448da870e0d05a7bd0277e7
+
+depends_lib-append	port:mpfr port:gmp port:tidy
+depends_run		port:py25-mx-base
+
+livecheck.type	regex
+livecheck.url	${homepage}
+livecheck.regex	Version: (\[0-9\\.\]+)
+

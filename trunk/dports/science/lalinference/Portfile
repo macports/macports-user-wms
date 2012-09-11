@@ -1,0 +1,48 @@
+# $Id$
+
+PortSystem    1.0
+
+name          lalinference
+version       0.4.0
+categories    science
+platforms     darwin
+maintainers   ram
+license       GPL
+
+description   LSC Algorithm Library - Inference
+long_description \
+  LIGO Scientific Collaboration Algorithm Library - Inference containing \
+  routines for Bayesian inference data analysis.
+
+homepage      https://www.lsc-group.phys.uwm.edu/daswg/projects/lalsuite.html
+master_sites  http://www.lsc-group.phys.uwm.edu/daswg/download/software/source/lalsuite
+
+checksums     rmd160 17e95a768a1358ecdaafd2e774941a5ca282411a \
+              sha256 19475785304ef0fce2fa17a874932714923bd433359b92a2b35aa4e2bcef4442
+
+depends_build port:pkgconfig \
+              port:python27
+
+depends_lib   port:gsl \
+              port:metaio \
+              port:libxml2 \
+              port:lal \
+              port:lalframe \
+              port:lalmetaio \
+              port:lalxml \
+              port:lalsimulation \
+              port:lalinspiral \
+              port:lalpulsar
+
+configure.python ${prefix}/bin/python2.7
+configure.args --mandir=${prefix}/share/man \
+               --disable-silent-rules \
+               --enable-lalxml \
+               --disable-gcc-flags \
+               --disable-debug
+
+use_parallel_build yes
+
+livecheck.type   regex
+livecheck.url    ${master_sites}
+livecheck.regex  {lalinference-(\d+(?:\.\d+)*).tar.gz}

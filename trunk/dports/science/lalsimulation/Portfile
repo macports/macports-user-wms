@@ -1,0 +1,54 @@
+# $Id$
+
+PortSystem    1.0
+
+name          lalsimulation
+version       0.4.0
+categories    science
+platforms     darwin
+maintainers   ram
+license       GPL
+
+description   LSC Algorithm Library - Simulation
+long_description \
+  LIGO Scientific Collaboration Algorithm Library - Simulation containing \
+  routines for simulation gravitational-wave waveforms and noise sources.
+
+homepage      https://www.lsc-group.phys.uwm.edu/daswg/projects/lalsuite.html
+master_sites  http://www.lsc-group.phys.uwm.edu/daswg/download/software/source/lalsuite
+
+checksums     rmd160 7de188a2bc81f0a4d50262f7fa257c214c7147f2 \
+              sha256 a1d9c1412b6c7c329bae96c9f7dba381f0cd88f8f587479ca0213cdfd3f9c08d
+
+depends_build port:pkgconfig \
+              port:python27
+
+depends_lib   port:lal \
+              port:gsl
+
+configure.python ${prefix}/bin/python2.7
+configure.args --mandir=${prefix}/share/man \
+               --disable-silent-rules \
+               --disable-gcc-flags \
+               --disable-debug
+
+use_parallel_build yes
+
+# check for earlier versions of lalburst and lalinspiral that contained
+# conflicting headers, deactivate if necessary
+pre-activate {
+  if {[file exists ${prefix}/include/lal/LALSimBurst.h]
+    && ![catch {set vers [lindex [registry_active lalburst] 0]}]
+    && [vercmp [lindex $vers 1] 1.0.1] < 0} {
+      registry_deactivate lalburst "" [list ports_nodepcheck 1]
+  }
+  if {[file exists ${prefix}/include/lal/LALSimInspiral.h]
+    && ![catch {set vers [lindex [registry_active lalinspiral] 0]}]
+    && [vercmp [lindex $vers 1] 1.1.0] < 0} {
+      registry_deactivate lalinspiral "" [list ports_nodepcheck 1]
+  }
+}
+
+livecheck.type   regex
+livecheck.url    ${master_sites}
+livecheck.regex  {lalsimulation-(\d+(?:\.\d+)*).tar.gz}

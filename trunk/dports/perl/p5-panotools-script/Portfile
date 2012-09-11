@@ -1,0 +1,32 @@
+# $Id$
+
+PortSystem			1.0
+PortGroup			perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup			Panotools-Script 0.25
+revision            3
+maintainers			nomaintainer
+description			Tools for manipulating Hugin script files
+long_description \
+        Library and utilities for manipulating project files created \
+        by the Hugin photo stitching software (available as port \
+        hugin-app). \
+        \
+        This file format is shared with various other tools, in \
+        particular this module is also capable of working with \
+        Panorama Tools script files.
+
+platforms			darwin
+
+checksums           sha1    fb5410954e503900e2cc45bbdc4e58f74d290ff8 \
+                    rmd160  feba0d60fef167b15fd55fc64e478b43e50b44d6
+
+master_sites        http://search.cpan.org/CPAN/authors/id/B/BP/BPOSTLE/
+
+if {${perl5.major} != ""} {
+depends_lib-append	port:p${perl5.major}-graphviz port:p${perl5.major}-image-exiftool \
+                        port:p${perl5.major}-image-size
+
+supported_archs noarch
+}

@@ -1,0 +1,57 @@
+# $Id$
+
+PortSystem              1.0
+PortGroup xcodeversion  1.0
+
+name                    ode
+version                 0.12
+categories              devel
+platforms               darwin
+license                 LGPL-2.1
+maintainers             nomaintainer
+homepage                http://www.ode.org/
+master_sites            sourceforge:project/opende/ODE/${version}
+
+# 0.12 was stealth-updated in May 2012 but some SourceForge mirrors still carry
+# the old file and the only changes are to the configure script and Makefiles
+# and other related autotools-generated files. These changes don't appear to
+# benefit us in any specific way right now so skip this update for now. #34952
+master_sites            macports_distfiles
+
+use_bzip2               yes
+
+description             library for simulating articulated rigid body dynamics
+
+long_description        ODE is a free, industrial quality library for \
+                        simulating articulated rigid body dynamics - for \
+                        example ground vehicles, legged creatures, and moving \
+                        objects in VR environments. It is fast, flexible, \
+                        robust and platform independent, with advanced joints, \
+                        contact with friction, and built-in collision detection.
+
+checksums               md5     83766cae59692c2843d9afccc1768988 \
+                        sha1    98ceaba7d1b947fba1c793c5d990c399624f1c47 \
+                        rmd160  e1154094c82897c4c9771e931fb9387543d01f25
+
+configure.args          --with-trimesh=opcode \
+                        --enable-double-precision \
+                        --enable-release \
+                        --enable-shared \
+                        --disable-demos
+
+build.type              gnu
+
+post-destroot {
+    system "ranlib ${destroot}${prefix}/lib/libode.a"
+}
+
+minimum_xcodeversions {9 3.1}
+
+variant debug description {Enable debugging checks} {
+    configure.args-delete --enable-release
+    configure.args-append --enable-debug
+}
+
+livecheck.type          sourceforge
+livecheck.name          opende
+livecheck.regex         ${name}-(\[0-9.\]+)${extract.suffix}

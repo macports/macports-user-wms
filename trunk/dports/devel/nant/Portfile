@@ -1,0 +1,45 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                nant
+version             0.91
+categories          devel mono
+platforms           darwin
+maintainers         nomaintainer
+license             GPL-2+
+supported_archs     noarch
+
+description         .NET build tool
+
+long_description    NAnt is a free .NET build tool. In theory it is kind of \
+                    like make without make's wrinkles. In practice it's a \
+                    lot like Ant.
+
+homepage            http://nant.sourceforge.net/
+master_sites        sourceforge:project/nant/nant/${version}
+distname            nant-${version}-src
+
+checksums           rmd160  f23f72c4eae7d5a29d854292b845eb1b31b60c44 \
+                    sha256  6694f16d71f77912ba08a6d83d6a1a67afe5f57469d817918cdc7ed1912974b7
+
+depends_build       port:mono \
+                    port:pkgconfig
+
+worksrcdir          nant-${version}
+
+patchfiles          patch-PkgConfigFunctions.cs \
+                    patch-ScriptTask.cs
+
+use_configure       no
+
+use_parallel_build  no
+
+build.args          prefix=${prefix}
+
+destroot.destdir    prefix=${destroot}${prefix}
+
+post-destroot {
+    reinplace "s|${destroot}${prefix}|${prefix}|g" ${destroot}${prefix}/bin/nant
+}

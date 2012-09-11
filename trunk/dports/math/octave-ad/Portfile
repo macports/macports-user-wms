@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        ad 1.0.6
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Automatic Forward Differentiation
+long_description    ${description}
+
+checksums           md5     9162813e37bad34c4277a30dd9d968da \
+                    sha1    71e32c0001c61dd62eec84f2d61e754dec5bcf2e \
+                    rmd160  1fdd5216d31035a03b5b6df6fe83fc0ebeca195c

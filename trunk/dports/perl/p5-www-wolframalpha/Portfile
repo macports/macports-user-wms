@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         WWW-WolframAlpha 1.10
+revision            2
+platforms           darwin
+license             Artistic GPL
+maintainers         l2g openmaintainer
+supported_archs     noarch
+
+description         WWW::WolframAlpha API - Interface to Wolfram\|Alpha API
+
+long_description    WWW::WolframAlpha provides an object-oriented Perl \
+                    interface to the Wolfram\|Alpha API. You will need a \
+                    development key from Wolfram, and the API is subject to \
+                    conditions and limitations\; see \
+                    http://products.wolframalpha.com/developers/ for details.
+
+checksums           sha1    bb38dfa6d9ff0f53b775b0edec3d09cb282926aa \
+                    rmd160  b1a1f2da5b79544c5bc9ca4780ecb4d5143ef83b
+
+if {${perl5.major} != ""} {
+depends_lib-append  port:p${perl5.major}-libwww-perl \
+                    port:p${perl5.major}-uri \
+                    port:p${perl5.major}-xml-simple
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 -W ${worksrcpath} Changes README ${destroot}${docdir}
+
+    set exampledir ${docdir}/examples
+    xinstall -d ${destroot}${exampledir}
+    xinstall -m 644 -W ${worksrcpath}/ex \
+        asyncPod.pl query.pl validatequery.pl \
+        ${destroot}${exampledir}
+}
+}

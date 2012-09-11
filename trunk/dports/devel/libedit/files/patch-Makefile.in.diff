@@ -1,0 +1,11 @@
+--- Makefile.in.orig	2012-06-01 14:05:32.000000000 -0500
++++ Makefile.in	2012-06-06 14:15:57.000000000 -0500
+@@ -289,7 +289,7 @@
+ top_srcdir = @top_srcdir@
+ AUTOMAKE_OPTIONS = foreign
+ ACLOCAL_AMFLAGS = -I m4
+-SUBDIRS = src examples doc
++SUBDIRS = src doc
+ EXTRA_DIST = libedit.pc.in
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = libedit.pc

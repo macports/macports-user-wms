@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem 1.0
+name		chef
+version		19930426
+categories	textproc amusements
+platforms	darwin freebsd
+maintainers	nomaintainer
+description	trunsletes inpoot text intu sveedeesh
+long_description	${description}
+
+master_sites	freebsd
+distname	bork
+extract.suffix	.tar.Z
+
+checksums	md5 5194b5a69436b0f90137f957d19d684d
+
+use_configure	no
+build		{ system "cd $worksrcpath && lex chef.x && ${configure.cc} lex.yy.c -ll -o chef" }
+destroot	{ xinstall ${worksrcpath}/chef ${destroot}${prefix}/bin }

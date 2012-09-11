@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem	1.0
+PortGroup	perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup	Crypt-Twofish 2.14
+revision    3
+license		{Artistic-1 GPL}
+maintainers	nomaintainer
+description	Implementation of the twofish-crypto algorithm for perl
+long_description	Twofish is a 128-bit symmetric block cipher with a \
+			variable length (128, 192, or 256-bit) key, developed \
+			by Counterpane Labs. It is unpatented and free for \
+			all uses, as described at \
+			<URL:http://www.counterpane.com/twofish.html>.
+platforms	darwin
+
+checksums               sha1    baed59fe8ddf0626b7f0f7eca7bbacc74bb041bf \
+                        rmd160  3c80e5cc86993f65f2e8869dddc283a3f7a23766

@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           DBI 1.616 ../by-authors/id/T/TI/TIMB/
+revision              3
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+description           Abstract database access module for Perl
+long_description      The DBI module enables your Perl applications to access \
+                      multiple database types transparently. You can connect \
+                      to MySQL, MSSQL, Oracle, Informix, Sybase, ODBC etc. \
+                      without having to know the different underlying \
+                      interfaces of each.  The API defined by DBI will work \
+                      on all these database types and many more.
+homepage              http://dbi.perl.org/
+
+platforms             darwin
+
+checksums             md5 799313e54a693beb635b47918458f7c4 \
+                      sha1 d969beb953c39f817f2329dcca6293ef5b048b50 \
+                      rmd160 ddfcd154546f78e1524f602356c209ec7975a464
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-test-simple \
+                      port:p${perl5.major}-sql-statement \
+                      port:p${perl5.major}-clone
+}

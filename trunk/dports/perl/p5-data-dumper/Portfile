@@ -1,0 +1,24 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Data-Dumper 2.131
+revision            2
+maintainers         l2g
+license             Artistic GPL
+platforms           darwin
+description         Stringified Perl data structures, suitable for both \
+                    printing and "eval"
+
+long_description    Given a list of scalars or reference variables, writes \
+                    out their contents in Perl syntax. The references can \
+                    also be objects.  The contents of each variable is \
+                    output in a single Perl statement.  Handles \
+                    self-referential structures correctly.  The return value \
+                    can be \"eval\"ed to get back an identical copy of the \
+                    original reference structure.
+
+checksums           sha1    553225e088e9a8ad1b60741485d8b25c38682f11 \
+                    rmd160  afa177e0d87f228c0e4751896bfee181fb7e7069

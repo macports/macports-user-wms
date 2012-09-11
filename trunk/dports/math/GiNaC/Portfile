@@ -1,0 +1,58 @@
+# $Id$
+
+PortSystem 1.0
+
+name		GiNaC
+version		1.5.8
+categories	math
+platforms	darwin
+maintainers	gwright
+description	GiNaC is Not a Computer algebra system
+long_description	\
+		Currently, GiNaC's capabilities include:		\
+									\
+		1. Very fast manipulation of large integers and		\
+		   rationals owing to the CLN library (for instance,	\
+		   it uses Karatsuba multiplication and			\
+		   Schoenhage-Strassen multiplication for very large	\
+		   integers).						\
+		2. Efficient handling of multivariate polynomials and	\
+		   rational functions.					\
+		3. Support for linear algebra includes symbolic		\
+		   matrices, vectors and solving equations.		\
+		4. Very fast heuristic polynomial GCD.			\
+		5. Many built in functions (sin, cos, atan, sinh,	\
+		   factorial, etc.)					\
+		6. Symbolic differentiation and series expansion of	\
+		   all built-in functions.				\
+		7. Several forms of output (also as optimized C++,	\
+		   for numerical postprocessing).			\
+		8. Memory-efficiency and -safety through the internal	\
+		   use of reference counting for all expressions.
+
+use_bzip2	yes
+distname	ginac-${version}
+
+homepage	http://www.ginac.de/
+master_sites	${homepage}
+
+checksums	md5     8693b3c9c3467694032ce9c8b3063d4c \
+		sha1    42e77ab5f9c7f8fab4adaeb4f2c9a93f618bf66a \
+		rmd160  9005c8625fdad753aee54846db74ea47b8124ad7
+
+depends_build	port:pkgconfig
+depends_lib	port:readline	\
+		port:cln
+
+if {${configure.compiler} == "clang"} {
+    configure.compiler llvm-gcc-4.2
+}
+
+configure.args	--infodir=${prefix}/share/info	\
+		--mandir=${prefix}/share/man
+
+default_variants	+test
+variant test description {run testsuite} {
+	          test.run	yes
+		  test.target	check
+}

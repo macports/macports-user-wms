@@ -1,0 +1,56 @@
+# $Id$
+
+PortSystem 1.0
+
+name            gmpc
+version         0.20.0
+revision        3
+categories      audio
+platforms       darwin
+license         GPL-2+
+maintainers     raimue \
+                openmaintainer
+
+description     GMPC is a GTK2 client for MPD
+long_description \
+    GMPC is a GTK2 client for Music Player Daemon. The interface is made to be \
+    easy to use, but provide full access to all the features MPD provides. Give \
+    the user several ways to browse his database while still being a \
+    lightweight client.
+homepage        http://gmpclient.org
+
+master_sites    sourceforge:musicpd
+checksums       md5     902fd69b0b6bb40abb647604080dd7ef \
+                sha1    3b160bb1e196760b0148faa6493c66083e1fe53d \
+                rmd160  fd1278dbec1eb7ca2efd1e0545b0e37ff1fad34f
+
+depends_build   port:intltool \
+                port:vala \
+                port:pkgconfig
+depends_lib     port:libmpd \
+                port:libglade2 \
+                port:gob2 \
+                port:gettext \
+                port:zlib \
+                port:openssl \
+                port:curl \
+                port:libsoup
+
+patchfiles      patch-bacon-buffer-overflow.diff
+
+post-patch {
+    # restore timestamp to avoid rebuilding .vala source files
+    system "cd ${worksrcpath} && touch -r src/bacon/bacon-message-connection.h src/bacon/bacon-message-connection.c"
+}
+
+configure.args  --disable-macige
+
+variant quartz {
+    depends_lib-append    port:ige-mac-integration
+    configure.args-delete --disable-macige
+    configure.args-append --enable-macige
+}
+
+livecheck.type regex
+livecheck.url  http://sourceforge.net/projects/musicpd/files/gmpc/
+livecheck.regex {gmpc-(\d+.\d+(?:.\d+))\.tar}

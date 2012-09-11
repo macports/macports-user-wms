@@ -1,0 +1,117 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+PortGroup python 1.0
+
+name			py-tkinter
+version			2.4.6
+categories		python graphics
+license			PSF
+platforms		darwin
+maintainers		nomaintainer
+description		Python bindings to the Tk widget set
+long_description	${description}
+
+homepage		http://docs.python.org/library/tkinter.html
+
+python.versions     24 25 26 27 31 32 33
+
+set extract_files "Modules/_tkinter.c Modules/tkappinit.c"
+set module_name Tkinter
+subport py24-tkinter {
+    maintainers fourdigits.nl:roel openmaintainer
+    homepage    http://docs.python.org/release/2.4.4/lib/module-Tkinter.html
+    checksums   md5 76083277f6c7e4d78992f36d7ad9018d \
+                sha1 cb1972a554a458f6a26d3e047b359251865d7c96 \
+                rmd160 0687989193dec2ac108142759281be7ddcf7f31e
+    use_bzip2   yes
+}
+subport py25-tkinter {
+    maintainers jwa openmaintainer
+    version     2.5.6
+    homepage    http://docs.python.org/release/2.5.4/lib/module-Tkinter.html
+    checksums   md5 5d45979c5f30fb2dd5f067c6b06b88e4 \
+                sha1 29f6dd41bf09c5e04311b367cbb7604fa016e699 \
+                rmd160 92f0a955971f187a7d50c6422168202ec551bf22
+    use_bzip2   yes
+}
+subport py26-tkinter {
+    maintainers mcalhoun openmaintainer
+    version     2.6.8
+    homepage    http://docs.python.org/release/${version}/library/tkinter.html
+    checksums   md5 b5b2b42e6f855fcd6f38942422a710bd \
+                rmd160 39f51b4fc14f90da1560ec8ddf9d0d66c8724b5f \
+                sha256 39c5fd7c66d57a09e739605e64a4bba7552e1a094dd4ce062a207095011b80ac
+    use_xz      yes
+}
+subport py27-tkinter {
+    maintainers jwa singingwolfboy openmaintainer
+    version     2.7.3
+    homepage    http://docs.python.org/release/${version}/library/tkinter.html
+    checksums	rmd160  a51bb3ed518c897d1cf3c3d237929d385409d9f7 \
+        sha256  61d36be58e9e9c733c49d7b76858d5c08e2c63a84f2066b29d35d3521057c985
+    use_xz		yes
+    append extract_files " Modules/tkinter.h"
+}
+subport py31-tkinter {
+    maintainers erickt openmaintainer
+    version     3.1.5
+    homepage    http://docs.python.org/release/${version}/library/tkinter.html
+    checksums   md5 20dd2b7f801dc97db948dd168df4dd52 \
+                rmd160 021362658310f9ea5f6825bf0919f160304f4833 \
+                sha256 035c4370354d901924ce0fd8df65c5452839f590ec1b9c17fae2ada3e5f3b4d7
+    use_xz      yes
+    append extract_files " Modules/tkinter.h"
+    set module_name tkinter
+}
+subport py32-tkinter {
+    maintainers jwa openmaintainer
+    version     3.2.3
+    homepage    http://docs.python.org/release/${version}/library/tkinter.html
+    checksums	rmd160  8e34a4dd2544a9b6a691557a0ab0e69b21e5ee0e \
+        sha256  23c16f621f21e54987079765c060196cbe50235c7867147c6126d433054b1754
+    use_xz		yes
+    append extract_files " Modules/tkinter.h"
+    set module_name tkinter
+}
+subport py33-tkinter {
+    maintainers jwa openmaintainer
+    version     3.3.0rc2
+    homepage    http://docs.python.org/release/${version}/library/tkinter.html
+    use_xz		yes
+    checksums   rmd160  f445324b982800a88f80c9ad379b55284d6d2237 \
+                sha256  1fd3a1d494eef3ec5b144d9890592826d23ad3c96a3f17b9b2b64a720983dea2
+    append extract_files " Modules/tkinter.h"
+    set module_name tkinter
+}
+
+master_sites	http://www.python.org/ftp/python/${version}/
+distname		Python-${version}
+
+if {$subport != $name} {
+    depends_lib-append port:tk
+
+    dist_subdir python${python.version}
+
+    worksrcdir		${worksrcdir}/Modules
+
+    foreach f $extract_files {
+        lappend extract_files_full "${distname}/$f"
+    }
+    extract.post_args	"| tar -xf - $extract_files_full"
+    post-extract {
+        file copy	${filespath}/setup.py ${worksrcpath}
+    }
+
+    configure {
+        reinplace "s|__PREFIX__|${prefix}|g" ${worksrcpath}/setup.py
+        reinplace "s|__TK-VERSION__|8.5|g" ${worksrcpath}/setup.py
+        reinplace "s|__MODULE_NAME__|${module_name}|g" ${worksrcpath}/setup.py
+    }
+    livecheck.type	regex
+    livecheck.url	http://www.python.org/download/releases/
+    livecheck.regex	Python (${python.branch}\\.\[0-9\]+)
+} else {
+    livecheck.type none
+}

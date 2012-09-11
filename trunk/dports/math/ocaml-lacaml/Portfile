@@ -1,0 +1,29 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           ocaml 1.0
+
+name                ocaml-lacaml
+version             7.0.3
+revision            1
+categories          math devel ml
+platforms           darwin
+license             LGPL-2.1
+maintainers         mww openmaintainer
+description         OCaml interfaces to the BLAS- and LAPACK-library
+long_description    ${description}
+homepage            https://bitbucket.org/mmottl/lacaml/
+master_sites        https://bitbucket.org/mmottl/lacaml/downloads/
+checksums           rmd160  9403096983bff3e516803b4038aeba51d34c4992 \
+                    sha256  3ebd0b35ae0e4fe5cc5483e61a8bf1fb46ef8fed60f5c89a09e589b91b7ec982
+
+distname            lacaml-${version}
+
+depends_lib         port:ocaml port:ocaml-findlib
+
+use_oasis           yes
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     lacaml-(\[0-9.\]+)${extract.suffix}
+

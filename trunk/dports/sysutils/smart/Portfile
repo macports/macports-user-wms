@@ -1,0 +1,69 @@
+# $Id$
+
+PortSystem 1.0
+
+name		smart
+version		1.2
+platforms	darwin freebsd
+categories	sysutils archivers
+maintainers	mac.com:n3npq afb
+description	Automatic updater and package installer/remover
+long_description	The Smart Package Manager project has the ambitious \
+			objective of creating smart and portable algorithms \
+			for solving adequately the problem of managing software \
+			upgrading and installation. This tool works in all \
+			major distributions, and will bring notable advantages \
+			over native tools currently in use (APT, APT-RPM, YUM, \
+			URPMI, etc).
+
+homepage	http://smartpm.org
+master_sites	http://labix.org/download/smart/
+checksums	md5 233ccbd1e666a9a7c5e1cc7900075d93 \
+		sha1 311f79ee381e4c099e3218f0735d2802c689f3f0 \
+		rmd160 249b9295a09375ff52395fe783c24709515d08e8
+
+use_bzip2	yes
+patchfiles	patch-prefix.diff patch-Makefile
+
+depends_lib	lib:librpm:rpm	port:python24
+### by default, it will run --shell interface.
+### to run it with --gui, you will need:
+#depends_run	port:py-gtk2
+
+patch {
+		foreach patch $patchfiles {
+			system "cd '${workpath}/${distname}' && \
+			sed -e 's#@@PREFIX@@#${prefix}#g' '${portpath}/${filesdir}/${patch}' | patch -p0"
+		}
+}
+
+use_configure	no
+
+build.args-append	PYTHON="${prefix}/bin/python2.4"
+destroot.args-append	PYTHON="${prefix}/bin/python2.4"
+test.args-append	PYTHON="${prefix}/bin/python2.4"
+
+variant rpm5 description "use rpm5, not rpm4" {
+	# uses RPM 5.0.3, instead of the default RPM 4.4.9
+	depends_lib-delete	lib:librpm:rpm port:python24
+	depends_lib-append	lib:librpm-5.0:rpm50 port:python25
+	#depends_run		port:py25-gtk
+	build.args-delete	PYTHON="${prefix}/bin/python2.4"
+	build.args-append	PYTHON="${prefix}/bin/python2.5"
+	destroot.args-delete	PYTHON="${prefix}/bin/python2.4"
+	destroot.args-append	PYTHON="${prefix}/bin/python2.5"
+	test.args-delete	PYTHON="${prefix}/bin/python2.4"
+	test.args-append	PYTHON="${prefix}/bin/python2.5"
+}
+
+post-destroot {
+	destroot.keepdirs ${destroot}${prefix}/etc/smart/channels \
+	                  ${destroot}${prefix}/var/lib/smart
+}
+
+test.run	yes
+
+livecheck.name	smartpm
+livecheck.type	regex
+livecheck.url	${homepage}
+livecheck.regex	/download/smart/${name}-(\[0-9\\.\]+)${extract.suffix}

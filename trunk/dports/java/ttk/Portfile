@@ -1,0 +1,33 @@
+# $Id$
+
+PortSystem          1.0
+
+name                ttk
+version             2011.01.02.1054
+epoch               2
+revision            1
+categories          java
+platforms           darwin
+maintainers         singingwolfboy openmaintainer
+homepage            http://sourceforge.net/projects/ttk/
+master_sites        sourceforge:ttk
+fetch.type          svn
+worksrcdir          gcs-release-${version}
+svn.url             http://ttk.svn.sourceforge.net/svnroot/ttk/tags/${worksrcdir}
+
+description         Trollworks Toolkit
+long_description \
+    ${description} is a toolkit of Java classes used in other \
+    Trollworks projects, such as GURPS Character Sheet.
+ 
+depends_build       bin:ant:apache-ant
+
+use_configure       no
+build.cmd           ant
+build.target        dist
+
+destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/share/java/
+    xinstall -m 644 -W ${worksrcpath} TrollworksToolkit.jar \
+        ${destroot}${prefix}/share/java/
+}

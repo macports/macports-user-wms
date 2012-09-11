@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               muniversal 1.0
+
+name                    lcms2
+version                 2.3
+worksrcdir              lcms2-${version}
+categories              graphics
+platforms               darwin
+maintainers             adfernandes openmaintainer
+license                 MIT
+use_parallel_build      yes
+
+description             Little Color Management System, a color matching \
+                        method library (version 2)
+long_description        LCMS is the Little Color Management System, a portable \
+                        Color Matching Method (CMM) library which implements \
+                        fast transforms between ICC profiles. \
+                        Color management refers to techniques that ensure \
+                        consistent color as images are transferred from \
+                        scanners or cameras to monitors and printers.
+
+homepage                http://www.littlecms.com/
+
+master_sites            sourceforge:lcms \
+                        ${homepage}
+
+checksums               md5     327348d67c979c88c2dec59a23a17d85 \
+                        sha1    67d5fabda2f5777ca8387766539b9c871d993133 \
+                        rmd160  b6a32e53abe3e3ca19c10a6fac7da63c6f0bfa3e
+
+depends_lib             port:jpeg \
+                        port:tiff \
+                        port:zlib
+
+test.run                yes
+test.target             check
+
+livecheck.type  regex
+livecheck.url   http://www.littlecms.com/download.html
+livecheck.regex "Current version is (\[A-Za-z0-9.\]+)"

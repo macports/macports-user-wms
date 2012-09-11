@@ -1,0 +1,130 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    pspp
+version                 0.6.2
+revision                2
+categories              math
+license                 GPL-3+
+maintainers             snc
+conflicts               pspp-devel
+description             Statistical analysis of sampled data (free \
+                        replacement for SPSS).
+long_description        PSPP is a program for \
+                        statistical analysis of sampled data. It is a Free \
+                        replacement for the proprietary program SPSS, and \
+                        appears very similar to it with a few exceptions.
+
+homepage                http://www.gnu.org/software/pspp/
+platforms               darwin
+master_sites            gnu
+
+checksums           rmd160  97667eb32b23a1bc7d18b7022649bd973ff01424 \
+                    sha256  ec9639a3dcd3663b8007e600ab1a56291214334a9bba2e8d8c5a314509826385
+
+use_parallel_build      yes
+
+depends_build           path:bin/perl:perl5 \
+                        port:pkgconfig
+configure.perl          ${prefix}/bin/perl
+
+depends_lib             port:gsl \
+                        port:libiconv \
+                        port:zlib \
+                        port:libxml2 \
+                        port:readline \
+                        port:plotutils \
+                        port:pkgconfig \
+                        port:gtk2 \
+                        port:libglade2
+                        
+
+configure.args          --disable-rpath \
+                        --without-libpq \
+                        --enable-debug \
+                        --without-libncurses
+
+patchfiles              patch-config.h.in.diff \
+                        patch-lib-gtksheet-gtkitmemory.c.diff
+
+test.run                yes
+test.target             check
+test.env-append         DYLD_FALLBACK_LIBRARY_PATH=${worksrcpath}/src
+
+variant help conflicts no_gui description {Provide in-application help via yelp} {
+    depends_run-append  port:yelp
+}
+
+variant ncurses description {Enable terminal resizing} {
+    depends_lib-append  port:ncursesw
+    configure.args-delete   --without-libncurses
+}
+
+variant doc description {Build documentation} {
+    depends_lib-append   port:texinfo
+    build.target-append  pdf html
+    post-destroot {
+        xinstall -d -m 0755 ${destroot}${prefix}/share/doc/${name}
+        foreach fl [glob -nocomplain -directory ${worksrcpath}/doc *.pdf *.html] {
+            copy ${fl} ${destroot}${prefix}/share/doc/${name}
+        }
+    }
+}
+
+variant postgres description {Enables reading of postgresql databases} {
+    depends_lib-append  port:postgresql83
+    configure.args-delete   --without-libpq
+    configure.ldflags-append -L${prefix}/lib/postgresql83
+}
+
+variant no_graph description {Disable graphing features} {
+    depends_lib-delete      port:plotutils
+    configure.args-append   --without-libplot
+}
+
+variant no_gui conflicts help description {Disable PSPPIRE, the graphical interface} {
+    depends_lib-delete      port:pkgconfig \
+                            port:gtk2 \
+                            port:libglade2
+    configure.args-append   --without-gui
+}
+
+post-destroot {
+    xinstall -d ${destroot}${prefix}/libexec/${name}
+
+    move ${destroot}${prefix}/bin/pspp ${destroot}${prefix}/libexec/${name}/pspp
+
+    xinstall -m 755 ${filespath}/pspp.in ${destroot}${prefix}/bin/pspp
+    reinplace s|@PREFIX@|${prefix}|g ${destroot}${prefix}/bin/pspp
+    reinplace s|@NAME@|${name}|g ${destroot}${prefix}/bin/pspp
+
+    if {![variant_isset no_gui]} {
+        ln -s ${prefix}/lib/pspp/libpsppire.dylib \
+            ${destroot}${prefix}/lib/pspp/libpsppire.so
+        ln -s ${prefix}/lib/pspp/libpsppwidgets.dylib \
+            ${destroot}${prefix}/lib/pspp/libpsppwidgets.so
+
+        move ${destroot}${prefix}/bin/psppire \
+            ${destroot}${prefix}/libexec/${name}/psppire
+
+        xinstall -m 755 ${filespath}/psppire.in ${destroot}${prefix}/bin/psppire
+        reinplace s|@PREFIX@|${prefix}|g ${destroot}${prefix}/bin/psppire
+        reinplace s|@NAME@|${name}|g ${destroot}${prefix}/bin/psppire
+
+        xinstall -d ${destroot}${applications_dir}/PSPP.app/Contents/MacOS
+        xinstall -m 644 ${filespath}/PSPP.app/Contents/Info.plist \
+            ${destroot}${applications_dir}/PSPP.app/Contents
+        reinplace s|@VERSION@|${version}|g \
+            ${destroot}${applications_dir}/PSPP.app/Contents/Info.plist
+        reinplace s|@NAME@|${name}|g \
+            ${destroot}${applications_dir}/PSPP.app/Contents/Info.plist
+        copy ${destroot}${prefix}/bin/psppire \
+            ${destroot}${applications_dir}/PSPP.app/Contents/MacOS
+        reinplace "s|psppire|psppire \\&|g" \
+            ${destroot}${applications_dir}/PSPP.app/Contents/MacOS/psppire
+        xinstall -m 644 ${filespath}/PSPP.app/Contents/PkgInfo \
+            ${destroot}${applications_dir}/PSPP.app/Contents
+    }
+}

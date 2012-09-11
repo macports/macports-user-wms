@@ -1,0 +1,36 @@
+# $Id$
+
+PortSystem      1.0
+PortGroup       github 1.0
+PortGroup       xcode 1.0
+
+github.setup    aglee appkido 0.988 release-
+name            AppKiDo
+categories      aqua devel
+platforms       darwin
+maintainers     puffin.lb.shuttle.de:michael.klein openmaintainer
+license         MIT
+
+description     Provides a powerful interface to Apple's Cocoa documentation
+
+long_description        \
+        AppKiDo is a free reference tool for Cocoa Objective-C \
+        programmers. It parses the header files and HTML \
+        documentation files provided by Developer Tools and \
+        presents the results in a powerful interface.
+
+homepage        http://appkido.com/
+
+checksums       sha256  35eb04bb5c362ea54296386198256d458eb1f22fff8b5ce4fcb103cc6226f59a \
+                rmd160  f4f46876f5eaaf7b8bd4e7f31349e6d624c1c9ab
+
+build.dir       ${worksrcpath}/src
+
+xcode.configuration             Release
+
+xcode.build.settings-append     SDKROOT_i386=${configure.sdkroot} \
+                                SDKROOT_ppc=${configure.sdkroot}
+
+xcode.destroot.settings-append  SDKROOT_i386=${configure.sdkroot} \
+                                SDKROOT_ppc=${configure.sdkroot} \
+                                SKIP_INSTALL=NO

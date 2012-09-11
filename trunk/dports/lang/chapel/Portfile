@@ -1,0 +1,71 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                chapel
+set vers            1.5
+version             ${vers}.0 
+categories          lang parallel science
+platforms           darwin
+supported_archs     i386 x86_64
+maintainers         takeshi openmaintainer
+description         parallel programming language
+long_description \
+    Chapel is a new parallel programming language \
+    being developed by Cray Inc. as part of the DARPA-led \
+    High Productivity Computing Systems program (HPCS).
+license             BSD
+homepage            http://chapel.cray.com/
+master_sites        sourceforge:project/chapel/chapel/${version}
+
+checksums           md5     38368f62afb2cad0327af26eabe06866 \
+                    sha1    26d2a56ba80ae4db0abeeddffc132fc61439a649 \
+                    rmd160  85e49034e7ac1e795c54bbee9a070183ce09dd1e
+
+worksrcdir          ${name}-${vers}
+
+use_configure       no
+use_parallel_build  no
+  
+# chapel does not build with clang.
+if {${configure.compiler} == "clang"} {
+    configure.compiler  llvm-gcc-4.2
+}
+
+configure.optflags  -O3
+
+variant universal {}
+
+build.env           CHPL_HOST_COMPILER=gnu \
+                    CHPL_TARGET_COMPILER=gnu \
+                    LDFLAGS="[get_canonical_archflags ld]"
+
+build.args          CXX=${configure.cxx} \
+                    CC=${configure.cc} \
+                    OPT_CFLAGS="${configure.optflags} [get_canonical_archflags cc]"
+
+destroot {
+    xinstall -m 755 ${worksrcpath}/bin/darwin/chpl ${destroot}${prefix}/bin
+    xinstall -m 644 ${worksrcpath}/man/man1/chpl.1 ${destroot}${prefix}/share/man/man1
+    xinstall -d ${destroot}${prefix}/lib/${name}
+    foreach d "lib examples make modules util runtime" {
+        file copy ${worksrcpath}/${d} ${destroot}${prefix}/lib/${name}
+    }
+    xinstall -d ${destroot}${prefix}/lib/${name}/third-party
+    foreach d "dlmalloc gasnet gmp nanox qthread tcmalloc" {
+        xinstall -d ${destroot}${prefix}/lib/${name}/third-party/$d
+        xinstall -m 644 ${worksrcpath}/third-party/${d}/Makefile.include \
+            ${destroot}${prefix}/lib/${name}/third-party/$d
+    }
+    xinstall -d ${destroot}${prefix}/lib/${name}/third-party/utf8-decoder
+    xinstall -m 644 ${worksrcpath}/third-party/utf8-decoder/utf8-decoder.h \
+        ${destroot}${prefix}/lib/${name}/third-party/utf8-decoder
+}
+
+variant universal {}
+
+notes "
+set CHPL_HOME to ${prefix}/lib/${name}
+set CHPL_HOST_PLATFORM to darwin
+"

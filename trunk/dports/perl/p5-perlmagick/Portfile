@@ -1,0 +1,45 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                  1.0
+PortGroup                   perl5 1.0
+
+# Keep relevant lines in sync between ImageMagick and p5-perlmagick.
+
+epoch                       1
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup                 PerlMagick 6.7.9-0
+set reasonable_version      [lindex [split ${version} -] 0]
+set my_name                 ImageMagick
+maintainers                 futurelab.ch:astricker ryandesign
+description                 Perl extension for calling ImageMagick's libMagick methods
+long_description            ${description}
+license                     ImageMagick
+platforms                   darwin
+use_xz                      yes
+
+# we use the ImageMagick distribution version of PerlMagick to
+# ensure it will always match ImageMagick version installed
+
+master_sites                ftp://ftp.imagemagick.org/pub/ImageMagick/ \
+                            http://image_magick.veidrodis.com/image_magick/ \
+                            http://imagemagick.linux-mirror.org/download/ \
+                            ftp://ftp.fifi.org/pub/ImageMagick/
+
+dist_subdir                 ImageMagick
+distname                    ${my_name}-${version}
+worksrcdir                  ${worksrcdir}/PerlMagick
+
+checksums                   rmd160  6b20ef791e8258acb188212c91fc263568b0f188 \
+                            sha256  4414a4d0596a3cbc1574c4924562ee0723ebf3909469b81964fd1f2cd1d5e49c
+
+if {${perl5.major} != ""} {
+depends_lib-append          port:ImageMagick
+
+livecheck.type              none
+} else {
+livecheck.version           ${reasonable_version}
+livecheck.type              regex
+livecheck.url               [lindex ${master_sites} 0]
+livecheck.regex             ${my_name}-(\\d+(?:\\.\\d+)*)(?:-\\d+)?
+}

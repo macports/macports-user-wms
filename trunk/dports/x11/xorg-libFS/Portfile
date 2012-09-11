@@ -1,0 +1,32 @@
+# $Id$
+
+PortSystem 1.0
+
+name            xorg-libFS
+version         1.0.4
+revision        1
+categories      x11 devel
+maintainers     jeremyhu openmaintainer
+description     X.org libFS
+homepage        http://www.x.org
+platforms       darwin macosx
+long_description X11 Font Server library
+master_sites    xorg:individual/lib/
+
+distname    libFS-${version}
+checksums           sha1    f114f32f60eb84d3e1d0e6f0dfe7679b07e91295 \
+                    rmd160  6e74cc9b4d8ece4abcabb26e3c5cec7a0e591918 \
+                    sha256  7073761e7594d43180a922605fb64cce60e5ccb8c06f8efa24f2d4621f5e8315
+
+use_bzip2   yes
+use_parallel_build      yes
+
+depends_build   port:pkgconfig \
+		port:xorg-xtrans
+
+depends_lib	port:xorg-fontsproto \
+                port:xorg-xproto
+
+livecheck.type  regex
+livecheck.url   http://xorg.freedesktop.org/archive/individual/lib/?C=M&O=D
+livecheck.regex libFS-(\\d+(?:\\.\\d+)*)

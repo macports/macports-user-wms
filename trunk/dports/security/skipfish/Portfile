@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                skipfish
+version             2.09b
+license             Apache-2
+categories          security
+maintainers         snc openmaintainer
+description         web application security scanner
+long_description    A fully automated, active web application security \
+                    reconnaissance tool.
+
+homepage            http://code.google.com/p/skipfish/
+platforms           darwin
+depends_lib         port:openssl port:libidn port:zlib port:pcre
+
+master_sites        googlecode
+extract.suffix      .tgz
+
+checksums           rmd160  4788eefab9081481f1ac75c8a1c4f651c36f3656 \
+                    sha256  12ea7c74ed8a3fa29668d95172f46c976997cd393c908a7704b97610bfcd350a
+
+patchfiles          patch-src-config.h.diff
+post-patch {
+    reinplace s|@@SHARE@@|${prefix}/share/${name}/|g ${worksrcpath}/src/config.h
+    reinplace s|-L/usr/local/lib/\ ||g ${worksrcpath}/Makefile
+    reinplace s|-I/usr/local|-I${prefix}|g ${worksrcpath}/Makefile
+}
+
+use_configure       no
+
+build.args-append   CC=${configure.cc}
+destroot {
+    file mkdir ${destroot}${prefix}/share/${name}
+    file copy ${worksrcpath}/skipfish ${destroot}${prefix}/bin/skipfish
+    file copy ${worksrcpath}/assets/ ${destroot}${prefix}/share/${name}
+    file copy ${worksrcpath}/README ${destroot}${prefix}/share/${name}
+    file copy ${worksrcpath}/doc/ ${destroot}${prefix}/share/${name}
+}
+
+notes \
+"See ${prefix}/share/${name}/doc/dictionaries.txt to pick a dictionary for the tool.
+
+Having problems with your scans? Be sure to visit:\
+http://code.google.com/p/skipfish/wiki/KnownIssues"

@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup      Expect 1.20
+revision         3
+license          {Artistic-1 GPL}
+maintainers      nomaintainer
+description      Perl version of the TCL "expect" tool
+long_description \
+    The Expect for Perl module was inspired more by the functionality \
+    the Tcl tool provides than any previous Expect-like tool such as \
+    Comm.pl or chat2.pl.  I've had some comments that people may not \
+    have heard of the original Tcl version of Expect, or where \
+    documentation (book form) on Expect may be obtained.
+
+platforms        darwin
+checksums        md5 9134ae3778285bcf8c3ffdba1a177886
+
+if {${perl5.major} != ""} {
+depends_lib-append      port:p${perl5.major}-io-tty port:p${perl5.major}-io-stty
+
+supported_archs noarch
+}

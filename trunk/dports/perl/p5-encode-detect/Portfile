@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Encode-Detect 1.01 
+revision            3
+platforms           darwin
+maintainers         nomaintainer
+description         Encode-Encoding subclass that detects the encoding of data
+
+long_description    This Perl module is an Encode::Encoding subclass that uses \
+                    Encode::Detect::Detector to determine the charset of the \
+                    input data and then decodes it using the encoder of the \
+                    detected charset. It is similar to Encode::Guess, but \
+                    does not require the configuration of a set of expected \
+                    encodings. Like Encode::Guess, it only supports \
+                    decoding--it cannot encode.
+
+if {${perl5.major} != ""} {
+depends_lib-append  port:p${perl5.major}-encode \
+                    port:p${perl5.major}-extutils-cbuilder
+
+checksums           md5     ee9faf55d7105c97b02b8ebe590819c7 \
+                    sha1    c2285d5b0678ceeb93508ee09d30386a59053c08 \
+                    rmd160  30264410aa80ea030932b8c310b117d4acf25cbe
+}

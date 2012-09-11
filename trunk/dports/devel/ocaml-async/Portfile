@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup ocaml 1.0
+
+name                ocaml-async
+version             108.00.02
+revision            1
+categories          devel ml
+platforms           darwin
+license             LGPL-2.1
+maintainers         mww openmaintainer
+description         Jane Street Capital's asynchronous execution library
+long_description    ${description}
+
+homepage            https://ocaml.janestreet.com/code
+master_sites        https://ocaml.janestreet.com/ocaml-core/${version}/individual/
+distname            async-${version}
+
+checksums           rmd160  aa103b00ad9169770911366de6b83c374db576b1 \
+                    sha256  7517cd9a37b707091956a4ada7b5252112f908a597027fe047ef73431234cf6f
+
+depends_lib         port:ocaml port:ocaml-findlib port:ocaml-async-core port:ocaml-async-extra port:ocaml-async-unix
+
+use_oasis           yes
+
+livecheck.type      regex
+livecheck.url       https://ocaml.janestreet.com/ocaml-core/
+livecheck.regex     (\[0-9\]+\\\.\[0-9\\\.\]+)
+

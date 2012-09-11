@@ -1,0 +1,235 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+PortGroup       muniversal 1.0
+
+name            dbus
+conflicts       dbus-devel
+version         1.4.20
+revision        1
+maintainers     mcalhoun openmaintainer
+categories      devel
+platforms       darwin
+license         {AFL-2.1 GPL-2+}
+description     A message bus system, a simple way for applications to talk to one another.
+
+long_description \
+    ${description}
+
+homepage        http://www.freedesktop.org/Software/dbus
+master_sites    http://dbus.freedesktop.org/releases/dbus
+
+checksums           rmd160  c0e88ab6bf6afe93a243a42d26f3b6c03e7892cd \
+                    sha256  103bdcd261a13140730b5fa69f56a98ab5c89ba3f0116ea62fcfd639520d5aaf
+
+# See r59386
+# See r68276
+patchfiles      patch-bus-system.conf.in.diff \
+                patch-dbus-dbus-sysdeps-unix.c.diff
+
+depends_build       \
+    port:pkgconfig
+
+set dbus_user     messagebus
+set dbus_group    messagebus
+add_users         ${dbus_user} group=${dbus_group} realname=Message\ Bus
+set startup_root  ""
+
+depends_lib     port:expat
+
+configure.args  --disable-doxygen-docs \
+                --disable-xml-docs \
+                --without-x \
+                --enable-launchd \
+                --with-launchd-agent-dir=${prefix}/Library/LaunchAgents \
+                --with-session-socket-dir=/tmp \
+                --with-test-socket-dir=/tmp \
+                --disable-tests
+
+# The startupitem.install keyword does not exist in MacPorts < 2.1.
+if {![info exists startupitem.install]} {
+    set startupitem.install yes
+}
+# Set default variants taking the old no_startupitem variant into consideration.
+if {[variant_isset no_startupitem]} {
+    default_variants    -startupitem
+} else {
+    default_variants    +startupitem
+}
+
+pre-configure {
+    # Value must be set in pre-configure because dbus_user may change in variant.
+    configure.args-append  --with-dbus-user=${dbus_user}
+}
+
+post-patch {
+    reinplace "s|/usr/local|${prefix}|g" ${worksrcpath}/dbus/dbus-sysdeps-unix.c
+    reinplace {s|broken_poll="no (cross compiling)"|broken_poll=yes|} ${worksrcpath}/configure
+    
+    if { [variant_isset startupitem] } {
+        # Disable if installed into startup directory.
+        reinplace "s|</array>|</array>\\\n\\\n\\\t<key>Disabled</key>\\\n\\\t<true/>|" \
+            ${worksrcpath}/bus/org.freedesktop.dbus-session.plist.in
+    }
+}
+
+use_parallel_build  yes
+
+test.run        yes
+test.target     check
+
+pre-test {
+    if {![variant_isset test]} {
+        ui_error "test variant must be activated to enable test support."
+        error "Please enable test variant."
+    }
+}
+
+destroot.keepdirs \
+    ${destroot}${prefix}/share/dbus-1/services \
+    ${destroot}${prefix}/var/run/dbus \
+    ${destroot}${prefix}/etc/dbus-1/system.d \
+    ${destroot}${prefix}/etc/dbus-1/session.d
+
+set plistDir  ${prefix}/Library/LaunchDaemons
+set plistFl   ${plistDir}/org.freedesktop.dbus-system.plist
+
+# universal_archs_to_use might not be set before pre-fetch.
+pre-destroot {
+    global merger_dont_diff merger_configure_env
+
+    # PortGroup muniversal has difficulty merging three files.
+    if {[info exists universal_archs_to_use] && [llength ${universal_archs_to_use}] == 3} {
+        set merger_dont_diff "${prefix}/lib/dbus-1.0/include/dbus/dbus-arch-deps.h"
+    }
+}
+
+post-destroot {
+    # Simplify startup script over startupitem.create.
+    # See #15081
+    xinstall -d -m 0755 ${destroot}${plistDir}
+    set plist [open "${destroot}${plistFl}" w 0644]
+    
+    puts ${plist} "<?xml version='1.0' encoding='UTF-8'?>"
+    puts ${plist} "<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\""
+    puts ${plist} "\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\" >"
+    puts ${plist} "<plist version='1.0'>"
+    puts ${plist} "<dict>"
+    
+    puts ${plist} "<key>Label</key><string>org.freedesktop.dbus-system</string>"
+    
+    puts ${plist} "<key>ProgramArguments</key>"
+    puts ${plist} "<array>"
+    puts ${plist} "\t<string>${prefix}/bin/dbus-daemon</string>"
+    puts ${plist} "\t<string>--system</string>"
+    puts ${plist} "\t<string>--nofork</string>"
+    puts ${plist} "</array>"
+    if {$macosx_deployment_target == "10.4"} {
+        puts ${plist} "<key>OnDemand</key><false/>"
+    } else {
+        puts ${plist} "<key>KeepAlive</key><true/>"
+    }
+
+    if { [variant_isset startupitem] } {
+        puts ${plist} "<key>Disabled</key><true/>"
+    }
+    
+    puts ${plist} "</dict>"
+    puts ${plist} "</plist>"
+    
+    close ${plist}
+    
+    if { [variant_isset startupitem]
+    && ${startupitem.install} != "no" } {
+        xinstall -d -m 0755 ${destroot}${startup_root}/Library/LaunchDaemons
+        xinstall -d -m 0755 ${destroot}${startup_root}/Library/LaunchAgents
+        ln -s ${plistFl} ${destroot}${startup_root}/Library/LaunchDaemons
+        ln -s ${prefix}/Library/LaunchAgents/org.freedesktop.dbus-session.plist ${destroot}${startup_root}/Library/LaunchAgents
+    }
+    
+    system "env DYLD_LIBRARY_PATH=${destroot}${prefix}/lib ${destroot}${prefix}/bin/dbus-uuidgen --ensure=${destroot}${prefix}/var/lib/dbus/machine-id"
+}
+
+pre-activate {
+    if { [file exists ${prefix}/var/lib/dbus/machine-id] } {
+        # See #19234
+        delete ${prefix}/var/lib/dbus/machine-id
+    }
+}
+
+set sudo ""
+if {![variant_isset no_root]} {
+    set sudo "sudo "
+}
+post-activate {
+    file attributes ${prefix}/var/run/dbus -group ${dbus_group} -owner ${dbus_user}
+    file attributes ${prefix}/libexec/dbus-daemon-launch-helper -group ${dbus_group}
+    
+    if { [variant_isset startupitem] && ![variant_isset no_root] } {
+        file attributes ${prefix}/Library/LaunchAgents/org.freedesktop.dbus-session.plist -owner root -group wheel
+        file attributes ${prefix}/Library/LaunchDaemons/[file tail ${plistFl}] -owner root -group wheel
+    }
+}
+
+# Set default variants taking the old no_startupitem into consideration.
+if {[variant_isset no_startupitem]} {
+    default_variants    -startupitem
+} else {
+    default_variants    +startupitem
+}
+
+# XXX Building with tests enabled causes dbus to link with dbus-glib,
+# which it shouldn't do because that port depends on this one: see #30088
+variant test description {enable tests} {
+    configure.args-delete   --disable-tests
+    configure.args-append   --enable-tests
+}
+
+variant startupitem description {Install startup files.} {}
+
+if { [variant_isset startupitem]
+&& ${startupitem.install} != "no" } {
+    notes "############################################################################
+# Startup items have been generated that will aid in
+# starting ${name} with launchd. They are disabled
+# by default. Execute the following command to start them,
+# and to cause them to launch at startup:
+#
+# ${sudo}launchctl load -w ${startup_root}/Library/LaunchDaemons/[file tail ${plistFl}]
+# launchctl load -w ${startup_root}/Library/LaunchAgents/org.freedesktop.dbus-session.plist
+############################################################################"
+}
+
+variant no_root description {Run the DBUS daemon as MacPorts install user.} {
+    pre-fetch {
+        if { ${install.user}=="root" || ${install.group}=="wheel" } {
+            ui_error "The DBUS daemon should not be run as root."
+            error "Please do not use this variant with your MacPorts configuration."
+        }
+    }
+
+    set dbus_user     ${install.user}
+    set dbus_group    ${install.group}
+    set startup_root  [join [lrange [exec /usr/bin/dscl . -read Users/${install.user} NFSHomeDirectory] 1 end]]
+    
+    # Files are installed into user's startup directory.
+    if { [variant_isset startupitem] } {
+        destroot.violate_mtree  yes
+    }
+}
+
+set cross_opts  "ac_cv_have_abstract_sockets=no"
+if { ${os.arch}=="i386" } {
+    if { ${os.major} >= 10 } {
+        set merger_configure_env(ppc) ${cross_opts}
+    }
+    set merger_configure_env(ppc64)   ${cross_opts}
+} else {
+    set merger_configure_env(i386)    ${cross_opts}
+    set merger_configure_env(x86_64)  ${cross_opts}
+}
+
+livecheck.type  regex
+livecheck.url   [lindex ${master_sites} 0]
+livecheck.regex {dbus-(\d+\.\d*[02468](\.\d+)*)\.tar}

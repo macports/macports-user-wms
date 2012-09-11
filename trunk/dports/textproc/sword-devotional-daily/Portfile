@@ -1,0 +1,28 @@
+# $Id$
+PortSystem		1.0
+name			sword-devotional-daily
+version			1.0
+revision		1
+categories		textproc
+platforms		darwin
+maintainers		nomaintainer
+description		Jonathan Bagster's Daily Light on the Daily Path
+long_description	Daily Light on the Daily Path: A Devotional Textbook \
+					for Every Day of the Year, In the Very Words of \
+					Scripture.  Prepared by Jonathan Bagster (1813-1872) \
+					and Other Members of His Family.
+distname		Daily
+homepage		http://www.crosswire.org/sword/modules/ModInfo.jsp?modName=${distname}
+master_sites	http://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/
+dist_subdir		sword/${distname}-${version}_${revision}
+use_zip			yes
+checksums		md5 6d746537d8928187c8fcf277aeb3ab77
+depends_lib		lib:libsword:sword
+use_configure	no
+build			{}
+destroot {
+	xinstall -d -m 0755 ${destroot}${prefix}/share/sword
+	system "cp -R ${workpath}/mods.d ${destroot}${prefix}/share/sword"
+	system "cp -R ${workpath}/modules ${destroot}${prefix}/share/sword"
+}
+

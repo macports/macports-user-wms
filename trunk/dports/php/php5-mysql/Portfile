@@ -1,0 +1,66 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                      1.0
+PortGroup                       php5extension 1.0
+PortGroup                       archcheck 1.0
+
+php5extension.setup             {mysql mysqli pdo_mysql} 5.3.15 bundled
+categories-append               databases
+platforms                       darwin
+maintainers                     ryandesign
+license                         PHP-3.01
+
+description                     a PHP interface to MySQL databases, including \
+                                the mysql, mysqli and pdo_mysql extensions
+
+long_description                ${description}
+
+checksums                       rmd160  b82b9f57c4bdc3b451a0c179f131497ebbbfd94f \
+                                sha256  f9b725659e64228a60883bd134afe1f638900b6b8fa93ba98053095b0892f1ef
+
+depends_lib-append              port:zlib
+
+configure.args-append           --with-zlib-dir=${prefix}
+
+use_parallel_build              yes
+
+variant mysqlnd conflicts mysql4 mysql5 description {Use MySQL Native Driver} {
+    configure.args-append       --with-mysql=mysqlnd \
+                                --with-mysqli=mysqlnd \
+                                --with-pdo-mysql=mysqlnd
+    configure.cppflags-append   -I${worksrcpath}
+    post-install {
+        set phpini ${prefix}/etc/php5/php.ini
+        if {1} {
+            ui_msg "To use mysqlnd with a local MySQL server, edit ${phpini} and set"
+            ui_msg "mysql.default_socket, mysqli.default_socket and pdo_mysql.default_socket"
+            ui_msg "to ${prefix}/var/run/mysql5/mysqld.sock"
+        }
+    }
+}
+
+variant mysql4 conflicts mysql5 mysqlnd description {Use MySQL 4 libraries} {
+    depends_lib-append          port:mysql4
+    archcheck.files-append      lib/mysql/libmysqlclient.dylib
+    configure.args-append       --with-mysql=${prefix} \
+                                --with-pdo-mysql=${prefix}
+}
+
+variant mysql5 conflicts mysql4 mysqlnd description {Use MySQL 5 libraries} {
+    depends_lib-append          path:bin/mysql_config5:mysql5
+    archcheck.files-append      lib/mysql5/mysql/libmysqlclient.dylib
+    configure.args-append       --with-mysql=${workpath}/mysql5 \
+                                --with-mysqli=${prefix}/bin/mysql_config5 \
+                                --with-pdo-mysql=${prefix}/bin/mysql_config5 \
+                                --with-mysql-sock=${prefix}/var/run/mysql5/mysqld.sock
+    post-extract {
+        file mkdir ${workpath}/mysql5
+        file link -symbolic ${workpath}/mysql5/lib ${prefix}/lib/mysql5
+        file link -symbolic ${workpath}/mysql5/include ${prefix}/include/mysql5
+    }
+}
+
+if {![variant_isset mysql4] && ![variant_isset mysql5]} {
+    default_variants +mysqlnd
+}

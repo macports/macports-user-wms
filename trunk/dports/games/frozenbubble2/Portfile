@@ -1,0 +1,46 @@
+# $Id$
+
+PortSystem	      1.0
+
+name		      frozenbubble2
+categories	      games
+version		      2.2.0
+revision          1
+platforms	      darwin
+maintainers	      pmq
+
+description	      Frozen Bubble 2
+long_description      Colorful 3D rendered penguin animations, 100 levels of 1p \
+		      game, hours and hours of 2p game, nights and nights of \
+		      2p/3p/4p/5p game over LAN or Internet, a level-editor, 3 \
+		      professional quality digital soundtracks, 15 stereo sound \
+		      effects, 8 unique graphical transition effects, 8 unique \
+		      logo eye-candies.
+
+homepage	      http://www.frozen-bubble.org
+master_sites	      ${homepage}/data
+distname	      frozen-bubble-${version}
+checksums	      sha1 df5a8c839a76fd662777925b2eb80fcb8adf3fa6 \
+		      rmd160 1bbe0163c28421c497979c85a98f64a98174c780
+use_bzip2	      yes
+
+depends_build        port:pkgconfig
+depends_lib	      port:perl5.12 path:lib/pkgconfig/sdl.pc:libsdl port:libsdl_image \
+		      port:libsdl_mixer port:p5.12-sdl_perl port:libsdl_pango
+depends_run	      port:p5.12-locale-gettext
+
+livecheck.type        freecode
+livecheck.name        frozen-bubble
+
+# uses nested functions
+compiler.blacklist  clang
+patchfiles	      patch-c_stuff-Makefile.PL.diff patch-Makefile.diff
+
+configure {
+    foreach file [glob ${worksrcpath}/frozen-bubble*] {
+        reinplace "s|/usr/bin/perl|${prefix}/bin/perl5.12|g" ${file}
+    }
+}
+
+build.args	      PREFIX=${prefix}
+destroot.args-append  PREFIX=${prefix}

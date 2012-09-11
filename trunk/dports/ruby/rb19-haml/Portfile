@@ -1,0 +1,25 @@
+# $Id$
+PortSystem          1.0
+PortGroup           ruby 1.0
+
+ruby.setup          haml 3.0.12 gem {} rubygems ruby19
+conflicts           rb-haml
+description         Haml and Sass: markup languages for HTML and CSS
+long_description    \
+    Haml is a markup language that’s used to cleanly and simply describe \
+    the HTML of any web document without the use of inline code. Haml \
+    functions as a replacement for inline page templating systems such as \
+    PHP, ASP, and ERB, the templating language used in most Ruby on Rails \
+    applications. However, Haml avoids the need for explicitly coding HTML \
+    into the template, because it itself is a description of the HTML, with \
+    some code to generate dynamic content. \
+    \
+    Sass is CSS, plus nested rules, variables, mixins, and more, all in a \
+    concise, readable syntax. Haml also contains Sass.
+license             MIT
+maintainers         singingwolfboy openmaintainer
+homepage            http://haml-lang.com
+categories-append   www
+checksums           md5     89fba4ce206e6d3757fc117661b11207 \
+                    sha1    d65111c909760c88b6604195b70b40424b11d4cc \
+                    rmd160  e7394d80debfd987e6fe1e24aad851f81184e234

@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name			gnuradio-grc
+version			3.2.2
+revision        2
+maintainers		michaelld
+description		GRC component of GNU Radio.
+long_description GRC component of GNU Radio: \
+GNU Radio Companion (GRC): Graphical interface to editing, \
+creating, and running applications which use GNU Radio.\n\n\
+NOTE: This port has been renamed to 'gnuradio-companion'\; \
+please uninstall this port and install that one.\n
+
+categories		science
+homepage        http://gnuradio.org/
+
+distfiles
+
+platforms		darwin macosx
+
+use_configure	no
+build			{}
+destroot		{}
+
+pre-extract {
+    ui_msg "\n\
+NOTE: This port has been renamed to 'gnuradio-companion'\; \n\
+please uninstall this port and install that one.\n"
+    error "obsolete port"
+}

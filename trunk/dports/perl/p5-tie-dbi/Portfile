@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Tie-DBI 1.05
+revision            2
+maintainers         pixilla
+
+description         Nie:DBI This distribution contains Tie::DBI and Tie::RDBM
+
+long_description    This distribution contains Tie::DBI and Tie::RDBM, \
+                    two modules that allow you to tie associative arrays \
+                    to relational databases using the DBI library.  \
+                    The hash is tied to a table in a local or networked \
+                    database.  Reading from the hash retrieves values \
+                    from the datavbase. Storing into the hash updates \
+                    the database (if you have sufficient privileges).
+
+homepage            http://search.cpan.org/~lds/Tie-DBI-1.02/
+
+checksums           sha1    f949e34e29b0290f7489359ea00e332f88a8f907 \
+                    rmd160  1536fcc99a0c0fc803efc6c1cd91fb398430a6ed
+
+platforms           darwin
+if {${perl5.major} != ""} {
+depends_lib         port:p${perl5.major}-dbi
+}

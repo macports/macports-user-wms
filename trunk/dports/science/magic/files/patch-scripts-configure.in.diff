@@ -1,0 +1,80 @@
+--- scripts/configure.in.orig	2010-03-08 07:33:07.000000000 -0600
++++ scripts/configure.in	2012-01-19 15:47:55.000000000 -0600
+@@ -23,6 +23,7 @@
+ dnl Checks for programs.
+ AC_PROG_CC
+ AC_PROG_CPP
++AC_PROG_CXX
+ AC_ISC_POSIX
+ AC_PROG_INSTALL
+ AC_PROG_RANLIB
+@@ -251,7 +252,6 @@
+ LD_RUN_PATH=""
+ WISH_EXE=""
+ TCLSH_EXE=""
+-CXX=
+ 
+ modules=""
+ unused=""
+@@ -1279,7 +1279,7 @@
+       SHDLIB_EXT=".dylib"
+       LDDL_FLAGS="-dynamiclib -flat_namespace -undefined suppress -noprebind"
+       LDFLAGS="${LDFLAGS} ${LIB_SPECS}"
+-      CFLAGS="${CFLAGS} ${X_CFLAGS} ${INC_SPECS} -I/sw/include -fno-common"
++      CFLAGS="${CFLAGS} ${X_CFLAGS} ${INC_SPECS} -fno-common"
+       ;;
+ 
+     *cygwin*)
+@@ -1518,9 +1518,6 @@
+    DEPEND_FLAG="-MM"
+ fi
+ 
+-if test $usingOA ; then
+-   AC_PROG_CXX
+-fi
+ 
+ dnl Substitute all variables
+ 
+@@ -1572,7 +1569,7 @@
+ echo "Configuration Summary (principle requirements):"
+ echo
+ 
+-echo -n "X11:          "
++printf "X11:          "
+ if test $usingX11 ; then
+    echo "yes"
+ else
+@@ -1586,7 +1583,7 @@
+    echo
+ fi
+ 
+-echo -n "OpenGL:       "
++printf "OpenGL:       "
+ if test $usingOGL ; then
+    echo "yes"
+ else
+@@ -1603,9 +1600,9 @@
+ fi
+ 
+ if test $usingTcl ; then
+-   echo -n "Tcl/Tk:       "
++   printf "Tcl/Tk:       "
+    echo "yes (version ${TCL_VERSION})"
+-   echo -n "BLT:          "
++   printf "BLT:          "
+    if test "x${TCLSH_EXE}" = "x" ; then
+       echo "Cannot find 'tclsh' executable to check existance of the BLT package"
+    else
+@@ -1628,10 +1625,10 @@
+    fi
+ else
+    if test $usingScheme ; then
+-     echo -n "Scheme:       "
++     printf "Scheme:       "
+      echo "yes"
+    else
+-     echo -n "Tcl/Tk:       "
++     printf "Tcl/Tk:       "
+      echo "no"
+      echo
+      echo "  Without Tcl/Tk, you cannot run the enhanced version of magic"

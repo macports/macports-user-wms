@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-logilab-common
+if {$subport != "py24-logilab-common"} {
+    version         0.58.2
+    revision        1
+} else {
+    epoch           1
+    version         0.50.3
+}
+license             LGPL-2.1+
+maintainers         dh stromnov openmaintainer
+description         A number of modules used by various projects from Logilab
+long_description    ${description}
+
+platforms           darwin
+
+homepage            http://www.logilab.org/project/logilab-common
+master_sites        http://download.logilab.org/pub/common/ \
+                    ftp://ftp.logilab.fr/pub/common
+distname            logilab-common-${version}
+
+if {$subport != "py24-logilab-common"} {
+    checksums       md5     a745888475d988300a76b0c87a5f4381 \
+                    sha1    a1df7965bb9382f56047e616e420f49d6181a0b2 \
+                    rmd160  041cc7a66beba31410435699809d3867e50fb8eb
+} else {
+    checksums       md5     b3ac2d2d3cc690c9446749048c177560 \
+                    sha1    abf35852ce0030b2724b1beeacc42f3ca03934c5 \
+                    rmd160  33ff2aa0216fcf717bf2e1b1063a6345bd98b51d
+}
+
+python.versions 24 25 26 27
+
+if {$subport != $name} {
+    post-destroot {
+        xinstall -m 755 -d ${destroot}${prefix}/share/doc/${subport}
+        xinstall -m 644 -W ${worksrcpath} ChangeLog README \
+        ${destroot}${prefix}/share/doc/${subport}
+    }
+    
+    livecheck.type  none
+} else {
+    livecheck.type      regex
+    livecheck.url       http://ftp.logilab.org/pub/common/
+    livecheck.regex     {logilab-common-(\d+(?:\.\d+)*)\.tar\.gz}
+}

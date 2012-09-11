@@ -1,0 +1,43 @@
+# $Id$
+
+PortSystem 1.0
+
+name            proxytunnel
+version         1.9.0
+categories      net
+platforms       darwin
+maintainers     nomaintainer
+
+description \
+    ProxyTunnel is a program that connects stdin and stdout \
+    to a server somewhere on the network, through a standard \
+    HTTPS proxy. This will allow you for example to access \
+    SSH servers when you normally only have http(s) access.
+
+long_description ${description}
+
+homepage        http://proxytunnel.sourceforge.net/
+master_sites    sourceforge:proxytunnel
+
+extract.suffix  .tgz
+checksums       md5  d74472b89c3f3b3b0abf6bd809ae34c2 \
+                sha1 51d816125bb9e9bca267d35f861000eb0fa9d80b
+
+worksrcdir      ${name}-${version}
+
+depends_build   port:pkgconfig
+depends_lib     port:openssl port:zlib
+
+patchfiles      patch-Makefile.diff
+
+use_configure       no
+universal_variant   no
+
+build.args-append CC=${configure.cc} CFLAGS="-Wall ${configure.cflags} -DDARWIN"
+build.target
+
+destroot.args PREFIX=${prefix}
+
+livecheck.type regex
+livecheck.url http://sourceforge.net/projects/proxytunnel/files/proxytunnel%20source%20tarballs/
+livecheck.regex "${name} (\\d+(?:\\.\\d+)+)"

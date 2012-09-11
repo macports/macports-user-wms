@@ -1,0 +1,39 @@
+# $Id$
+
+PortSystem    1.0
+
+name          lalframe
+version       1.0.6
+categories    science
+platforms     darwin
+maintainers   ram
+license       GPL
+
+description   LSC Algorithm Library - Frame
+long_description \
+  LIGO Scientific Collaboration Algorithm Library - Frame, containing \
+  routines for reading and writing frame files.
+
+homepage      https://www.lsc-group.phys.uwm.edu/daswg/projects/lalsuite.html
+master_sites  http://www.lsc-group.phys.uwm.edu/daswg/download/software/source/lalsuite
+
+checksums     rmd160 055477f597b9a05e5cf08139f5ead95daaff71e8 \
+              sha256 34f10f5767a062e67e5bac74118d10bb0526bea94ed3c325505f5de526daa02a
+
+depends_build port:pkgconfig \
+              port:python27
+
+depends_lib   port:lal \
+              port:libframe
+
+configure.python ${prefix}/bin/python2.7
+configure.args --mandir=${prefix}/share/man \
+               --disable-silent-rules \
+               --disable-gcc-flags \
+               --disable-debug
+
+use_parallel_build yes
+
+livecheck.type   regex
+livecheck.url    ${master_sites}
+livecheck.regex  {lalframe-(\d+(?:\.\d+)*).tar.gz}

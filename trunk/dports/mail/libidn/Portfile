@@ -1,0 +1,37 @@
+# $Id$
+
+PortSystem 1.0
+
+name			libidn
+version			1.25
+categories		mail
+license			{LGPL-2.1+ GPL-3+}
+description		international domain name library
+long_description	Libidn is an implementation of the Stringprep, \
+			Punycode and IDNA specifications defined by the IETF \
+			Internationalized Domain Names (IDN) working group, \
+			used for internationalized domain names. The library \
+			contains a generic Stringprep implementation that does \
+			Unicode 3.2 NFKC normalization, mapping and \
+			prohibitation of characters, and bidirectional \
+			character handling. Profiles for iSCSI, Kerberos 5, \
+			Nameprep, SASL and XMPP are included. Punycode and \
+			ASCII Compatible Encoding (ACE) via IDNA are supported.
+homepage		http://www.gnu.org/software/libidn/
+platforms		darwin
+maintainers		foellinger.de:olaf openmaintainer
+master_sites	gnu
+
+checksums           rmd160  e14088d528d57686df723ce001ee5dc05aee8870 \
+                    sha256  7fe625328a6a5d837d723c462c1788affb84d9c9fc0ae5cd0ce9ac7724c34716
+
+depends_lib		port:libiconv port:gettext
+configure.args  --disable-csharp
+
+use_parallel_build	yes
+
+test.run        yes
+
+livecheck.type	regex
+livecheck.url	http://ftp.gnu.org/pub/gnu/$name/
+livecheck.regex	$name-(\\d+(?:\\.\\d+)*)

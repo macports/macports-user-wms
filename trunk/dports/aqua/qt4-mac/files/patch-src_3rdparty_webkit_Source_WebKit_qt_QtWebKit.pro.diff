@@ -1,0 +1,29 @@
+--- src/3rdparty/webkit/Source/WebKit/qt/QtWebKit.pro.orig	2012-08-08 16:27:13.000000000 -0400
++++ src/3rdparty/webkit/Source/WebKit/qt/QtWebKit.pro	2012-08-08 16:33:29.000000000 -0400
+@@ -233,7 +233,7 @@
+                        $$SOURCE_DIR/../WebKitLibraries/
+ 
+         DEFINES+=NSGEOMETRY_TYPES_SAME_AS_CGGEOMETRY_TYPES
+-        contains(CONFIG, "x86") {
++        contains(CONFIG, "x86")|contains(CONFIG, "ppc") {
+             DEFINES+=NS_BUILD_32_LIKE_64
+         }
+ 
+@@ -295,7 +295,7 @@
+ 
+ !symbian-abld:!symbian-sbsv2 {
+     modfile.files = $$moduleFile
+-    modfile.path = $$[QMAKE_MKSPECS]/modules
++    modfile.path = $$[QT_INSTALL_DATA]/mkspecs/modules
+ 
+     INSTALLS += modfile
+ } else {
+@@ -303,7 +303,7 @@
+ 
+     inst_modfile.commands = $$QMAKE_COPY ${QMAKE_FILE_NAME} ${QMAKE_FILE_OUT}
+     inst_modfile.input = moduleFile
+-    inst_modfile.output = $$[QMAKE_MKSPECS]/modules
++    inst_modfile.output = $$[QT_INSTALL_DATA]/mkspecs/modules
+     inst_modfile.CONFIG = no_clean
+ 
+     QMAKE_EXTRA_COMPILERS += inst_modfile

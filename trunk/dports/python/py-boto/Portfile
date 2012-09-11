@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               python 1.0
+
+name                    py-boto
+set real_name           boto
+epoch                   1
+version                 2.2.2
+revision                1
+python.versions         25 26 27
+python.default_version  25
+maintainers             singingwolfboy openmaintainer
+license                 MIT
+supported_archs         noarch
+
+description             Python interface to Amazon's Web Services
+long_description        ${description}
+platforms               darwin
+
+homepage                https://github.com/boto/boto
+master_sites            http://pypi.python.org/packages/source/b/${real_name}
+distname                ${real_name}-${version}
+
+checksums               rmd160  b91a7ecaf0bffc1770b5320cd128101a8cf4e265 \
+                        sha256  17dce8082a650da50cdc966a5325b97873fac14916dcf1b9d9130b7e212ee292
+
+if {${name} != ${subport}} {
+    post-destroot {
+        if {[file exists ${destroot}${python.pkgd}/tests]} {
+            delete ${destroot}${python.pkgd}/tests
+        }
+    }
+}

@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                cabocha
+version             0.64
+categories          textproc japanese
+maintainers         hum openmaintainer
+
+description         Yet Another Japanese Dependency Structure Analyzer
+long_description    CaboCha is a Jpanese dependency structure analyzer based on \
+                    support vector machines. \
+                    This version of CaboCha supports the UTF-8 encoding.
+
+homepage            http://code.google.com/p/cabocha/
+platforms           darwin
+license             BSD
+
+master_sites        googlecode
+checksums           rmd160  b6e0a3f7cb4829e26b8b86ca2e2ab6131ab22a12 \
+                    sha256  034b5540b36e12dea9b41c37252784b85abbb9f831c4a0ec6de8dc74b52a04d8
+
+depends_lib         port:crfpp \
+                    port:libiconv \
+                    port:mecab-base \
+                    port:mecab-utf8
+
+patchfiles          patch-configure.diff
+
+configure.args      --with-charset=UTF8
+
+variant juman conflicts unidic description {Set the default posset to JUMAN} {
+    configure.args-append  --with-posset=JUMAN
+}
+
+variant unidic conflicts juman description {Set the default posset to UniDic} {
+    configure.args-append  --with-posset=UNIDIC
+}
+
+build.args          LIBS="-liconv -lcrfpp -lmecab"
+
+test.run            yes
+test.target         check

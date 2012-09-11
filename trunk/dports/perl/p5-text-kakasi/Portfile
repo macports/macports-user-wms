@@ -1,0 +1,33 @@
+# $Id$
+
+PortSystem      1.0
+PortGroup       perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup     Text-Kakasi 2.04
+revision        3
+categories-append \
+                textproc japanese
+maintainers     takanori openmaintainer
+description     This module provides interface to kakasi.
+long_description \
+                ${description}
+platforms       darwin
+license         GPL-2+
+if {${perl5.major} != ""} {
+patchfiles      patch-MANIFEST.diff
+checksums       md5 5a9e381cb93edfd707124a63c60f96b1
+
+depends_lib-append  port:kakasi
+
+post-patch {
+    reinplace "s|/usr/local|${prefix}|g" ${worksrcpath}/Makefile.PL
+    system "pod2text ${worksrcpath}/lib/Text/Kakasi/JP.pod ${worksrcpath}/usage.jp"
+    delete ${worksrcpath}/lib
+}
+
+post-destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}/doc
+    xinstall -m 644 -W ${worksrcpath} COPYING ChangeLog.1 Changes README README.jp usage.jp ${destroot}${prefix}/share/doc/${name}
+}
+}

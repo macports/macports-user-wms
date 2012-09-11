@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                  1.0
+PortGroup                   perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup                 Net-DNS-Resolver-Programmable 0.003
+revision                    3
+license                     {Artistic-1 GPL-2+}
+platforms                   darwin
+maintainers                 ryandesign openmaintainer
+description                 allows a virtual DNS to be emulated instead of \
+                            querying the real DNS
+long_description            Net::DNS::Resolver::Programmable is a \
+                            Net::DNS::Resolver descendant class that allows \
+                            a virtual DNS to be emulated instead of querying \
+                            the real DNS.  A set of static DNS records may be \
+                            supplied, or arbitrary code may be specified as a \
+                            means for retrieving DNS records, or even \
+                            generating them on the fly.
+distname                    ${perl5.module}-v${perl5.moduleversion}
+
+checksums                   md5     8d44bf331d6115e7fb4ea21f6cf4b96b \
+                            sha1    05601b1a3054eaaca03b3ec6e4aeefdb838dc44e \
+                            rmd160  6b93ce7174d1f61ec7411e31e7d61c6a003cd6ec
+
+if {${perl5.major} != ""} {
+depends_lib-append          port:p${perl5.major}-net-dns \
+                            port:p${perl5.major}-version
+
+supported_archs             noarch
+}
+livecheck.version           v${perl5.moduleversion}

@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                kolourpaint
+version             4.8.3
+revision            1
+categories          kde kde4
+license             LGPL-2 LGPL-2+ BSD
+maintainers         nicos openmaintainer
+description         KolourPaint is a free, easy-to-use paint program for KDE.
+long_description    ${description}
+platforms           darwin
+homepage            http://kolourpaint.sourceforge.net/
+master_sites        kde:stable/${version}/src/
+use_xz              yes
+distname            kolourpaint-${version}
+checksums           rmd160  f441d806eac5dad9681e99b3b92a4e7932785a78 \
+                    sha256  dd43c3d433ed55a0facbf0aef47f7b7a1ec1c8b9b1563f1adb6b3f11b186067c
+
+depends_lib-append  port:kdelibs4 \
+                    port:oxygen-icons \
+                    port:qimageblitz
+
+if {![variant_isset docs]} {
+    patchfiles      patch-CMakeLists.txt.diff
+}
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/latest/src/
+livecheck.regex     kolourpaint-(\\d+\\.\\d+\\.\\d+)${extract.suffix}

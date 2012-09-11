@@ -1,0 +1,24 @@
+# $Id$
+
+PortSystem 1.0
+name             rman
+version          3.2
+categories       textproc
+license          Artistic-1
+maintainers      mac.com:lomion
+description      Man page format converter
+long_description \
+    PolyglotMan takes formatted man pages from most of the popular \
+    flavours of UN*X and transforms them into any number of source \
+    formats. It can produce ASCII-only, section headers-only, \
+    TkMan, \[tn\]roff, Ensemble, SGML, HTML, LaTeX, RTF, Perl 5 POD.
+homepage         http://polyglotman.sourceforge.net/
+platforms        darwin
+master_sites     sourceforge:polyglotman
+checksums        md5 6d1d67641c6d042595a96a62340d3cc6
+patchfiles       patch-Makefile
+
+configure {
+    reinplace "s|__PREFIX|${prefix}|g" ${worksrcpath}/Makefile
+    reinplace "s|__DSTROOT|${destroot}${prefix}|g" ${worksrcpath}/Makefile
+}

@@ -1,0 +1,59 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                  1.0
+
+name                        kerberos5
+conflicts                   e2fsprogs fbopenssl
+version                     1.7.2
+set branch                  [join [lrange [split ${version} .] 0 1] .]
+categories                  net security
+maintainers                 nomaintainer
+license                     MIT BSD ISC OpenLDAP-2.8+
+platforms                   darwin
+homepage                    http://web.mit.edu/kerberos/
+master_sites                ${homepage}dist/krb5/${branch}/
+distname                    krb5-${version}
+distfiles                   ${distname}-signed.tar
+worksrcdir                  ${distname}/src
+
+description                 Kerberos is a network authentication protocol.
+
+long_description            Kerberos is a network authentication protocol. \
+                            It is designed to provide strong authentication \
+                            for client/server applications by using secret-key \
+                            cryptography. A free implementation of this protocol \
+                            is  available from the Massachusetts Institute of \
+                            Technology. Kerberos is available in many commercial \
+                            products as well.
+
+checksums           rmd160  decaa75d4024d598d4929bde17e440c32a736528 \
+                    sha256  559bdcff2bdb70f68519729ca3e1bd83c3e6d784e3a8c94e0d64904428506744
+
+depends_lib                 port:openssl
+
+extract.cmd                 cat
+extract.pre_args
+
+patchfiles                  patch-pkinit_crypto_openssl.c.diff
+
+if {${configure.compiler} == "clang"} {
+    configure.compiler llvm-gcc-4.2
+}
+
+configure.cppflags-delete   -I${prefix}/include
+configure.ldflags-delete    -L${prefix}/lib
+configure.args              --mandir=${prefix}/share/man
+
+post-configure {
+    reinplace -E {s|-arch [^ ]+||g} \
+        ${worksrcpath}/krb5-config
+}
+
+post-extract {
+    system "cd ${workpath} && gzip -dc ${distname}.tar.gz | tar -xf -"
+}
+
+livecheck.regex krb5-(\[0-9.\]+)-signed.tar
+livecheck.type  regex
+livecheck.url   http://web.mit.edu/kerberos/dist/index.html

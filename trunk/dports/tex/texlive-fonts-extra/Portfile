@@ -1,0 +1,152 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-fonts-extra
+version             26866
+revision            0
+
+categories          tex
+maintainers         dports
+license             Copyleft Permissive
+description         TeX Live: Extra fonts
+long_description    Extra fonts
+
+checksums           texlive-fonts-extra-26866-run.tar.xz \
+                    rmd160  fa2db50d1db35b2a0859ca8e035bc20a9f3fa77e \
+                    sha256  24bd5cf730d0b0ec9dc6ed4e1154de912ec1b83ef0881b0c4752010e58e130bb \
+                    texlive-fonts-extra-26866-doc.tar.xz \
+                    rmd160  9479c4c7c82e28b4de4a637be6771a84b150c3a2 \
+                    sha256  89e50988e58fd6f5cf4e4f26fcdc544054abfbf4840e664cf925780fcd7a82ff \
+                    texlive-fonts-extra-26866-src.tar.xz \
+                    rmd160  37e1bdb9d1730bd038dcad73a5235458d849d0b1 \
+                    sha256  7160c4b0a71aa4981ef6ac34e5ae776bc0805feddecf893b01c4e996c5549a35
+
+depends_lib         port:texlive-basic
+
+texlive.maps      \
+    {Map OrnementsADF.map} \
+    {Map ArrowsADF.map} \
+    {Map BulletsADF.map} \
+    {MixedMap allrunes.map} \
+    {Map uaq.map} \
+    {Map antt.map} \
+    {Map archaicprw.map} \
+    {Map arev.map} \
+    {Map ascii.map} \
+    {Map aspectratio.map} \
+    {Map augie.map} \
+    {Map auncial.map} \
+    {Map aurical.map} \
+    {Map ybv.map} \
+    {MixedMap bbold.map} \
+    {Map belleek.map} \
+    {Map bera.map} \
+    {Map ybd.map} \
+    {Map sqrcaps.map} \
+    {Map boondox.map} \
+    {Map pbsi.map} \
+    {Map calligra.map} \
+    {Map cantarell.map} \
+    {Map cmin.map} \
+    {Map ccicons.map} \
+    {Map clm.map} \
+    {Map cm-lgc.map} \
+    {MixedMap cmll.map} \
+    {Map comfortaa.map} \
+    {Map CountriesOfEurope.map} \
+    {Map cyklop.map} \
+    {Map dejavu-type1.map} \
+    {Map dictsym.map} \
+    {Map dstroke.map} \
+    {Map droid.map} \
+    {Map dutchcal.map} \
+    {Map yes.map} \
+    {Map epigrafica.map} \
+    {Map ESSTIX.map} \
+    {Map esvect.map} \
+    {Map fdsymbol.map} \
+    {Map fge.map} \
+    {Map foekfont.map} \
+    {Map fonetika.map} \
+    {Map fourier.map} \
+    {Map fourier-utopia-expert.map} \
+    {Map frcursive.map} \
+    {Map gfsartemisia.map} \
+    {Map gfsbodoni.map} \
+    {Map gfscomplutum.map} \
+    {Map gfsdidot.map} \
+    {Map gfsneohellenic.map} \
+    {Map gfssolomos.map} \
+    {Map yfrak.map} \
+    {Map ugq.map} \
+    {MixedMap hfbright.map} \
+    {Map fi4.map} \
+    {Map Acorn.map} \
+    {Map AnnSton.map} \
+    {Map ArtNouv.map} \
+    {Map ArtNouvc.map} \
+    {Map Carrickc.map} \
+    {Map Eichenla.map} \
+    {Map Eileen.map} \
+    {Map EileenBl.map} \
+    {Map Elzevier.map} \
+    {Map GotIn.map} \
+    {Map GoudyIn.map} \
+    {Map Kinigcap.map} \
+    {Map Konanur.map} \
+    {Map Kramer.map} \
+    {Map MorrisIn.map} \
+    {Map Nouveaud.map} \
+    {Map Romantik.map} \
+    {Map Rothdn.map} \
+    {Map RoyalIn.map} \
+    {Map Sanremo.map} \
+    {Map Starburst.map} \
+    {Map Typocaps.map} \
+    {Map Zallman.map} \
+    {Map iwona.map} \
+    {Map kpfonts.map} \
+    {Map kurier.map} \
+    {Map lato.map} \
+    {Map libertine.map} \
+    {Map yly.map} \
+    {Map linearA.map} \
+    {MixedMap lxfonts.map} \
+    {Map mathabx.map} \
+    {Map mdbch.map} \
+    {Map mdput.map} \
+    {Map mdugm.map} \
+    {Map mdsymbol.map} \
+    {Map MnSymbol.map} \
+    {Map ntx.map} \
+    {Map cherokee.map} \
+    {Map ocrb.map} \
+    {Map oinuit.map} \
+    {Map opensans.map} \
+    {Map paratype-type1.map} \
+    {Map phaistos.map} \
+    {MixedMap pigpen.map} \
+    {Map ap.map} \
+    {Map prodint.map} \
+    {Map pxtx.map} \
+    {Map recycle.map} \
+    {Map yrd.map} \
+    {Map rsfso.map} \
+    {Map sansmathaccent.map} \
+    {MixedMap semaf.map} \
+    {Map icelandic.map} \
+    {Map starfont.map} \
+    {Map tfrupee.map} \
+    {MixedMap trajan.map} \
+    {Map gptimes.map} \
+    {Map yv1.map} \
+    {Map yv2.map} \
+    {Map yv3.map} \
+    {Map yvo.map} \
+    {Map yvt.map}
+
+
+texlive.texmfport

@@ -1,0 +1,133 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                vigra
+version             1.8.0
+revision            1
+categories          graphics
+platforms           darwin
+maintainers         gmail.com:benjamin.seppke
+description         Generic Image Processing Library for C++
+long_description    VIGRA stands for \"Vision with Generic Algorithms\". \
+                    It's a novel computer vision library that puts its \
+                    main emphasis on customizable algorithms and data \
+                    structures. By using template techniques similar to \
+                    those in the C++ Standard Template Library, you can \
+                    easily adapt any VIGRA component to the needs of your \
+                    application, without thereby giving up execution speed.
+homepage            http://hci.iwr.uni-heidelberg.de/vigra/
+master_sites        ${homepage}
+distname            ${name}-${version}-src
+use_parallel_build  yes
+#universal_variant   no
+worksrcdir          ${name}-${version}
+
+checksums           rmd160  99d781da6e0ca94ce3404e1bcb3adeb9e43a2017 \
+                    sha256  fc3a87d220ce23e79d163c58dd280fd534b81a870d2b140f1d072bbc82c78214
+
+depends_build       port:cmake
+depends_lib         port:jpeg \
+                    port:tiff \
+                    port:libpng \
+                    port:zlib \
+                    port:openexr \
+                    port:fftw-3 \
+                    port:hdf5-18
+
+# correct the INSTALL_NAME_DIR for Python .so modules
+patchfiles          patch-config-VIGRA_ADD_NUMPY_MODULE.cmake.diff
+
+configure.cmd       cmake
+
+configure.args      -DSKIP_BUILD_RPATH=TRUE \
+					-DCMAKE_VERBOSE_MAKEFILE=ON \
+                    -DCMAKE_BUILD_TYPE=Release \
+                    -DCMAKE_SYSTEM_PREFIX_PATH=\"${prefix}\;/usr\" \
+                    -DCMAKE_INSTALL_PREFIX=${prefix} \
+                    -DCMAKE_INSTALL_NAME_DIR=${prefix}/lib \
+                    -DCMAKE_INCLUDE_PATH=${prefix}/include \
+                    -DCMAKE_LIBRARY_PATH=${prefix}/lib \
+                    -DJPEG_INCLUDE_DIR=${prefix}/include \
+                    -DPNG_PNG_INCLUDE_DIR=${prefix}/include \
+                    -DTIFF_INCLUDE_DIR=${prefix}/include \
+                    -Wno-dev \
+                    -DBUILD_SHARED_LIBS=ON
+configure.post_args .
+
+destroot.env-append DESTDIR=${destroot}
+
+post-destroot {
+    # fix location of documentation to include version.
+    # remove documentation if no variant is set.
+    # for now since NumPy variant does not work, just
+    # move what can be moved and delete the rest.
+    if {[variant_isset docs]} {
+        # move documentation to a versioned directory
+        xinstall -m 755 -d ${destroot}${prefix}/share/doc
+        move ${destroot}${prefix}/doc/${name} \
+            ${destroot}${prefix}/share/doc/${name}-${version}
+    }
+    # delete whatever is left in the doc directory
+    delete ${destroot}${prefix}/doc
+}
+
+variant docs description "Build documentation" {}
+if {[variant_isset docs]} {
+    depends_lib-append port:doxygen
+} else {
+    configure.args-append \
+        -DBUILD_doc=OFF \
+        -DDOXYGEN_DOT_EXECUTABLE= \
+        -DDOXYGEN_DOT_PATH= \
+        -DDOXYGEN_EXECUTABLE=
+}
+
+variant valgrind description "Include support for VALGRIND" {}
+if {[variant_isset valgrind]} {
+    depends_lib-append port:valgrind
+} else {
+    configure.args-append -DWITH_VALGRIND=NO
+}
+
+# just like it's done in games/PlasmaClient and other ports that
+# require Boost::Python.
+if {![file exists ${prefix}/lib/libboost_python-mt.dylib]} {
+    # just disable NUMPY bindings via a CMake flag
+    configure.args-append -DWITH_VIGRANUMPY=NO
+
+    pre-fetch {
+        ui_msg "
+****
+**** To get NUMPY bindings, ${name} requires the port 'boost' to
+**** be installed with the variant +python26.  If you want NUMPY
+**** bindings, then please do the following first:
+****
+****     sudo port install boost +python26
+****
+**** and then try installing ${name} again.
+****
+"
+    }
+} else {
+    # assume Python version 2.6, no matter what the user has actually
+    # installed via "port install boost +pythonXY".
+    set python_version "2.6"
+
+    # append cmake flags
+    configure.args-append \
+        -DPYTHON_EXECUTABLE=${prefix}/bin/python${python_version} \
+        -DPYTHON_SPHINX=${prefix}/bin/sphinx-build-${python_version}
+
+    # make sure dependencies are installed
+    set python_version_join [join [split ${python_version} "."] ""]
+    depends_lib-append port:boost \
+        port:python${python_version_join} \
+        port:py${python_version_join}-numpy \
+        port:py${python_version_join}-sphinx
+}
+
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     ${name}-(\[0-9.\]+)-src\\.tar

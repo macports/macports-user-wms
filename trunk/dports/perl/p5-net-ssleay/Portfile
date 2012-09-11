@@ -1,0 +1,23 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		Net-SSLeay 1.48
+revision        1
+license			OpenSSL SSLeay
+maintainers		nomaintainer
+description		Perl extension for using OpenSSL
+long_description	Net::SSLeay Perl module for using OpenSSL
+homepage		http://search.cpan.org/dist/Net-SSLeay/
+platforms		darwin
+
+checksums               rmd160  5b4263f6e9e4d404cfe8e9eaf561ab827ef44d86 \
+                        sha256  630d857e797a11dd67433198b0458ad810d5f265d9ba0be5b93e73b629e4be6f
+
+if {${perl5.major} != ""} {
+depends_lib-append		port:openssl
+
+configure.env	OPENSSL_PREFIX=${prefix}
+}

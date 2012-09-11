@@ -1,0 +1,87 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                upc
+version             4.7.0.2
+categories          lang parallel science
+maintainers         takeshi openmaintainer
+description         Unified Parallel C
+license             GPL-3
+long_description    \
+    The GCC UPC toolset provides a compilation and execution environment \
+    for programs written in the UPC (Unified Parallel C) language. 
+homepage            http://www.gccupc.org/
+platforms           darwin
+master_sites        http://www.gccupc.org/downloads/upc/rls/${name}-${version}/
+distname            ${name}-${version}.src
+use_bzip2           yes
+checksums           md5     282940a3bf79d4584cc626155fa38c65 \
+                    sha1    8d8f39009a21113960577e8b2d34dfb782ace7e8 \
+                    rmd160  0804f261d026b9a2f0e775decee6eaf9680f892a
+
+depends_lib         port:gmp port:mpfr port:libiconv port:libmpc
+
+worksrcdir          build
+
+post-extract {
+    file mkdir ${worksrcpath}
+}
+
+if {[info exists build_arch] && ${os.platform} == "darwin"} {
+    configure.cc_archflags
+    configure.cxx_archflags
+    configure.objc_archflags
+    configure.pre_args-append --build=${build_arch}-apple-darwin${os.major}
+}
+
+pre-configure {
+    if {${os.platform} == "darwin" && ${os.arch} == "powerpc"} {
+        ui_error "PowerPC is not supported"
+    }
+}
+
+configure.cmd       ../${name}-${version}/configure
+configure.args      --bindir=${prefix}/lib/${name}/bin \
+                    --libdir=${prefix}/lib/${name} \
+                    --libexecdir=${prefix}/libexec/${name} \
+                    --datarootdir=${prefix}/share/${name} \
+                    --with-local-prefix=${prefix} \
+                    --with-system-zlib \
+                    --disable-nls \
+                    --without-gnu-ld \
+                    --disable-multilib \
+                    --with-gmp=${prefix} \
+                    --with-mpfr=${prefix} \
+                    --with-mpc=${prefix} \
+                    --enable-languages=upc
+if {${os.platform} == "darwin" && ${build_arch} == "x86_64"} {
+    configure.args-append   --build=${build_arch}-apple-${os.platform}${os.major}
+}
+use_parallel_build  yes
+universal_variant   no
+
+post-destroot {
+    xinstall -d ${destroot}${prefix}/share/man/man1
+    xinstall -m 644 ${destroot}${prefix}/share/${name}/man/man1/g${name}.1 \
+        ${destroot}${prefix}/share/man/man1/
+    xinstall -m 644 ${destroot}${prefix}/share/${name}/info/g${name}.info \
+        ${destroot}${prefix}/share/info/
+    xinstall -m 644 ${destroot}${prefix}/share/${name}/info/libg${name}.info \
+        ${destroot}${prefix}/share/info/
+    file delete -force ${destroot}${prefix}/include
+    system "cd ${destroot}${prefix}/bin; \
+            ln -s ${prefix}/lib/${name}/bin/g${name} g${name}; \
+            ln -s ${prefix}/lib/${name}/bin/g${name} ${name}; \
+            cd ${destroot}${prefix}/share/man/man1; \
+            ln -s ${prefix}/share/man/man1/g${name}.1 ${name}.1; \
+            cd ${destroot}${prefix}/share/info; \
+            ln -s ${prefix}/share/info/g${name}.info ${name}.info"
+    file delete -force ${destroot}${prefix}/share/${name}
+}
+
+# Error: cannot check if upc was updated (The requested URL returned error: 406)
+#livecheck.type      regex
+#livecheck.url       ${homepage}
+#livecheck.regex     {The current version of GCC/UPC compiler is ([0-9]+.[0-9]+.[0-9]+.[0-9]+)}

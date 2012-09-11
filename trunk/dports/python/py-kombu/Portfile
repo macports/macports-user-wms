@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-kombu
+version             2.4.5
+revision            0
+categories-append   devel
+license             BSD
+platforms           darwin
+supported_archs     noarch
+
+maintainers         stromnov openmaintainer
+
+description         AMQP Messaging Framework for Python.
+long_description    ${description}
+
+homepage            http://ask.github.com/kombu/
+master_sites        http://pypi.python.org/packages/source/k/kombu/
+distname            kombu-${version}
+
+checksums           rmd160  6b2e7cc62688944c01417506e9b41c8d6e0cad10 \
+                    sha256  909b101c521eca3a3c7d25b52f845b8fa347e602c8db40d5046e3f23039a931f
+
+python.versions     25 26 27 31 32
+python.default_version  27
+
+if {$subport != $name} {
+    depends_lib-append  port:py${python.version}-distribute
+}
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "kombu-(\\d+(?:\\.\\d+)*)${extract.suffix}"

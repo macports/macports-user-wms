@@ -1,0 +1,29 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup	    perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup	    MogileFS-Utils 2.14
+revision        3
+categories          perl net sysutils
+platforms	    darwin
+maintainers	    pmq openmaintainer
+
+description         MogileFS tools
+long_description    \
+    This package contains two tools to manage MogileFS: mogadm (MogileFS \
+    admin tool) and mogtool (inject/extract data to/from a MogileFS \
+    installation)
+
+homepage            http://www.danga.com/mogilefs
+master_sites        http://search.cpan.org/CPAN/authors/id/D/DO/DORMANDO \
+                    http://search.cpan.org/CPAN/authors/id/B/BR/BRADFITZ
+checksums           md5 3e76f855aee03084f89f41c2283cb9ee \
+		    sha1 b505cadbd4c9709e0584bce2c4e3c2852608d55b
+
+if {${perl5.major} != ""} {
+depends_run-append  port:p${perl5.major}-mogilefs-client port:p${perl5.major}-libwww-perl
+
+supported_archs noarch
+}

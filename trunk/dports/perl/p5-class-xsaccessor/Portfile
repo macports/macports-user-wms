@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Class-XSAccessor 1.11
+revision            3
+maintainers         nomaintainer
+description         Generate fast XS accessors without runtime compilation
+long_description    Class::XSAccessor implements fast read, write and \
+                    read/write accessors in XS. Additionally, it can \
+                    provide predicates such as has_foo() for testing \
+                    whether the attribute foo is defined in the object.
+
+platforms           darwin
+
+checksums           md5 e5640b633c451c14ef7dfc289733e0b5 \
+                    sha1 6526c1d23dd87c549b9775b5946cf17eb396eee4 \
+                    rmd160 8b018905fffd5f8947ba25a4d772c79acac02009

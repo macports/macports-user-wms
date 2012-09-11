@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xwd
+version             1.0.5
+categories          x11 graphics
+maintainers         jeremyhu openmaintainer
+description         Dump an image of an X11 window
+long_description    ${description}
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           sha1    3b0e4f3f9d28a07444e72952342e21544d4785b6 \
+                    rmd160  59ea270202137c109e38c0cab2d3a452a80aa8ef \
+                    sha256  02752ba737299cf4a1b75d777166c5b5e5ba8d3cabdf2c54cbe77de175356f3a
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libX11
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

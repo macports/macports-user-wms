@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-routes
+version             1.13
+revision            0
+python.versions     24 25 26 27
+categories-append   www
+license             BSD
+platforms           darwin
+supported_archs     noarch
+
+maintainers         akitada stromnov openmaintainer
+
+description         A Routing package for Python that matches \
+                    URLs to dicts and vice versa.
+
+long_description    Routes is a Python re-implementation of the \
+                    Rails routes system for mapping URLs to \
+                    Controllers/Actions and generating URLs. \
+                    Routes makes it easy to create pretty and \
+                    concise URLs that are RESTful with little \
+                    effort.
+
+homepage            http://routes.groovie.org
+master_sites        http://cheeseshop.python.org/packages/source/R/Routes/
+distname            Routes-${version}
+
+checksums           rmd160  b89721619da197da9f55a4e4bcb58292a830b209 \
+                    sha256  cc03d1a357cdb7af82e3909ee8ff93cb2b2afb48aca23bfde0117d6f49f624a7
+
+if {$name != $subport} {
+    depends_build-append \
+                    port:py${python.version}-distribute
+}
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "Routes-(\\d+(?:\\.\\d+)*)${extract.suffix}"

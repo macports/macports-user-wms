@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        msh 0.1.1
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Package for creating and managing triangular and \
+                    tetrahedral meshes for Finite Element or Finite Volume \
+                    PDE solvers. Uses a mesh data structure compatible with \
+                    pdetool. Relies on gmsh for unstructured mesh generation.
+long_description    ${description}
+
+checksums           md5     74da2651bbbb8425162efd49d5c4e4e8 \
+                    sha1    a404fa12bbdb3650894e41cb212aaccb48640f99 \
+                    rmd160  848aececa70ac5c15616ee866dccb959bf0b1927
+
+depends_lib-append  port:octave-splines

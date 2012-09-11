@@ -1,0 +1,11 @@
+--- setup.py.orig	2012-02-17 13:06:52.000000000 -0500
++++ setup.py	2012-02-17 20:20:00.000000000 -0500
+@@ -153,7 +153,7 @@
+         outputheader.close()
+         outputfile.close()
+ 
+-        EXT = "/opt/local"
++        EXT = "@PREFIX@"
+         inc_dirs=["ov/src",
+                   "layer0","layer1","layer2",
+                   "layer3","layer4","layer5", 

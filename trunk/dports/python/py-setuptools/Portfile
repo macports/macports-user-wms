@@ -1,0 +1,29 @@
+# $Id$
+
+PortSystem			1.0
+
+name				py-setuptools
+replaced_by         py24-distribute
+version				0.6c11
+revision            1
+categories      	python devel
+maintainers			nomaintainer
+description			distutils enhancement for build and distribution
+long_description \
+	setuptools is a collection of enhancements to the Python distutils that \
+	allow you to more easily build and distribute Python packages, \
+	especially ones that have dependencies on other packages.
+
+platforms			darwin
+
+homepage			http://peak.telecommunity.com/DevCenter/setuptools
+distfiles
+archive_sites
+
+use_configure	no
+pre-configure {
+    ui_error "${name} has been replaced by ${replaced_by}. Please install ${replaced_by} instead."
+    return -code error "obsolete port"
+}
+
+livecheck.type      none

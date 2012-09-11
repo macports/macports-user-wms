@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                libdc1394
+version             2.1.3
+categories          devel
+license             LGPL-2.1+
+platforms           darwin
+
+maintainers         uwe-arzt.de:mail
+
+description         Library for Firewire IIDC Cameras
+long_description    libdc1394 is a library that provides a complete \
+                    high level application programming interface (API) \
+                    for developers who wish to control IEEE 1394 based \
+                    cameras that conform to the 1394-based Digital \
+                    Camera Specifications (also known as the IIDC or \
+                    DCAM Specifications).
+
+homepage            http://damien.douxchamps.net/ieee1394/libdc1394/
+
+master_sites        sourceforge
+
+checksums           sha1    cab77199f2e434ece3cf31c798d00d79326679b4 \
+                    rmd160  298ad9c92187bea0f127f0a0f9960483d50201aa
+
+depends_build       port:pkgconfig
+
+depends_lib         path:lib/pkgconfig/libusb-1.0.pc:libusb
+
+livecheck.type      regex
+livecheck.url       http://sourceforge.net/projects/libdc1394/files/libdc1394-2/
+livecheck.regex     "(\\d+(?:\\.\\d+)*)${extract.suffix}"

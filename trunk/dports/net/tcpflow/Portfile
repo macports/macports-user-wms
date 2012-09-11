@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                tcpflow
+version             1.2.1
+categories          net security
+platforms           darwin freebsd
+maintainers         nomaintainer
+license             GPL-2
+
+description         TCP flow recorder
+
+long_description    tcpflow is a program that captures data transmitted as \
+                    part of TCP connections (flows), and stores the data in a \
+                    way that is convenient for protocol analysis or debugging. \
+                    A program like tcpdump(4) shows a summary of packets seen \
+                    on the wire, but usually doesn't store the data that's \
+                    actually being transmitted. In contrast, tcpflow \
+                    reconstructs the actual data streams and stores each flow \
+                    in a separate file for later analysis. tcpflow understands \
+                    TCP sequence numbers and will correctly reconstruct data \
+                    streams regardless of retransmissions or out-of-order \
+                    delivery.
+
+homepage            http://afflib.org/software/tcpflow
+master_sites        http://afflib.org/downloads
+
+checksums           rmd160  45f95932ab4dd1e2576500240e1c2afe62949cc9 \
+                    sha256  c514b70d348aab2d033bdb4e57a7d8f5a7779405ad7178f48b37b36248ce808d
+
+depends_lib         port:libpcap
+
+livecheck.type      regex
+livecheck.url       [lindex ${master_sites} 0]/tcpflow_version.txt
+livecheck.regex     ${name}-(\\d+(?:\\.\\d+)*)

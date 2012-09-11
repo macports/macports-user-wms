@@ -1,0 +1,21 @@
+# $Id$
+
+PortSystem		1.0
+PortGroup		perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		File-MMagic 1.27
+revision		4
+license		Apache-1
+maintainers		nomaintainer
+description		This is a Perl extension for determining file types.
+long_description	${description}
+
+checksums		md5 4ffb13b6587888e6e455c22988abce5e
+platforms		darwin
+
+if {${perl5.major} != ""} {
+patchfiles		patch-MMagic.pm
+
+supported_archs noarch
+}

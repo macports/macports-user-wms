@@ -1,0 +1,28 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Fey-Test 0.09 ../by-authors/id/D/DR/DROLSKY
+revision            2
+platforms           darwin
+maintainers         l2g openmaintainer
+license             Artistic-2+
+supported_archs     noarch
+
+description         Fey::Test - test libraries for Fey distros
+
+long_description    This module is only useful for testing p5-fey and any \
+                    other p5-fey-* ports. You should not have to install it \
+                    explicitly.
+
+checksums           sha1 589ec79f1a833e3176cf5ccf3719495105d9f412 \
+                    rmd160 f5ed00471143cada2e414fbfd76e5f99de7fcb81
+
+if {${perl5.major} != ""} {
+depends_lib-append  port:p${perl5.major}-dbi \
+                    port:p${perl5.major}-list-moreutils \
+                    port:p${perl5.major}-test-mockobject
+}

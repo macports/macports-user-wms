@@ -1,0 +1,91 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                gearmand
+version             0.34
+revision            1
+categories          sysutils net devel
+platforms           darwin
+license             BSD
+
+description         Framework for distributed computation
+long_description    \
+        Gearman provides a generic application framework  to  farm  out  work \
+        to other machines or processes that are better suited to do the work. \
+        It allows you to do work in parallel,  to  load  balance  processing, \
+        and to call functions between languages.  It can be used in a variety \
+        of applications, from high-availability web sites to the transport of \
+        database replication events. In other words, it is the nervous system \
+        for how distributed processing communicates.
+
+maintainers         medialize.de:rodney.rehm \
+                    andyfowler.com:andy \
+                    openmaintainer
+
+homepage            http://gearman.org/
+master_sites        https://launchpad.net/gearmand/trunk/${version}/+download/
+
+checksums           rmd160  d5cf8b68d64b8095c695daa0a3d2248df7b888a3 \
+                    sha256  968d701233f2376060274a69fa7c1b8e99f34b454a401805a2bd62067c13bca1
+
+depends_lib         port:boost port:libevent port:ossp-uuid
+
+configure.args      --disable-silent-rules \
+                    --disable-libdrizzle \
+                    --disable-libpq \
+                    --disable-libmemcached \
+                    --disable-libtokyocabinet \
+                    --without-mysql \
+                    --without-sqlite3
+
+variant dtrace description {Enable DTrace probes} {
+    configure.args-append   --enable-dtrace
+}
+
+variant no_sqlite conflicts sqlite description {Legacy compatibility variant} {}
+variant sqlite description {Build with sqlite3 support} {
+    depends_lib-append      port:sqlite3
+    configure.args-delete   --without-sqlite3
+}
+if {[variant_isset no_sqlite]} {
+    default_variants -sqlite
+} else {
+    default_variants +sqlite
+}
+
+variant drizzle description {Build with libdrizzle support} {
+    depends_lib-append      port:libdrizzle
+    configure.args-delete   --disable-libdrizzle
+    configure.args-append   --enable-libdrizzle
+}
+
+variant postgres description {Build with postgresql support} {
+    depends_lib-append      port:libpqxx
+    configure.args-delete   --disable-libpq
+    configure.args-append   --enable-libpq
+}
+
+variant memcached description {Build with memcached support} {
+    depends_lib-append      port:libmemcached
+    configure.args-delete   --disable-libmemcached
+    configure.args-append   --enable-libmemcached
+}
+
+variant tokyocabinet description {Build with tokyocabinet support} {
+    depends_lib-append      port:tokyocabinet
+    configure.args-delete   --disable-libtokyocabinet
+    configure.args-append   --enable-libtokyocabinet
+}
+
+startupitem.create  yes
+startupitem.executable  ${prefix}/sbin/gearmand -vv \
+                        --port=4730 \
+                        -u root \
+                        --pid-file=${prefix}/var/run/gearmand.pid \
+                        --log-file=${prefix}/var/log/gearmand.log
+
+livecheck.type      regex
+livecheck.url       https://launchpad.net/${name}/+download
+livecheck.regex     {gearmand-(\d+(?:\.\d+)*).tar.gz}

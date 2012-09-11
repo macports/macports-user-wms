@@ -1,0 +1,34 @@
+# $Id$
+
+PortSystem 1.0
+
+name	   add
+version	   20070214
+categories	math
+platforms	darwin
+license		BSD
+maintainers	jmpp openmaintainer
+
+description	Fixed-point, full screen calculator.
+long_description	add is a fixed-point calculator that operates as a full-screen editor. \
+			It is designed for use as a checkbook or expense-account balancing tool.
+
+homepage	http://dickey.his.com/add/
+master_sites	ftp://invisible-island.net/add/
+extract.suffix	.tgz
+checksums	md5 939091db5323c54b6bf65dd01885db9d \
+		sha1 a8afdb2e83a69847c805e874ec30f9eb7edbb182 \
+		rmd160 a860640c3054e4bc700ae74bea4a5f26e50932a9
+
+depends_lib	port:ncurses
+
+configure.args	--mandir=${prefix}/share/man
+
+post-destroot	{
+		xinstall -d -m 755 ${destroot}${prefix}/share/doc/${name}
+		file rename ${destroot}${prefix}/bin/add.hlp ${destroot}${prefix}/share/doc/${name}
+}
+
+livecheck.type	regex
+livecheck.url	${master_sites}
+livecheck.regex	"${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

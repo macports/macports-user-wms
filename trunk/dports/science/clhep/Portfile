@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           cmake 1.0
+
+name                clhep
+version             2.1.2.0
+categories          science
+maintainers         pd.infn.it:cristiano.fontana
+license             LGPL-3
+
+description         A Class Library for High Energy Physics
+long_description    A Class Library for High Energy Physics
+homepage            http://www.cern.ch/clhep
+platforms           darwin
+extract.suffix      .tgz
+master_sites        http://proj-clhep.web.cern.ch/proj-clhep/DISTRIBUTION/tarFiles/
+
+checksums           rmd160  04b13225639d8f5e332245f0b430c4b64d80d318 \
+                    sha256  b4dcb7812acbd4a781fab556eb4bfac2ed4c1fbfa64cb5d27a296cdba4f6336c
+
+worksrcdir          ${version}/CLHEP
+
+configure.dir       ${workpath}/build
+build.dir           ${configure.dir}
+
+post-extract {
+    file mkdir ${configure.dir}
+}
+
+configure.post_args ${worksrcpath}
+
+post-build {
+    fs-traverse file ${build.dir} {
+        if {[string match {*-config} ${file}]} {
+            reinplace -E {s|-arch [^ ]+||g} ${file}
+        }
+    }
+}
+
+livecheck.type      regex
+livecheck.regex     {<b>([0-9.]+)</b>}

@@ -1,0 +1,40 @@
+# $Id$
+
+PortSystem 1.0
+name            ldmud
+version         3.3.719
+categories      games
+maintainers     toby
+description     modern LPMud gamedriver
+long_description \
+    LDMud started as a project to clean up and modernize Amylaar's LPMud \
+    gamedriver. Primary goals are full documentation, a commented source body \
+    and out-of-the-box support for the major mudlibs, of which the commented \
+    source body has been pretty much completed. During the course of work a \
+    lot of bug fixes and improvements found their way into the driver - much \
+    more than originally expected, and definitely enough to make LDMud a \
+    driver in its own right.
+homepage        http://www.bearnip.com/lars/proj/ldmud.html
+platforms       darwin
+
+master_sites    http://www.bearnip.com/ftp/mud/
+checksums       md5 1a21a292441358a6184c79c9e3ba53b4 \
+                sha1 4ba2e94ebefe2ab78432894001f0fb00447f7c5c \
+                rmd160 5a1e055f69e32acab9fe2e81dbc97b07c93c1d2e
+
+patchfiles      patch-src__Makefile.in
+
+depends_lib     port:libiconv
+
+configure.dir   ${worksrcpath}/src
+configure.args  --libdir=${prefix}/var/ldmud \
+                --with-optimize=no
+configure.env   EXTRA_CFLAGS=${configure.cflags}
+
+build.dir       ${worksrcpath}/src
+
+destroot.target install-driver
+
+livecheck.type  md5
+livecheck.url   http://www.bearnip.com/ftp/mud/ldmud-stable.tar.gz.md5
+livecheck.md5   8ece749faded6aaf7e4ec09a080b0001

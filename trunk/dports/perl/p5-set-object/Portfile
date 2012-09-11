@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Set-Object 1.28
+revision            3
+license             Artistic-1
+maintainers         nomaintainer
+description         set of objects and strings
+long_description    This modules implements a set of objects, \
+                    that is, an unordered collection of objects \
+                    without duplication.
+
+platforms           darwin
+
+checksums           md5 fa90c2a568b149bffc3285dea57c63cf \
+                    sha1 b552f63874c2450174d40f7278c5c56cb15ed827 \
+                    rmd160 1565d88a4bc58e733a26f2963b21be7f011fa839

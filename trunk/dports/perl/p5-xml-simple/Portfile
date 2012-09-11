@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           XML-Simple 2.18
+revision              3
+maintainers           nomaintainer
+license               {Artistic GPL}
+description           Easy API to read/write XML (esp config files)
+long_description      ${description}
+
+platforms             darwin
+
+checksums             md5 593aa8001e5c301cdcdb4bb3b63abc33 \
+                      sha1 81d38dd9fd955b0322ac64099f2d116c296267d1 \
+                      rmd160 815f8e2ccb7f6763f76c9014eee82aad14d6c519
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-xml-namespacesupport \
+                      port:p${perl5.major}-xml-sax \
+                      port:p${perl5.major}-xml-sax-expat
+
+supported_archs noarch
+}

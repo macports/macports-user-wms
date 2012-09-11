@@ -1,0 +1,78 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               github 1.0
+
+github.setup            textmate textmate 9305 r
+epoch                   1
+version                 2.0.${github.version}
+
+maintainers             cal openmaintainer
+name                    textmate2
+
+categories              editors aqua
+description             \
+    TextMate brings Apple's approach to operating systems into the world of text editors. By \
+    bridging UNIX underpinnings and GUI, TextMate cherry-picks the best of both worlds to the \
+    benefit of expert scripters and novice users alike.
+long_description        ${description}\
+    TextMate is well-known for its large number of bundles adding support, snippets, completions \
+    and commands for a huge number of file types.
+
+platforms               darwin
+supported_archs         x86_64
+license                 GPL-3+
+
+pre-fetch {
+    if {${os.platform} == "darwin" && ${os.major} < 11} {
+        ui_error "${name} only works with Mac OS X 10.7 Lion or later."
+        return -code error "incompatible Mac OS X version"
+    }
+}
+fetch.type              git
+post-fetch {
+    system -W ${worksrcpath} "git submodule update --init"
+}
+
+patchfiles              patch-configure-versionnumber.diff
+
+post-patch {
+    reinplace "s/@REVISION@/${github.version}/" ${worksrcpath}/configure
+    fs-traverse file ${worksrcpath} {
+        if {[file tail ${file}] == "target"} {
+            reinplace "/TEST_SOURCES =/d" ${file}
+        }
+    }
+}
+
+depends_build-append    port:ninja \
+                        port:ragel \
+                        port:proctools
+
+set depends_skip_archcheck {ninja ragel proctools}
+
+if {[vercmp ${xcodeversion} "4.4"] < 0} {
+    depends_build-append    port:clang-3.2
+    configure.compiler      macports-clang-3.2
+}
+
+depends_lib-append      port:boost \
+                        port:multimarkdown \
+                        port:curl \
+                        port:openssl \
+                        port:libiconv \
+                        port:zlib
+
+configure.env-append    builddir=${worksrcpath}/build \
+                        tag=-macports
+
+build.cmd               ninja
+build.args              -j ${build.jobs}
+build.target            TextMate mate
+
+destroot {
+    copy ${worksrcpath}/build/Applications/TextMate/TextMate.app ${destroot}${applications_dir}
+    xinstall -m 0755 ${worksrcpath}/build/Applications/mate/mate ${destroot}${prefix}/bin
+    xinstall -m 0755 ${worksrcpath}/rmate/rmate ${destroot}${prefix}/bin
+}

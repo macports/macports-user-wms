@@ -1,0 +1,12 @@
+--- src/Config.cpp.orig	2011-03-06 07:10:21.000000000 +0900
++++ src/Config.cpp	2011-08-06 11:39:09.000000000 +0900
+@@ -185,8 +185,7 @@
+   if (mp.Length())
+     m_maximaProgram->SetValue(mp);
+   else
+-    // this is where the mac installer installs maxima
+-    m_maximaProgram->SetValue(wxT("/Applications/Maxima.app"));
++    m_maximaProgram->SetValue(wxT("maxima"));
+ #else
+   if (mp.Length())
+     m_maximaProgram->SetValue(mp);

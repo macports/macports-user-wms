@@ -1,0 +1,28 @@
+# -*- Mode: Tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name            libtasn1
+version         2.11
+categories      devel
+# libs are LGPL; executables, examples and tests are GPL
+license         {LGPL-2.1+ GPL-3+}
+maintainers     sfiera openmaintainer
+description     ASN.1 structure parser library
+homepage        http://josefsson.org/libtasn1/
+platforms       darwin
+
+long_description \
+    The libtasn1 library was developed for ASN1 (Abstract Syntax Notification \
+    One) structures management.
+
+master_sites    gnu
+
+checksums           md5     ee8076752f2afcbcd12f3dd9bc622748 \
+                    sha1    6367c799726ad3218fac4f0e88692976258904da \
+                    rmd160  1a79ed2720ecfee4edabea505955d0ce426c2a87
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnu.org/pub/gnu/libtasn1/
+livecheck.regex ${name}-(\\d+(\\.\\d+)*)

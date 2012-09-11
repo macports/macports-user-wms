@@ -1,0 +1,91 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+name                    gnubg
+version                 0.14.3
+revision                5
+categories              games
+platforms               darwin
+maintainers             nomaintainer
+homepage                http://www.gnubg.org/
+description             GNU Backgammon
+
+long_description        GNU Backgammon (gnubg) is a software for playing and analysing \
+                        backgammon positions, games and matches. It's based on a neural \
+                        network. Although it already plays at a very high level, it's \
+                        still work in progress. You can play at GNU Backgammon using the \
+                        command line or via a graphical interface based (on GTK+).
+
+master_sites            http://alpha.gnu.org/gnu/${name}/ \
+                        ftp://alpha.gnu.org/gnu/${name}/ \
+                        ftp://ftp.funet.fi/pub/mirrors/alpha.gnu.org/gnu/${name}/
+                        
+distfiles               ${distname}.tar.gz ${name}.weights-0.14.gz
+extract.only            ${distname}.tar.gz
+                        
+checksums           ${name}-${version}.tar.gz \
+                    rmd160  da7b2a3b52194ca11d505a70fba805e99f15c3ed \
+                    sha256  76d18f1a7952a4ba2372e439b3c4ecf2fcd244d334c609bb22d3f501067d1d72 \
+                    ${name}.weights-0.14.gz \
+                    rmd160  5d588b1145f0d0489b5d70fa6cfccd9ce6738f04 \
+                    sha256  6c134ded36d0875cb673a4f9fd84e2d30424935951baeffcd94852ccdb2daf70
+
+depends_build           port:pkgconfig
+depends_lib             port:gtk2 \
+                        port:gmp \
+                        port:libiconv \
+                        port:libxml2 \
+                        port:freetype \
+                        port:readline
+
+post-extract {          copy ${distpath}/${name}.weights-0.14.gz ${worksrcpath}
+                        system "cd ${worksrcpath} && gzip -d ${name}.weights-0.14.gz"
+                        move ${worksrcpath}/${name}.weights-0.14 ${worksrcpath}/${name}.weights
+                        }
+
+patchfiles              patch-configure.diff patch-rollout.h.diff \
+                        patch-export.c.diff patch-Makefile.in.diff
+
+configure.cflags-append -lmx
+configure.ldflags -lX11 -liconv -bind_at_load -multiply_defined suppress
+
+configure.args          --mandir=${prefix}/share/man \
+                        --infodir=${prefix}/share/info \
+                        --sysconfdir=${prefix}/etc \
+                        --libdir=${prefix}/lib \
+                        --disable-gtkextratest \
+                        --disable-libarttest \
+                        --disable-esdtest \
+                        --disable-audiofiletest \
+                        --disable-gtkglext-test \
+                        --disable-artsc-test \
+                        --disable-nas \
+                        --without-sound \
+                        --without-board3d \
+                        --without-libintl-prefix \
+                        --without-python \
+                        --without-gtkextra \
+                        --with-gtk2
+
+
+post-destroot {         xinstall -d ${destroot}${prefix}/share/doc/${name}
+                        xinstall -m 644 -v -W ${worksrcpath} \
+                                AUTHORS ChangeLog README TODO \
+                                ${destroot}${prefix}/share/doc/${name}
+                        system "rm -rf ${destroot}${prefix}/share/${name}/sounds"
+                        }
+
+variant gdbm {          depends_lib-append      lib:libgdbm:gdbm
+                        configure.args-append   --with-gdbm
+                        }
+
+variant guile {         depends_lib-append      bin:guile:guile
+                        configure.args-append   --with-guile
+                        }
+
+variant python {        depends_lib-append      bin:python:python24
+                        configure.args-delete   --without-python
+                        configure.args-append   --with-python
+                        }
+

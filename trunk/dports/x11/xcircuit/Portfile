@@ -1,0 +1,43 @@
+# $Id$
+
+PortSystem 1.0
+
+name             xcircuit
+version          3.7.39
+revision         1
+categories       x11 cad
+maintainers      nomaintainer
+description      circuit-drawing program
+long_description \
+    XCircuit is a program for drawing publishable-quality \
+    electrical circuit schematic diagrams and related figures, \
+    and produce circuit netlists through schematic capture. \
+    XCircuit regards circuits as inherently hierarchical, and \
+    writes both hierarchical PostScript output and \
+    hierarchical SPICE netlists. Circuit components are saved \
+    in and retrieved from libraries which are fully editable. \
+    XCircuit does not separate artistic expression from \
+    circuit drawing\; it maintains flexiblity in style without \
+    compromising the power of schematic capture.
+homepage         http://opencircuitdesign.com/${name}
+platforms        darwin
+master_sites     ${homepage}/archive/
+extract.suffix   .tgz
+checksums        rmd160 38fa6ba7ea756aa1938f795d52bcb83138cbd2a7 \
+                 sha256 e351dfe0ab8f55b78e4db41ade03b8f27059d01d620d44b6353ad223d84e1af3
+
+depends_lib      port:ghostscript \
+                 port:tk \
+                 port:xpm
+
+configure.args   --mandir=${prefix}/share/man \
+                 --with-tcl=${prefix}/lib \
+                 --with-tk=${prefix}/lib \
+                 --with-gs=${prefix}/bin/gs \
+                 --x-includes=${prefix}/include \
+                 --x-libraries=${prefix}/lib
+
+pre-configure {
+    # configure.in ships with a later mod time than aclocal.m4
+    touch ${worksrcpath}/aclocal.m4 ${worksrcpath}/Makefile.in ${worksrcpath}/configure
+}

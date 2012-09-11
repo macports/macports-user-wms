@@ -1,0 +1,108 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    cdf
+epoch                   1
+version                 3.4.1
+revision                1
+set my_branch           [join [lrange [split ${version} .] 0 1] ""]
+set my_version          ${my_branch}_[join [lrange [split ${version} .] 2 end] "_"]
+set my_short_version    ${my_branch}_[lindex [split ${version} .] 2]
+maintainers             ryandesign openmaintainer
+platforms               darwin
+categories              science
+
+description             CDF: Common Data Format
+
+long_description        The Common Data Format (CDF) is a self-describing \
+                        data format for the storage and manipulation of \
+                        scalar and multidimensional data in a platform and \
+                        discipline independent fashion.
+
+homepage                http://cdf.gsfc.nasa.gov/
+master_sites            ftp://cdaweb.gsfc.nasa.gov/pub/cdf/dist/${name}${my_version}/unix \
+                        ftp://cdaweb.gsfc.nasa.gov/pub/cdf/dist/obsolete/${name}${my_branch}/${name}${my_version}/unix
+
+# 3.4.1 was stealth-updated 2012-06-28 (#35017), 2012-07-02 (#35216)
+dist_subdir             ${name}/${version}_2
+
+fetch.use_epsv          no
+distname                ${name}${my_version}-dist
+worksrcdir              ${name}${my_short_version}-dist
+extract.suffix          -all${extract.suffix}
+
+checksums               rmd160  abae16c2f60df98754345f1bdda6c8b59aff84d9 \
+                        sha256  6bbbb63ca7f5a44e890cd01f51ace818a1f956cfe95bbbcc572b138181ac7cee
+
+depends_lib             port:ncurses
+
+post-patch {
+    reinplace "s|@PREFIX@|${prefix}|g" ${worksrcpath}/Makefile
+    reinplace "s|-lgcc|`${configure.cc} -print-libgcc-file-name`|g" ${worksrcpath}/Makefile
+    reinplace "s|\\\$(INSTALLDIR)/bin/definitions\\.\\(\[BCK\]\\)|${prefix}/bin/definitions.\\1|" ${worksrcpath}/Makefile
+}
+
+use_configure           no
+
+use_parallel_build      no
+
+build.args              FORTRAN=yes
+
+platform darwin {
+    patchfiles-append patch-Makefile
+    build.args-append OS=macosx
+}
+
+if {[info exists build_arch]} {
+    build.args-append ENV=${configure.build_arch}
+}
+
+pre-build {
+    build.args-append CC=${configure.cc} FC=${configure.fc}
+}
+
+destroot.destdir        INSTALLDIR=${destroot}${prefix}
+
+post-destroot {
+    reinplace "s|${destroot}${prefix}|${prefix}|" \
+        ${destroot}${prefix}/bin/definitions.B \
+        ${destroot}${prefix}/bin/definitions.C \
+        ${destroot}${prefix}/bin/definitions.K
+    
+    system "install_name_tool -id ${prefix}/lib/libcdf.dylib ${destroot}${prefix}/lib/libcdf.dylib"
+    
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    xinstall -W ${worksrcpath} CDF_copyright.txt CHANGES.txt \
+        README_cdf_tools.txt Release.notes Welcome.txt ${docdir}
+    move ${destroot}${prefix}/CDFLeapSeconds.txt ${docdir}
+}
+
+variant gcc44 conflicts gcc45 gcc46 gcc47 description {Use gcc44} {
+    depends_lib-append  port:gcc44
+    configure.compiler  macports-gcc-4.4
+}
+
+variant gcc45 conflicts gcc44 gcc46 gcc47 description {Use gcc45} {
+    depends_lib-append  port:gcc45
+    configure.compiler  macports-gcc-4.5
+}
+
+variant gcc46 conflicts gcc44 gcc45 gcc47 description {Use gcc46} {
+    depends_lib-append  port:gcc46
+    configure.compiler  macports-gcc-4.6
+}
+
+variant gcc47 conflicts gcc44 gcc45 gcc46 description {Use gcc47} {
+    depends_lib-append  port:gcc47
+    configure.compiler  macports-gcc-4.7
+}
+
+if {![variant_isset gcc44] && ![variant_isset gcc45] && ![variant_isset gcc46] && ![variant_isset gcc47]} {
+    default_variants +gcc45
+}
+
+livecheck.type          regex
+livecheck.regex         {V([0-9.]+)[\.\s<]}

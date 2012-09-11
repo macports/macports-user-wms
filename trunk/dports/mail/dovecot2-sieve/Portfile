@@ -1,0 +1,67 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                dovecot2-sieve
+version             0.3.1
+
+# Please revbump port:dovecot2-sieve and port:dovecot2-antispam
+# on port:dovecot2 version changes.
+revision            0
+
+# Please keep port:dovecot2 major.minor version in sync.
+# On port:dovecot2 major.minor version change please find the new version
+# of port:dovecot2-sieve.
+set dovecot2        2.1
+
+# set hg.tag to tag or rev.
+hg.tag              ${version}
+hg.tag              1641
+
+categories          mail
+maintainers         pixilla openmaintainer
+platforms           darwin
+license             LGPL
+
+description         Pigeonhole sieve and managesieve plugins for dovecot
+long_description    ${description}
+
+homepage            http://pigeonhole.dovecot.org/
+master_sites        http://hg.rename-it.nl/dovecot-${dovecot2}-pigeonhole/archive/
+
+distname            ${hg.tag}
+use_bzip2           yes
+
+if {${hg.tag} != ${version}} {
+    version             ${version}-${hg.tag}
+
+    depends_build       port:libtool
+    pre-configure {
+        system "cd ${worksrcpath} && ./autogen.sh"
+    }
+
+    livecheck.url       [lindex ${master_sites} 0]
+    livecheck.type      regex
+    livecheck.url       http://hg.rename-it.nl/dovecot-${dovecot2}-pigeonhole/log
+    livecheck.version   ${hg.tag}
+    livecheck.regex     "\\] rev (\[0-9\]+)</i>"
+} else {
+
+    livecheck.url       [lindex ${master_sites} 0]
+    livecheck.type      regex
+    livecheck.url       http://hg.rename-it.nl/dovecot-${dovecot2}-pigeonhole/tags
+    livecheck.version   ${hg.tag}
+    livecheck.regex     "<b>(\[0-9\.\]+)</b>"
+}
+
+worksrcdir          dovecot-[join [split ${dovecot2} .] -]-pigeonhole-${hg.tag}
+
+checksums           rmd160  bb92afed07d0f7cffd85ef475af546d14d4ba92c \
+                    sha256  3df11d1559360955abf299431ca53fedbabecbe923b88da44a204cf578613fe6
+
+depends_lib         port:dovecot2
+
+configure.ldflags-append \
+                    -L${prefix}/lib/dovecot
+configure.args      --with-managesieve=yes

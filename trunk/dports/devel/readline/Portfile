@@ -1,0 +1,93 @@
+# $Id$
+
+PortSystem      1.0
+PortGroup       muniversal 1.0
+
+name            readline
+set milestone   6.2
+set patchlevel  000
+version         ${milestone}.${patchlevel}
+distname        ${name}-${milestone}
+categories      devel
+platforms       darwin freebsd
+maintainers     mcalhoun openmaintainer
+license         GPL-3+
+
+description     Library that provides command line editing
+
+long_description \
+    The GNU Readline library provides a set of functions for use by         \
+    applications that allow users to edit command lines as they are typed   \
+    in. Both Emacs and vi editing modes are available. The Readline library \
+    includes additional functions to maintain a list of previously-entered  \
+    command lines, to recall and perhaps reedit those lines, and perform    \
+    csh-like history expansion on previous commands.
+
+homepage        http://cnswww.cns.cwru.edu/~chet/readline/rltop.html
+master_sites    gnu
+
+patch_sites     gnu:${name}/${distname}-patches/
+
+set i 1
+set patchname ${name}[join [split $milestone .] ""]
+if {![regexp {0*([1-9]+)} $patchlevel -> lastpatch]} {
+    set lastpatch 0
+}
+
+patchfiles-append  patch-shobj-conf.diff
+while {$i <= $lastpatch} {
+    patchfiles-append ${patchname}-[format "%03d" $i]
+    incr i
+}
+
+post-patch {
+    reinplace "s|__MACPORTS_PATCHLEVEL__|${patchlevel}|" ${worksrcpath}/support/shobj-conf
+}
+
+checksums       ${distfiles} \
+                md5     67948acb2ca081f23359d0256e9a271c \
+                sha1    a9761cd9c3da485eb354175fcc2fe35856bc43ac \
+                rmd160  5e7fb934e7c83cd0cd37463f7865bc257c3ea743
+
+configure.args  --with-curses
+
+configure.universal_args-delete --disable-dependency-tracking
+
+use_parallel_build  yes
+
+depends_lib     port:ncurses
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${docdir}/html
+    xinstall -m 0644 -W ${worksrcpath} CHANGELOG CHANGES COPYING NEWS README \
+        ${destroot}${docdir}
+    eval xinstall -m 0644 [glob ${worksrcpath}/doc/*.html] \
+        ${destroot}${docdir}/html
+}
+
+# Install symlinks to avoid breaking ports linked against the old versions
+platform darwin {
+    post-destroot {
+        foreach f {history readline} {
+            foreach v {5.0 5.1 5.2 6.1} {
+                ln -sf lib${f}.${milestone}.dylib ${destroot}${prefix}/lib/lib${f}.${v}.dylib
+            }
+        }
+    }
+}
+
+if {[variant_isset universal]} {
+
+    pre-configure {
+        # Eliminate warning.
+        configure.args-delete  --disable-dependency-tracking
+    }
+
+    configure.args-append   bash_cv_must_reinstall_sighandlers=no \
+                            bash_cv_func_sigsetjmp=present \
+                            bash_cv_func_strcoll_broken=no \
+                            bash_cv_func_ctype_nonascii=yes
+}
+
+livecheck.version   ${milestone}

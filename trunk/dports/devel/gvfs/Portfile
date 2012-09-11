@@ -1,0 +1,88 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+
+name            gvfs
+version         1.6.7
+set branch      [join [lrange [split ${version} .] 0 1] .]
+maintainers     nomaintainer
+categories      devel
+# trashlib code used in the daemon is GPL 
+license         {LGPL GPL-3}
+platforms       darwin
+description     The Gnome Virtual File System.
+
+long_description \
+    gvfs is a userspace virtual filesystem designed \
+    to work with the i/o abstractions of gio (a new \
+    library available with glib). It installs several \
+    modules that are automatically used by applications \
+    using the APIs of libgio. The gvfs model differs \
+    from e.g. gnome-vfs in that filesystems must be \
+    mounted before they are used. There is a central \
+    daemon (gvfsd) that handles coordinting mounts, and \
+    then each mount is (typically) in its own daemon \
+    process (although mounts can share daemon process). \
+    gvfs comes with a set of backends, including trash \
+    support, sftp, smb, http, dav and others. There is \
+    a set of command line programs starting with gvfs- \
+    that lets you run commands (like cat, ls, stat, etc) \
+    on files in the gvfs.
+
+homepage        http://www.gnome.org/
+master_sites    gnome:sources/${name}/${branch}/
+use_bzip2       yes
+
+checksums       md5     ac249ae10e38cf3d5f779624b81ad3b0 \
+                sha1    285a810772dce8b37289cbe0aaab8354f2b6717a \
+                rmd160  e833fdbc9dc503cdde8e0ab5a7a8fa5403ec1aa1
+
+depends_build   port:pkgconfig \
+                port:intltool
+
+depends_lib \
+    port:gconf \
+    port:gettext \
+    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+    port:libgnome-keyring \
+    port:libarchive \
+    port:libsoup \
+    port:libxml2
+
+patchfiles      patch-gconf-gapplookupgconf.h.diff
+
+configure.args  --disable-avahi \
+                --disable-fuse \
+                --disable-hal \
+                --disable-cdda \
+                --disable-obexftp \
+                --disable-gphoto2 \
+                --disable-samba
+
+test.run        yes
+test.target     check
+
+destroot.keepdirs ${destroot}${prefix}/share/gvfs/remote-volume-monitors
+
+post-destroot {
+    xinstall -d ${destroot}${prefix}/share/gvfs/remote-volume-monitors
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 -W ${worksrcpath} AUTHORS COPYING MAINTAINERS NEWS README \
+        ${destroot}${docdir}
+}
+
+variant no_gnome description "Disable GNOME support" {
+    depends_lib-delete \
+        port:gconf \
+        port:libgnome-keyring
+
+    configure.args-append \
+        --disable-keyring \
+        --disable-gconf
+}
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

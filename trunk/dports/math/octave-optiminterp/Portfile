@@ -1,0 +1,17 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        optiminterp 0.3.2
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         An optimal interpolation toolbox for octave. This package \
+                    provides functions to perform a n-dimensional optimal \
+                    interpolations of arbitrarily distributed data points.
+long_description    ${description}
+
+checksums           md5     d68ae8c3fdea03df953eb30790524220 \
+                    sha1    2f59d8cf5acda824fb09823ef27a6a109db0b4ec \
+                    rmd160  ccf8119ab8c05bb072bf45f1ddf1fd1ddc281794

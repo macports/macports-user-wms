@@ -1,0 +1,37 @@
+# $Id$
+
+PortSystem 1.0
+
+PortGroup	haskell 1.0
+haskell.setup	hslogger 1.0.10
+maintainers	nomaintainer
+platforms	darwin
+
+description	Versatile logging framework for haskell
+long_description	\
+	hslogger is a logging framework for Haskell, roughly similar	\
+	to Python's logging module.					\
+									\
+	hslogger lets each log message have a priority and source be	\
+	associated with it. The programmer can then define global	\
+	handlers that route or filter messages based on the priority	\
+	and source. hslogger also has a syslog handler built in. 
+
+checksums	md5     f65a5326d28f9cdad6887a32525d70dc \
+		sha1    53310e45737fc177456e0b413383632cfe3b24b2 \
+		rmd160  c5be1e190b55b8850c97a38e948b6ff68f4140d3
+
+depends_lib	port:ghc			\
+		port:hs-platform-network	\
+		port:hs-platform-mtl		\
+		port:hs-platform-time
+
+universal_variant	no
+
+configure.args-append	-v --enable-library-profiling		\
+			--with-gcc=${configure.cc}
+
+build.args-append	-v
+
+livecheck.type	none
+

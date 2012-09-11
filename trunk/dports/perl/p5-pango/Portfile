@@ -1,0 +1,25 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Pango 1.223
+revision        1
+license             LGPL-2.1+
+maintainers         ryandesign openmaintainer
+description         Perl bindings to Pango
+long_description    ${description}
+
+platforms           darwin
+
+if {${perl5.major} != ""} {
+depends_lib-append  port:p${perl5.major}-glib path:lib/pkgconfig/pango.pc:pango port:p${perl5.major}-cairo
+livecheck.type      none
+}
+homepage            http://gtk2-perl.sourceforge.net/
+master_sites        sourceforge:project/gtk2-perl/Pango/${perl5.moduleversion}
+
+checksums           rmd160  d8aec4fbbf1d1319bb7189edfde7214def048001 \
+                    sha256  cd827df3814296c60afbd34da993d289a625c17289aaea46db0efadd73befc00

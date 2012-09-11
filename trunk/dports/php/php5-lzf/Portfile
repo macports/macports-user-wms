@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           php5extension 1.0
+
+php5extension.setup lzf 1.6.2 pecl
+categories          php devel
+platforms           darwin
+maintainers         freebsd.org:miwi
+license             PHP
+
+description         Handles LZF compression / decompression.
+
+long_description    ${description}
+
+checksums           rmd160  5a0140ef9fe82f576d4b4c5d085ef3141fac0a15 \
+                    sha256  b381ac66cd12cc753e768c602f87d542fcd9718039cec4947d37f1229a7b93e3
+
+distname            LZF-${version}
+
+configure.args-append --enable-lzf
+
+use_parallel_build  yes

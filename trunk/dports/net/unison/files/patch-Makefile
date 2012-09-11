@@ -1,0 +1,22 @@
+--- Makefile.orig	2011-04-16 22:35:38.000000000 +0200
++++ Makefile	2011-04-26 17:53:52.000000000 +0200
+@@ -80,7 +80,7 @@
+ ######################################################################
+ # Installation
+ 
+-INSTALLDIR = $(HOME)/bin/
++INSTALLDIR = $(DESTDIR)$(PREFIX)/bin/
+ 
+ # This has two names because on OSX the file INSTALL shadows the target 'install'!
+ install: doinstall
+@@ -92,9 +92,8 @@
+ 	$(MAKE) -C .. text
+ 
+ doinstall: $(NAME)$(EXEC_EXT)
+-	-mv $(INSTALLDIR)/$(NAME)$(EXEC_EXT) /tmp/$(NAME)-$(shell echo $$$$)
+-	cp $(NAME)$(EXEC_EXT) $(INSTALLDIR)
+ 	cp $(NAME)$(EXEC_EXT) $(INSTALLDIR)$(NAME)-$(MAJORVERSION)$(EXEC_EXT)
++	cd $(INSTALLDIR) && ln -s $(NAME)-$(MAJORVERSION)$(EXEC_EXT) $(NAME)
+ 
+ 
+ ######################################################################

@@ -1,0 +1,42 @@
+# $Id$
+
+PortSystem  1.0
+PortGroup   github 1.0
+PortGroup   xcode 1.0
+
+github.setup gnachman iTerm2 1.0.0.20120203 v
+categories  aqua shells
+maintainers singingwolfboy openmaintainer
+license         GPL-2+
+description Enhanced terminal emulator program, successor to iTerm
+long_description    \
+    iTerm2 is a replacement for Terminal and the successor to iTerm. It \
+    works on Macs with Leopard or Snow Leopard. Its focus is on \
+    performance, internationalization, and supporting innovative features \
+    that make your life better.
+
+homepage        http://www.iterm2.com/
+
+checksums       rmd160  7c383ec2f32c6ba815f3e981f9b374a090a8c551 \
+                sha256  11d00ec8370f5d177a0a39b3e4e04518e61e9dbfcb33688c8305f08d9214aa7f
+
+xcode.project   iTerm.xcodeproj
+xcode.target    iTerm
+
+post-patch {
+    reinplace "s|^version *= *.*$|version = \"${version}\"|" ${worksrcpath}/updateVersion.py
+    # disable Sparkle autoupdate
+    reinplace "s|.*Sparkle.*||g" ${worksrcpath}/${xcode.project}/project.pbxproj
+}
+
+destroot {
+    file copy ${build.dir}/build/Deployment/iTerm.app \
+        ${destroot}${applications_dir}/${name}.app
+}
+
+platform darwin 8 {
+    pre-fetch {
+        ui_error "${name} requires Mac OS X 10.5 or newer"
+        return -code error "unsupported Mac OS X version"
+    }
+}

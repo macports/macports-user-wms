@@ -1,0 +1,47 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup python27 1.0
+PortGroup app 1.0
+
+name                linkchecker
+version             8.0
+set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          www python
+maintainers         mww openmaintainer
+platforms           darwin freebsd
+license             GPL-2+
+
+description         linkchecker for html pages
+long_description    linkchecker for html pages with recursive checking, \
+                    multithreaded, output can be colored or normal text, HTML, \
+                    SQL, CSV or a sitemap graph in XML or GML format, additionally \
+                    reports download time for HTML pages HTTP/1.1 and 1.0, HTTPS, \
+                    FTP, mailto:, news:, nntp:, gopher, telnet and local file \
+                    links are supported, restrict link checking with regular \
+                    expression filters for URLs, proxy support, give \
+                    username/password for HTTP and FTP authorization, robots.txt \
+                    exclusion protocol support, i18n support, CGI web interface.
+
+homepage            http://linkchecker.sourceforge.net/
+master_sites        sourceforge:project/linkchecker/${branch}/
+dist_subdir         ${name}
+distname            LinkChecker-${version}
+use_xz              yes
+
+checksums           rmd160  800cf13c7c5742e90f2f77a0d62c4640819c0106 \
+                    sha256  d89cc9e9657c0f396657c425aebc19b3d08c61ca0749ef0ebc4dfc09aa36bc86
+
+depends_lib-append  port:py27-pyqt4
+
+pre-build {
+    system "cd ${worksrcpath} && make -C doc/html"
+}
+
+app.name            LinkChecker
+app.executable      linkchecker-gui
+app.icon            doc/html/logo128x128.png
+
+python.link_binaries_suffix
+
+livecheck.type      freecode

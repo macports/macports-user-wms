@@ -1,0 +1,41 @@
+# $Id$
+
+PortSystem    1.0
+PortGroup     python27 1.0
+
+name          bzrtools
+epoch         1
+version       2.5
+set branch    [join [lrange [split ${version} .] 0 1] .]
+categories    devel python
+platforms     darwin
+license       GPL-2+
+maintainers   raimue
+
+description   A collection of plugins bzr.
+long_description  A collection of plugins for bzr. Including rspush for \
+    pushing to a remote server with rsync, baz-import for importing arch \
+    or baz branches into bzr, shelve/unshelve for a fine grained 'undo' \
+    facility, clean-tree for removing unknown files from the current \
+    tree, graph-ancestory for producing graphs of branch history, and \
+    many others.
+
+homepage      http://bazaar-vcs.org/BzrTools
+master_sites  http://code.launchpad.net/${name}/stable/${version}/+download/
+worksrcdir    ${name}
+
+checksums     rmd160  15a15d16423d839309c7ec757ff4cd39c6a41487 \
+              sha256  bccff6fba6129013f92a7bf16e73efad159cabd7957f4de765068044f730f03f
+
+depends_lib-append port:bzr
+depends_run-append path:bin/dot:graphviz
+
+variant no_graphviz description {Disable GraphViz, removing Graph Ancestry support} {
+    depends_run-delete path:bin/dot:graphviz
+}
+
+universal_variant no
+
+livecheck.type  regex
+livecheck.url   ${homepage}
+livecheck.regex {bzrtools-(\d+(?:\.\d+)*).tar.gz}

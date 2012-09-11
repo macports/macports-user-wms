@@ -1,0 +1,27 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Date-Calc 6.3
+revision            3
+license             Artistic GPL
+maintainers         l2g
+description         Gregorian calendar date calculations
+long_description    The library provides all sorts of date calculations \
+                    based on the Gregorian calendar (the one used in all \
+                    western countries today), thereby complying with all \
+                    relevant norms and standards: ISO/R 2015-1971, DIN \
+                    1355 and, to some extent, ISO 8601 (where \
+                    applicable).
+
+checksums           md5     9b64555b7051c1beb6b61daead2d01b3 \
+                    sha1    05464e935cf2340fe72e3d81264ed633dc728926 \
+                    rmd160  5591594c553eae276ffcd6c0b781b6621f04b8b2
+
+platforms           darwin
+
+if {${perl5.major} != ""} {
+depends_lib-append  port:p${perl5.major}-bit-vector port:p${perl5.major}-carp-clan
+}

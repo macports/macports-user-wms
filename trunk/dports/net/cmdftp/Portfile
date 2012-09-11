@@ -1,0 +1,25 @@
+# $Id$
+
+PortSystem 1.0
+name             cmdftp
+version          0.9.7
+categories       net
+maintainers      nomaintainer
+description      command line shell-like ftp client
+long_description \
+	cmdftp is a command line FTP client for Unix under GPL. \
+	Features include passive mode for all data transfers, \
+	shell like transparent syntax for local and remote modes, \
+	multiple and recursive file transfers using wildcards, \
+	recursive copy and move commands, remote and local text \
+	file viewing and editing, network errors detection and \
+	resuming of currently executing command, partial download \
+	resuming (if server accepts REST command), tab completion \
+	for both local and remote names, autologin using classic \
+	~/.netrc approach, large file support.
+homepage         http://www.nongnu.org/cmdftp/
+platforms        darwin
+master_sites     http://download.savannah.nongnu.org/releases/cmdftp/
+checksums        sha1 becc64d8e5b723f80933f1c22ddcf18905051dca
+patchfiles       patch-configure
+configure.args   --mandir=${prefix}/share/man

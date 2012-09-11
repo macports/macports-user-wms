@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    tigervnc
+conflicts               vnc tightvnc
+version                 1.1.0
+categories              x11 vnc
+maintainers             nomaintainer
+platforms               darwin
+license                 GPL-2+
+
+description             Advanced VNC implementation.
+
+long_description        TigerVNC is an advanced VNC implementation. \
+                        It is based on the fourth generation of VNC. TigerVNC \
+                        also includes features from the TightVNC and TurboVNC \
+                        projects. This includes accelerated JPEG compression. \
+                        TigerVNC supports the latest X.Org X server.
+
+homepage                http://www.tigervnc.com/
+master_sites            sourceforge:project/${name}/${name}/${version}
+
+checksums               rmd160  692ce76f38c229485ae75acb87f39f8844575e35 \
+                        sha256  594b70825a2c24863afd7b8dd2a5bc1935807118c6726e1d98396dee44d060f4
+
+depends_build           port:gccmakedep
+
+depends_lib             port:gnutls \
+                        port:jpeg \
+                        port:xorg-libXaw \
+                        port:xorg-libX11 \
+                        port:zlib
+
+patchfiles              patch-configure.diff
+
+configure.args          --mandir=${prefix}/share/man \
+                        --with-system-jpeg

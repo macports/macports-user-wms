@@ -1,0 +1,45 @@
+# $Id$
+
+PortSystem          1.0
+
+name                bro
+version             1.5.3
+categories          net security
+platforms	    darwin
+maintainers	    pmq
+
+description         BRO is a Network Intrusion Detection System
+long_description    \
+    Bro is an open-source, Unix-based Network Intrusion Detection System \
+    (NIDS) that passively monitors network traffic and looks for suspicious \
+    activity.
+
+homepage            http://www.bro-ids.org/
+master_sites        ${homepage}downloads/ \
+                    ftp://ftp.bro-ids.org/
+distname	    bro-${version}
+checksums	    sha1 81ae6ab0b34edecae3d0fe76ca8b9030677c5441 \
+		    rmd160 6dce9a38a16539cf31a661b4f666cc9ba345780e
+
+livecheck.type	    regex
+livecheck.url	    ${homepage}/download.html
+livecheck.regex	    "${master_sites}/bro-(\[0-9a-z.\]+)-stable${extract.suffix}"
+
+# use the system-provided flex
+depends_lib         port:libpcap port:bison port:openssl port:perl5 port:readline
+
+configure.args	    --enable-brov6
+
+post-destroot {
+    move ${destroot}${prefix}/etc/broccoli.conf ${destroot}${prefix}/etc/broccoli.conf.dist
+}
+post-activate {
+    if {![file exists ${prefix}/etc/broccoli.conf]} {
+        copy ${prefix}/etc/broccoli.conf.dist ${prefix}/etc/broccoli.conf
+    }
+}
+
+notes \
+"You'll need to set your BROHOME to ${prefix}/share/bro and your\
+BROPATH to ${prefix}/share/bro/site:${prefix}/share/bro/policy\
+to use the provided policies."

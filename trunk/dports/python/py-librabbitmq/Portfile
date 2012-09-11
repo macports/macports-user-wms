@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-librabbitmq
+version             0.9.9
+revision            0
+categories-append   devel
+license             MPL
+platforms           darwin
+
+maintainers         stromnov openmaintainer
+
+description         AMQP Client using the rabbitmq-c library.
+long_description    ${description}
+
+homepage            http://github.com/celery/librabbitmq
+master_sites        http://pypi.python.org/packages/source/l/librabbitmq/
+distname            librabbitmq-${version}
+
+checksums           rmd160  2d15eb9a9339218e4d3d7ff6b26732bd260790c5 \
+                    sha256  b98cd7313a706e64c0f8a18c495385f36591cb9b818a7109a315b983282aaa79
+
+python.versions     26 27
+python.default_version  27
+
+if {$subport != $name} {
+    depends_lib-append  port:py${python.version}-distribute
+}
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "librabbitmq-(\\d+(?:\\.\\d+)*)${extract.suffix}"

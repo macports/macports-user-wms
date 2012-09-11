@@ -1,0 +1,36 @@
+# $Id$
+
+PortSystem 1.0
+
+PortGroup	haskell 1.0
+haskell.setup	hashed-storage 0.5.6
+maintainers	gwright
+platforms	darwin
+
+description	Hashed file storage support code.
+long_description	\
+	Support code for reading and manipulating hashed file storage	\
+	(where each file and directory is associated with a		\
+	cryptographic hash, for corruption-resistant storage and fast	\
+	comparisons).							\
+									\
+	The supported storage formats include darcs hashed pristine,	\
+	a plain filesystem tree and an indexed plain tree (where the	\
+	index maintains hashes of the plain files and directories). 
+
+checksums	md5     624ad03c37c3953e6a3214d1a650e163 \
+		sha1    656db2c658e64e8aa4542277cbdb3e1b42ae270b \
+		rmd160  34f78657ff4ab747e81647548877fb99e9e431aa
+
+depends_lib	port:ghc		\
+		port:hs-binary		\
+		port:hs-dataenc		\
+		port:hs-mmap		\
+		port:hs-zlib
+
+universal_variant	no
+
+configure.args-append	-v --enable-library-profiling	\
+			--with-gcc=${configure.cc}
+
+build.args-append     -v

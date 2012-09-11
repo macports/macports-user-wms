@@ -1,0 +1,25 @@
+# $Id$
+
+PortSystem 1.0
+
+name			html-xml-utils
+version                 6.0
+categories		textproc
+platforms		darwin
+maintainers		nomaintainer
+description		A number of simple utilties for manipulating HTML and XML files.
+long_description	${description}
+
+homepage		http://www.w3.org/Tools/HTML-XML-utils/
+master_sites	${homepage}
+
+checksums               sha1    74f57eb8f1abec30fbc3dbbe37caa20ce6a72e48 \
+                        rmd160  50273cd1cdc9d3459c8a0b0b09e1c2c7660fb6d6
+
+configure.args	--program-prefix=w3
+
+configure.libs-append   -liconv
+
+livecheck.type	regex
+livecheck.url	[lindex ${master_sites} 0]
+livecheck.regex	${name}-(\[0-9.\]+)\\.tar

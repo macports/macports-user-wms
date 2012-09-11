@@ -1,0 +1,39 @@
+# $Id$
+
+PortSystem			1.0
+PortGroup			ruby 1.0
+
+name				rb-test-spec
+version				0.4.0
+
+homepage			http://test-spec.rubyforge.org/
+master_sites		http://rubyforge.org/frs/download.php/22284/
+
+distname			test-spec-0.4.0
+categories-append	devel
+platforms			darwin
+maintainers			internode.on.net:arpstr
+depends_lib			port:ruby
+
+description       Ruby unit testing library.
+long_description  test/spec layers an RSpec-inspired interface on top of Test::Unit, \
+                  so you can mix TDD and BDD (Behavior-Driven Development). Darcs \
+                  repository: http://chneukirchen.org/repos/testspec/
+                  
+checksums			md5 be9a3d747dc212bb21f7d78928d20652 \
+					sha1 415c31e8b9104b9172288b687ab0dfe56e0ec869 \
+					rmd160 5dc4c26001db55a6b55ee9d176a522f93261851f
+
+set testspec_libdir ${destroot}/${ruby.lib}/test
+
+use_configure       no
+build { }
+destroot {
+	file mkdir ${testspec_libdir}/spec
+	xinstall -m 755 ${worksrcpath}/lib/test/spec.rb ${testspec_libdir}
+	xinstall -m 755 ${worksrcpath}/lib/test/spec/dox.rb ${testspec_libdir}/spec
+	xinstall -m 755 ${worksrcpath}/lib/test/spec/rdox.rb ${testspec_libdir}/spec
+	xinstall -m 755 ${worksrcpath}/lib/test/spec/should-output.rb \
+	 	${testspec_libdir}/spec
+	xinstall -m 755 ${worksrcpath}/lib/test/spec/version.rb ${testspec_libdir}/spec
+}

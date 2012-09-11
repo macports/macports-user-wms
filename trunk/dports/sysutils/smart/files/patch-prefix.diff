@@ -1,0 +1,103 @@
+--- ./Makefile.orig	2005-08-27 19:33:06.000000000 -0400
++++ ./Makefile	2007-06-18 10:43:00.000000000 +0200
+@@ -5,7 +5,7 @@
+ DESTDIR=/
+ PYTHON=python
+ 
+-prefix=/usr
++prefix=@@PREFIX@@
+ bindir=$(prefix)/bin
+ 
+ all:
+--- ./smart/const.py.jbj	2005-08-27 19:28:52.000000000 -0400
++++ ./smart/const.py	2005-08-27 19:30:30.000000000 -0400
+@@ -64,9 +64,9 @@
+ 
+ BLOCKSIZE = 16384
+ 
+-DISTROFILE  = "/usr/lib/smart/distro.py"
+-PLUGINSDIR  = "/usr/lib/smart/plugins/"
+-DATADIR     = "/var/lib/smart/"
++DISTROFILE  = "@@PREFIX@@/lib/smart/distro.py"
++PLUGINSDIR  = "@@PREFIX@@/lib/smart/plugins/"
++DATADIR     = "@@PREFIX@@/var/lib/smart/"
+ USERDATADIR = "~/.smart/"
+ CONFFILE    = "config"
+ 
+--- ./smart/plugins/detectsys.py.orig	2006-01-24 20:43:55.000000000 +0100
++++ ./smart/plugins/detectsys.py	2007-06-18 10:43:26.000000000 +0200
+@@ -23,7 +23,7 @@ from smart import *
+ import os
+ 
+ def detectRPMSystem():
+-    dir = os.path.join(sysconf.get("rpm-root", "/"), "var/lib/rpm")
++    dir = os.path.join(sysconf.get("rpm-root", "/"), "@@PREFIX@@/var/lib/rpm")
+     if os.path.isdir(dir):
+         for alias in sysconf.keys("channels"):
+             if sysconf.get(("channels", alias, "type")) == "rpm-sys":
+@@ -35,7 +35,7 @@
+                         })
+ 
+ def detectDEBSystem():
+-    dir = os.path.join(sysconf.get("deb-root", "/"), "var/lib/dpkg")
++    dir = os.path.join(sysconf.get("deb-root", "/"), "@@PREFIX@@/var/lib/dpkg")
+     if os.path.isdir(dir):
+         for alias in sysconf.keys("channels"):
+             if sysconf.get(("channels", alias, "type")) == "deb-sys":
+--- ./smart/backends/rpm/base.py.orig	2006-11-07 21:22:46.000000000 +0100
++++ ./smart/backends/rpm/base.py	2007-06-18 20:53:43.000000000 +0200
+@@ -53,7 +53,7 @@ def getTS(new=False):
+         getTS.ts = rpm.ts(getTS.root)
+         if not sysconf.get("rpm-check-signatures", False):
+             getTS.ts.setVSFlags(rpm._RPMVSF_NOSIGNATURES)
+-        dbdir = os.path.join(getTS.root, "var/lib/rpm")
++        dbdir = os.path.join(getTS.root, "@@PREFIX@@/var/lib/rpm")
+         if not os.path.isdir(dbdir):
+             try:
+                 os.makedirs(dbdir)
+--- ./smart/channels/rpm_sys.py.orig	2006-01-24 20:43:55.000000000 +0100
++++ ./smart/channels/rpm_sys.py	2007-06-18 20:53:33.000000000 +0200
+@@ -33,7 +33,7 @@ class RPMSysChannel(PackageChannel):
+     def fetch(self, fetcher, progress):
+         getTS() # Make sure the db exists.
+         path = os.path.join(sysconf.get("rpm-root", "/"),
+-                            "var/lib/rpm/Packages")
++                            "@@PREFIX@@/var/lib/rpm/Packages")
+         digest = os.path.getmtime(path)
+         if digest == self._digest:
+             return True
+--- ./smart/channels/deb_sys.py.orig	2007-08-07 18:56:15.000000000 +0200
++++ ./smart/channels/deb_sys.py	2008-01-28 11:55:32.000000000 +0100
+@@ -32,7 +32,7 @@ class DebSysChannel(PackageChannel):
+ 
+     def fetch(self, fetcher, progress):
+         path = os.path.join(sysconf.get("deb-root", "/"),
+-                            "var/lib/dpkg/status")
++                            "@@PREFIX@@/var/lib/dpkg/status")
+         digest = os.path.getmtime(path)
+         if digest == self._digest:
+             return True
+--- ./smart/plugins/channelsync.py.orig	2007-08-07 18:56:17.000000000 +0200
++++ ./smart/plugins/channelsync.py	2008-01-28 15:08:12.000000000 +0100
+@@ -23,7 +23,7 @@ from smart.channel import *
+ from smart import *
+ import os
+ 
+-CHANNELSDIR = "/etc/smart/channels/"
++CHANNELSDIR = "@@PREFIX@@/etc/smart/channels/"
+ 
+ def syncChannels(channelsdir, force=None):
+ 
+--- ./smart/plugins/aptchannelsync.py.orig	2007-08-07 18:56:17.000000000 +0200
++++ ./smart/plugins/aptchannelsync.py	2008-01-28 15:08:04.000000000 +0100
+@@ -29,8 +29,8 @@ import sys
+ if sys.version_info < (2, 4):
+     from sets import Set as set
+ 
+-APT_SOURCES_DIR = "/etc/apt/sources.list.d/"
+-APT_SOURCES = "/etc/apt/sources.list"
++APT_SOURCES_DIR = "@@PREFIX@@/etc/apt/sources.list.d/"
++APT_SOURCES = "@@PREFIX@@/etc/apt/sources.list"
+ 
+ def _readSourcesList(file):
+ 

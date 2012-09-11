@@ -1,0 +1,44 @@
+# $Id$
+
+PortSystem		1.0
+name			slrn
+version			0.9.9p1
+categories		news net
+platforms		darwin
+maintainers		foellinger.de:olaf
+homepage		http://slrn.sourceforge.net/
+description		A powerful console-based newsreader
+
+long_description	slrn is an easy to use but powerful NNTP/spool based \
+			newsreader.  It is highly customizable, supports \
+			scoring, free key bindings, and can be extended using \
+			the SLang macro language.
+			
+master_sites 		sourceforge
+checksums		md5     6cc8ac6baaff7cc2a8b78f7fbbe3187f \
+			sha1    f14d88eda39b78bd2f098f211d4a1c363c0fe924 \
+			rmd160  9e614d12c30f72a4ccde90fe557495d86d44b368
+
+depends_lib		port:slang2 \
+			port:libiconv
+
+configure.args		--with-libiconv-prefix=${prefix} \
+			--mandir=${prefix}/share/man \
+			--with-slang-library=${prefix}/lib \
+			--with-slang-includes=${prefix}/include
+
+# adds slrnpull
+variant	pull		{ configure.args-append	--with-slrnpull }
+
+# ssl variant 		(added by ealdrov@math.fsu.edu)
+variant ssl		{ 
+			configure.args-append 	--with-ssl=${prefix} \
+						--with-ssl-includes=${prefix}/include/openssl
+			depends_lib-append	port:openssl
+}
+
+variant uudeview description {Use uudeview library to decode uuencoded articles} {
+	# build dependency because uudeview provides only the static library libuu.a
+	depends_build-append	port:uudeview
+	configure.args-append	--with-uu=${prefix}
+}

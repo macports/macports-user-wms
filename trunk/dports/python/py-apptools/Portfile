@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-apptools
+version             4.0.1
+categories-append   devel
+maintainers         vcn.com:jjstickel openmaintainer
+description         The Enthought apptools package
+long_description    The Enthought Tool Suite includes a set of packages\
+    that we have found useful in creating a number of applications.\
+    They implement functionality that is commonly needed by many applications.\
+    These packages are distributed together as the AppTools project.
+platforms           darwin
+homepage            https://github.com/enthought/apptools
+master_sites        http://www.enthought.com/repo/ets/
+distname            apptools-${version}
+
+checksums           md5     cd988ecf41f790dbd2a266d237c673d2 \
+                    sha1    0ffa78ea4857e5192c494a67c93f5a7014df1c0e \
+                    rmd160  6fc5ca5db74185ffca836879a7d9078dd0ed3f10
+
+python.versions        25 26 27
+python.default_version 27
+
+if {$subport != $name} {
+    depends_build-append  port:py${python.version}-distribute
+    depends_lib-append    port:py${python.version}-configobj\
+                          port:py${python.version}-traitsui
+}

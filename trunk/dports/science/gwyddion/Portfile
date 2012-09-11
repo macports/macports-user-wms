@@ -1,0 +1,76 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                gwyddion
+version             2.29
+categories          science x11
+platforms           darwin
+revision            1
+maintainers         rowue gwyddion.net:yeti
+description         Software for SPM Analysis
+
+long_description \
+    Gwyddion is a modular program for SPM (scanning probe microscopy) data \
+    visualization and analysis. It uses gtk2 for the user interface.
+
+homepage            http://gwyddion.net
+master_sites        sourceforge
+use_bzip2           no
+use_parallel_build  yes
+
+checksums           md5     21c2c99ed0c69a5a7ec9b10b728fe0c1 \
+                    sha1    3a99fa44da028c4f2c4f6db4b2b04ebfe943885a \
+                    rmd160  56d5c67b4c4ee7040a1cd7059f30a5cd0ac33a7d
+
+
+depends_build       port:pkgconfig
+
+depends_lib         port:gtk2 \
+                    port:libxml2 \
+                    port:fftw-3 \
+                    port:gtkglext
+
+configure.args      --disable-desktop-file-update \
+                    --x-include=${prefix}/include \
+                    --x-lib=${prefix}/lib
+
+variant no_x11 description { Build gwyddion with quartz gl support} {
+
+}
+
+variant debug description { Enable debugging } {
+    configure.cflags-append "-O0 -g"
+}
+
+post-destroot {
+    xinstall -m 755 -d ${destroot}${applications_dir}/gwyddion.app/Contents/MacOS
+    if {[variant_isset no_x11]} {
+        xinstall ${filespath}/gwyddion.quartz ${destroot}${applications_dir}/gwyddion.app/Contents/MacOS/gwyddion
+        reinplace "s|@PREFIX@|${prefix}|" ${destroot}${applications_dir}/gwyddion.app/Contents/MacOS/gwyddion
+    } else {
+        xinstall ${filespath}/gwyddion ${destroot}${applications_dir}/gwyddion.app/Contents/MacOS
+        reinplace "s|@APPDIR@|${applications_dir}|" ${destroot}${applications_dir}/gwyddion.app/Contents/MacOS/gwyddion
+        reinplace "s|@PREFIX@|${prefix}|" ${destroot}${applications_dir}/gwyddion.app/Contents/MacOS/gwyddion
+    }
+    xinstall -m 755 -d ${destroot}${applications_dir}/gwyddion.app/Contents/Resources
+    xinstall -m 0644 ${filespath}/gwyddion.icns ${destroot}${applications_dir}/gwyddion.app/Contents/Resources
+    xinstall -m 0644 ${filespath}/Info.plist ${destroot}${applications_dir}/gwyddion.app/Contents/
+    reinplace "s|@VERSION@|${version}|" ${destroot}${applications_dir}/gwyddion.app/Contents/Info.plist
+    system "echo 'APPL????' > ${destroot}${applications_dir}/gwyddion.app/Contents/PkgInfo"
+}
+
+post-activate {
+        system "${prefix}/bin/update-mime-database ${prefix}/share/mime ; true"
+}
+
+platform darwin 8 {
+	post-activate {
+		if {[file exists ${prefix}/lib/pkgconfig/gl.pc]} {
+            if {![variant_isset no_x11]} {
+			    ui_msg "openGL support currently requires you to use MacPorts' X11 server (xorg-server) rather than Apple's."
+            }
+		}
+	}
+}

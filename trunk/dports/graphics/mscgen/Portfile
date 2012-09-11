@@ -1,0 +1,34 @@
+# $Id$
+
+PortSystem              1.0
+
+name                    mscgen
+version                 0.18
+categories              graphics
+maintainers             landonf
+homepage                http://www.mcternan.me.uk/mscgen/
+platforms               darwin
+
+description             Message Sequence Chart image generator
+
+long_description        Mscgen is a small program that parses Message Sequence \
+                        Chart descriptions and produces PNG, SVG, EPS or \
+                        server side image maps (ismaps) as the output. Message \
+                        Sequence Charts (MSCs) are a way of representing \
+                        entities and interactions over some time period \
+                        and are often used in combination with SDL. 
+
+master_sites            ${homepage}/software/
+distname                ${name}-src-${version}
+
+checksums               md5     0922258a7fb86612bb623c1101260fd0 \
+                        sha1    7f80a6827d9b04807f8a296606b65e567496f3ef \
+                        rmd160  93a9797c6fef4e51c455c42cb4824e463ce2e0fe
+
+depends_lib             port:gd2
+
+worksrcdir              ${name}-${version}
+
+configure.env		GDLIB_CFLAGS='${configure.cflags}' GDLIB_LIBS='-lgd'
+use_configure           yes
+configure.args          --prefix=${prefix}

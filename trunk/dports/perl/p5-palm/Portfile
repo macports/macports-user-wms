@@ -1,0 +1,34 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Palm 1.009
+revision            3
+
+# Gotta be a better way to do this...
+# The module lives in CPAN's "Palm" hierarchy but the filename is "p5-Palm",
+# yet it seems that using "p5-Palm 1.009 Palm" above still isn't enough.
+
+distname            p5-${perl5.module}-${perl5.moduleversion}
+livecheck.url       http://search.cpan.org/dist/p5-${perl5.module}/
+livecheck.regex     (?:This Release)?<td class=label>(?:This|Latest) Release</td>.*<td class=cell>(?:<\[^<\]+>)?p5-${perl5.module}-(\[^<\]+?)<
+
+maintainers         nomaintainer
+description         Palm OS utility functions
+long_description    Perl modules for creating and manipulating Palm OS \
+                    databases, including raw PDB and PRC files as well as \
+                    application-specific databases (Address, DateBook, Mail, \
+                    Memo, ToDo, and ZirePhoto).
+platforms           darwin
+checksums           md5     919c8f52aa98eec1abccb5d944dab4ab \
+                    sha1    bb5307ff9340add0a78bf4e690adfdeef4707a92 \
+                    rmd160  5e35f36836d775321c72523c3aba23231cdb3134
+
+supported_archs noarch
+if {${perl5.major} != ""} {
+variant all_tests description {include Test::Manifest and Test::Pod in tests} {
+    depends_build-append    port:p${perl5.major}-test-manifest port:p${perl5.major}-test-pod
+}
+}

@@ -1,0 +1,63 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               xcode 1.0
+
+name                    vineserver
+version                 3.1
+revision                1
+categories              aqua vnc
+homepage                http://www.testplant.com/products/vine_server
+maintainers             ryandesign
+supported_archs         i386 ppc
+
+fetch.type              cvs
+cvs.root                :pserver:anonymous@osxvnc.cvs.sourceforge.net:/cvsroot/osxvnc
+cvs.module              OSXvnc
+cvs.tag                 V[strsed ${version} {g/\./_/}]
+worksrcdir              OSXvnc
+
+description \
+    a full-featured VNC server (formerly OSXvnc)
+
+long_description \
+    Vine Server (formerly OSXvnc) is a full-featured VNC server \
+    for Mac OS X providing remote access to the GUI, keyboard and \
+    mouse using any VNC client.
+
+depends_build \
+    port:libiconv
+
+depends_lib \
+    port:zlib
+
+patchfiles \
+    patch-project.pbxproj.diff \
+    patch-rfb.h.diff
+
+post-patch {
+    # Make all strings UTF-16 so CopyStringsFile doesn't fail on Leopard. See #15919.
+    set language_encodings {
+        English utf-8
+        German macroman
+        Italian macroman
+        Japanese utf-8
+    }
+    foreach {language encoding} ${language_encodings} {
+        system -W ${worksrcpath}/${language}.lproj "cp -p Localizable.strings Localizable.strings.orig && ${prefix}/bin/iconv -f ${encoding} -t utf-16 Localizable.strings.orig > Localizable.strings"
+    }
+}
+
+post-destroot {
+    # Fix permissions for users not installing with root
+    fs-traverse dir ${workpath} {
+        if {[file isdirectory ${dir}]} {
+            file attributes ${dir} -permissions 0755
+        }
+    }
+}
+
+livecheck.type          regex
+livecheck.url           http://www.testplant.com/support/downloads/vine/
+livecheck.regex         {>Vine Server ([0-9.]+)<}

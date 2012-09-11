@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+# '-ml' stands for Machine Learning, which is appended in order to avoid conflict with devel/opal.
+# see http://lists.macosforge.org/pipermail/macports-dev/2012-January/017429.html and #32884.
+name                opal-ml
+version             2012-08-31
+epoch               1
+categories          math
+platforms           darwin
+maintainers         hum openmaintainer
+license             {GPL-2 LGPL-2.1}
+
+homepage            http://www.tkl.iis.u-tokyo.ac.jp/~ynaga/opal/
+description         C++ header library of online learning with kernel slicing
+long_description    Opal is a ${description}.
+
+master_sites        ${homepage}
+checksums           rmd160  80350a49252f0f350493b2810ef67d7989c043ec \
+                    sha256  d19929d2fd53e3bc15dd1a97625551de3260a44a5f24f34788813c71304dd88b
+
+distname            opal-${version}
+
+post-destroot {
+    file mkdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS COPYING GPL LGPL README \
+        ${destroot}${prefix}/share/doc/${name}
+    copy ${worksrcpath}/test ${destroot}${prefix}/share/${name}
+}
+
+variant multiclass description {Add a multi-class classifier} {
+    configure.args-append  --enable-multi
+}
+    
+default_variants    +multiclass
+
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     {opal-(\d+-\d+-\d+)\.tar}

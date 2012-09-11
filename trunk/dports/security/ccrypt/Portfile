@@ -1,0 +1,50 @@
+# $Id$
+
+PortSystem              1.0
+
+name                    ccrypt
+version                 1.9
+categories              security
+platforms               darwin
+maintainers             nomaintainer
+homepage                http://ccrypt.sourceforge.net
+
+description             Encrypt and decrypt files and streams
+
+long_description        Utility for encrypting and decrypting files and streams. \
+                        It was designed to replace the standard unix crypt \
+                        utility, which is notorious for using a very weak \
+                        encryption algorithm. ccrypt is based on the Rijndael \
+                        cipher, which is the U.S. government's chosen candidate \
+                        for the Advanced Encryption Standard (AES, see \
+                        http://www.nist.gov/aes/). This cipher is believed to \
+                        provide very strong security. Unlike unix crypt, the \
+                        algorithm provided by ccrypt is not symmetric, i.e., \
+                        one must specify whether to encrypt or decrypt. The most \
+                        common way to invoke ccrypt is via the commands \
+                        ccencrypt and ccdecrypt. There is also a ccat command \
+                        for decrypting a file directly to the terminal, thus \
+                        reducing the likelihood of leaving temporary plaintext \
+                        files around. In addition, there is a compatibility mode \
+                        for decrypting legacy unix crypt files.
+
+master_sites            sourceforge:project/ccrypt/ccrypt/${version}
+
+checksums               md5     c3f78019d7a166dd66f1d4b1390c62c2 \
+                        sha1    5ad1889c71be905c3004c80dc011948c9c35c814 \
+                        rmd160  2e7ec037dcfab82ad6963b8644a52017ac6c003e
+
+depends_lib             port:gettext
+
+# test fails, ticket #32377
+compiler.blacklist      clang
+
+use_parallel_build      yes
+
+build.target            check
+
+configure.args          --mandir=${prefix}/share/man \
+                        --infodir=${prefix}/share/info
+
+livecheck.type          regex
+livecheck.regex         ${name}-(\[0-9.\]+)\\.tar

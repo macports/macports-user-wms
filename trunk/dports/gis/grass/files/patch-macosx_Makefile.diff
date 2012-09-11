@@ -1,0 +1,11 @@
+--- macosx/Makefile.orig	2010-02-19 06:16:31.000000000 +0900
++++ macosx/Makefile	2010-05-19 17:53:30.000000000 +0900
+@@ -35,6 +35,8 @@
+ 
+ include $(MODULE_TOPDIR)/include/Make/Dir.make
+ 
++INST_DIR:=${DESTDIR}${INST_DIR}
++
+ default: subdirs
+ 
+ include bundle.make

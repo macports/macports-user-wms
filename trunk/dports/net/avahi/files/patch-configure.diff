@@ -1,0 +1,14 @@
+--- a/configure	2012-02-15 10:30:25.000000000 -0800
++++ b/configure	2012-02-15 10:33:40.000000000 -0800
+@@ -21925,9 +21925,9 @@
+ 
+ 
+ 
+-  PYTHON_PREFIX='${prefix}'
++  PYTHON_PREFIX=`$PYTHON -c 'import sys; print sys.prefix;'`
+ 
+-  PYTHON_EXEC_PREFIX='${exec_prefix}'
++  PYTHON_EXEC_PREFIX=`$PYTHON -c 'import sys; print sys.exec_prefix;'`
+ 
+ 
+ 

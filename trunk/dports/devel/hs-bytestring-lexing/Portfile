@@ -1,0 +1,27 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           haskell 1.0
+haskell.setup       bytestring-lexing 0.2.1
+maintainers         nomaintainer
+description         Parse literals efficiently from ByteStrings
+long_description \
+   Parse literals efficiently from GHC's ByteString type.  At the moment, \
+   only Doubles are supported.  Reading Ints and Integers is supported by \
+   GHC's included ByteString module.
+
+platforms           darwin
+
+checksums	md5     42822f6151677228582a97076d6ddda0 \
+		sha1    c1cff3d590be4bafe9198197d300e5acfa69c20e \
+		rmd160  42ee7ee19334e4ad52798155c04b964ce3826efa
+
+depends_build-append   port:hs-platform-alex
+
+universal_variant	no
+
+configure.args-append   -v --enable-library-profiling	\
+			--with-gcc=${configure.cc}
+
+build.args-append   -v
+

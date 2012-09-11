@@ -1,0 +1,65 @@
+# $Id$
+
+PortSystem 1.0
+
+name		xorg-libXmu
+version		1.1.1
+categories	x11 devel
+license		X11
+maintainers	jeremyhu openmaintainer
+description	X.org libXmu
+homepage	http://www.x.org
+platforms	darwin macosx
+long_description X.org Xmu library
+master_sites	xorg:individual/lib/
+
+distname	libXmu-${version}
+checksums           sha1    3e280aa927d78c05f94db6c7ae606f7ad132b495 \
+                    rmd160  9b04624ee16ebd10c07b9554771e18d16d77374f \
+                    sha256  709081c550cc3a866d7c760a3f97384a1fe16e27fc38fe8169b8db9f33aa7edd
+use_bzip2	yes
+use_parallel_build      yes
+
+depends_build \
+	port:pkgconfig
+
+depends_lib \
+	port:xorg-libXext \
+	port:xorg-libXt
+
+configure.args \
+	--without-xmlto \
+	--without-fop \
+	--disable-docs
+
+build.args V=1
+
+# Depending on ghostscript for the PDF documentation creates a dependency
+# loop, so you may want to install first without the docs variant
+variant docs description "Install extra documentation" {
+	depends_build-append \
+		port:fop \
+		port:xmlto \
+		port:xorg-sgml-doctools
+
+	depends_skip_archcheck-append \
+		xmlto
+
+	configure.args-delete \
+		--without-xmlto \
+		--without-fop \
+		--disable-docs
+
+	configure.args-append \
+		--with-xmlto \
+		--with-fop \
+		--enable-docs
+
+	configure.env-append \
+		XMLTO="${prefix}/bin/xmlto" \
+		FOP="${prefix}/bin/fop"
+}
+
+livecheck.type  regex
+livecheck.url   http://xorg.freedesktop.org/archive/individual/lib/?C=M&O=D
+livecheck.regex libXmu-(\\d+(?:\\.\\d+)*)

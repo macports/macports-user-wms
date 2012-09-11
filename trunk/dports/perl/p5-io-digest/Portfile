@@ -1,0 +1,24 @@
+# $Id$
+
+PortSystem		1.0
+PortGroup		perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		IO-Digest 0.10
+revision        3
+maintainers		geeklair.net:dluke openmaintainer
+description		This is a Perl extension for calculating digests while reading or writing (used by svk).
+license			{GPL Artistic}
+long_description	${description}
+
+checksums	md5	0448841e0559c2c19c7e8001ef087e26 \
+		sha1	8e70b0b3b403283548d66906af4e04eb2da38e43 \
+		rmd160	a5d01321ceba2900d3da96cea448d1f996d3bfbf
+
+platforms		darwin
+
+if {${perl5.major} != ""} {
+depends_lib-append	port:p${perl5.major}-perlio-via-dynamic
+
+supported_archs noarch
+}

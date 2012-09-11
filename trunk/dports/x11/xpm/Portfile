@@ -1,0 +1,32 @@
+# $Id$
+
+PortSystem 1.0
+
+name		xpm
+version		3.5.10
+categories	x11 devel graphics
+license		X11
+maintainers	 jeremyhu openmaintainer
+description	The X Pixmap Library
+homepage	http://www.x.org
+platforms	darwin macosx
+long_description XPM, X PixMap, is a format for storing/retrieving X pixmaps to/from files.  It is used by a large number of common X applications and has become something of a de-facto standard.
+master_sites	 http://xorg.freedesktop.org/archive/individual/lib/
+
+distname	libXpm-${version}
+checksums           sha1    eca9dbfa6253f7d6cc7d593dc83110c6c4876d7c \
+                    rmd160  bc6c0911fb2117ab2a168fafa584a6cb34cdc1ef \
+                    sha256  a6db7e234750e7d60330017972e31d8e1f29f0a8c1391e4ac82f6102d919a735
+use_bzip2	yes
+use_parallel_build      yes
+
+depends_build	port:pkgconfig \
+                port:xorg-xproto
+
+depends_lib	port:xorg-libXt \
+		port:xorg-libXext \
+		port:gettext
+
+livecheck.type  regex
+livecheck.url   [lindex ${master_sites} 0]?C=M&O=D
+livecheck.regex libXpm-(\\d+(?:\\.\\d+)*)

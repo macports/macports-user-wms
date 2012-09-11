@@ -1,0 +1,45 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name		gnome-mud
+version		0.11.2
+revision        2
+set branch      [join [lrange [split ${version} .] 0 1] .]
+description	GNOME-Mud is a mudclient for the GNOME platform.
+long_description        ${description}
+maintainers	nomaintainer
+categories	gnome games
+platforms	darwin
+homepage	http://amcl.sourceforge.net/
+master_sites    gnome:sources/${name}/${branch}/
+
+checksums       md5     aa41b2afb55158e7a9d2e14831223949 \
+                sha1    27e2537842f976efe075f5dc57dbfb9bfe5f6f2f \
+                rmd160  2218fd5f325823506edf75034dcfe674ca2606df
+
+depends_build   port:pkgconfig \
+                port:intltool \
+                port:gnome-doc-utils
+
+depends_lib	port:gconf  \
+                port:libglade2 \
+                port:gnet2 \
+                port:vte \
+                port:pcre \
+                port:gstreamer
+                
+patchfiles      patch-src-mud-telnet.h.diff
+
+configure.args	--mandir=${prefix}/share/man \
+                --disable-schemas-install
+
+post-activate {
+   system "export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` && \
+        gconftool-2 --makefile-install-rule ${prefix}/etc/gconf/schemas/*.schemas"
+}
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

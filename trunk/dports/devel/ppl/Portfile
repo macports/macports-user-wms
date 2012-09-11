@@ -1,0 +1,63 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           muniversal 1.0
+
+name                ppl
+version             1.0
+categories          devel math
+platforms           darwin
+maintainers         adfernandes openmaintainer
+license             GPL-3+
+
+description         A modern C++ library providing numerical abstractions
+
+long_description    The Parma Polyhedra Library (PPL) is a modern C++ library \
+                    providing numerical abstractions especially targeted at \
+                    applications in the field of analysis and verification of \
+                    complex systems. The PPL can handle all the convex \
+                    polyhedra that can be defined as the intersection of a \
+                    finite number of (open or closed) hyperspaces, each \
+                    described by an equality or inequality (strict or \
+                    non-strict) with rational coefficients. The PPL also \
+                    handles restricted classes of polyhedra that offer \
+                    interesting complexity/precision tradeoffs. The library \
+                    also supports finite powersets of (any kind of) polyhedra \
+                    and linear programming problems solved with an \
+                    exact-arithmetic version of the simplex algorithm.
+
+homepage            http://bugseng.com/products/ppl/
+master_sites        http://www.cs.unipr.it/ppl/Download/ftp/releases/${version}/ \
+                    ftp://ftp.cs.unipr.it/pub/ppl/releases/${version}/
+use_bzip2           yes
+
+checksums           rmd160  eb239b1ef6eed3963c604cab4c8a9d5d48813c00 \
+                    sha256  c169e962b8a0f7b7bcde5c5e0e2235248f1d78b155dfad684591d1a57e330b54
+
+depends_build       port:m4
+depends_lib         port:gmp port:glpk
+
+if { ${configure.compiler} == "gcc-4.0" } {
+    configure.compiler gcc-4.2
+    if {![file executable ${configure.cc}]} {
+        depends_build-append port:apple-gcc42
+        depends_skip_archcheck-append apple-gcc42
+        configure.compiler apple-gcc-4.2
+    }
+}
+
+if { [string match "*clang*" ${configure.compiler}] || [string match "*llvm*" ${configure.compiler}] } {
+    # As of 'ppl-0.12.1', we need to be careful about use of the '--enable-fpmath' flag!
+    # Newer versions of 'clang' will error about '-frounding-math' being unsupported due to '-Werror'.
+    # Older versions of 'clang' will just warn about '-frounding-math' despite '-Werror'.
+    # And 'llvm-gcc' does not '-frounding-math' and siliently ignores it.
+    configure.args-append   --enable-fpmath=no
+}
+
+test.run            yes
+test.target         check
+
+livecheck.type      regex
+livecheck.url       ${homepage}Download/
+livecheck.regex     ${name}-(\[0-9.\]+)\\.tar

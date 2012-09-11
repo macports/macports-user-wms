@@ -1,0 +1,29 @@
+# $Id$
+
+PortSystem 1.0
+name				ffcall
+version				1.10
+revision			1
+categories			devel
+maintainers			nomaintainer
+description			Foreign function call libraries
+long_description	ffcall is a collection of four libraries which can \
+					be used to build foreign function call interfaces \
+					in embedded interpreters.
+homepage			http://www.haible.de/bruno/packages-ffcall.html
+platforms			darwin
+master_sites		ftp://ftp.santafe.edu/pub/gnu/ \
+					http://www.haible.de/bruno/gnu/
+checksums			md5 2db95007e901f3bc2ae7e5a9fe9ebea4
+test.run			yes
+test.target			check
+# configure accepts --infodir, although there is no info pages (yet?).
+configure.args		--mandir=${prefix}/share/man \
+					--infodir=${prefix}/share/info
+
+post-destroot {
+	xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+	eval move [glob ${destroot}${prefix}/share/html/*] \
+		${destroot}${prefix}/share/doc/${name}
+}
+

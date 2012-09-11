@@ -1,0 +1,29 @@
+# $Id $
+
+PortSystem              1.0
+PortGroup               qt4 1.0
+
+name                    qlipper
+version                 2.0.1
+#revision                1
+description             Lightweight & cross-platform clipboard history applet
+long_description        ${description}
+maintainers             pvanek openmaintainer
+categories              aqua office textproc
+platforms               darwin
+homepage                http://code.google.com/p/qlipper/
+master_sites        	googlecode
+
+use_bzip2               yes
+
+depends_lib             port:qt4-mac
+depends_build-append    port:cmake
+
+checksums           md5     54b4e676c79c05ace6281880e8c2bb85 \
+                    sha1    e073bfce5ceae011b755c220c4b8d4d612a73996 \
+                    rmd160  ba757171942fe3fece38f144909a47ad7b97289b
+
+configure.cmd           cmake
+configure.pre_args      -DCMAKE_INSTALL_PREFIX=${applications_dir}
+configure.args          ${qt_cmake_defines} .
+

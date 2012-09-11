@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        defunkt hub 1.10.2 v
+description         git-wrapper for GitHub specific functionality
+long_description    hub is a command line utility which adds GitHub knowledge to git.\
+                    It can be used on its own or as a git wrapper.
+maintainers         phw openmaintainer
+categories          devel
+license             MIT
+platforms           darwin
+supported_archs     noarch
+
+homepage            http://defunkt.io/hub/
+
+checksums           rmd160  58215bc0a3e6e3148c94d506dd53ff704e0f9bca \
+                    sha256  3bd8cf160062dac2dcdad176d14a88237fb4018522ef3a584a83c3f812d5b1c5
+
+depends_build       bin:rake:rb-rake
+
+depends_lib         port:git-core
+
+use_configure       no
+
+build {}
+
+destroot.cmd        rake
+destroot.args       prefix=${destroot}${prefix}
+post-destroot {
+    set bash-completions ${destroot}${prefix}/etc/bash_completion.d
+    xinstall -d ${bash-completions}
+    xinstall ${worksrcpath}/etc/hub.bash_completion.sh ${destroot}${prefix}/etc/bash_completion.d/hub
+    set site-functions ${destroot}${prefix}/share/zsh/site-functions
+    xinstall -d ${site-functions}
+    xinstall ${worksrcpath}/etc/hub.zsh_completion ${site-functions}/
+}
+
+notes "
+To use 'hub' as a true git wrapper add the following line to your .bashrc
+
+alias git=hub
+
+or use 'hub' as standalone command
+"

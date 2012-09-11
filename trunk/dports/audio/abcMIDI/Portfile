@@ -1,0 +1,44 @@
+# $Id$
+
+PortSystem 1.0
+
+name                abcMIDI
+version             2012-08-08
+categories          audio
+platforms           darwin
+maintainers         mww
+license             GPL
+description         ABC to midi and vice versa converter
+long_description    ABC is a text-based music notation language. These \
+                    tools can convert ABC to midi and vice versa.
+
+homepage            http://ifdo.pugmarks.com/~seymour/runabc/top.html
+master_sites        http://ifdo.pugmarks.com/~seymour/runabc/
+checksums           rmd160  dc6d1d094dc275c3974abb7ee1d67e102a89ec58 \
+                    sha256  ab0ae8256ce724ac2fedfb1aaa97a85b27da181915fc472111c55d41b1622bbf
+patchfiles          patch-makefile.diff
+
+worksrcdir          abcmidi
+
+use_zip             yes
+post-extract { xinstall -m 755 ${filespath}/configure ${worksrcpath} }
+
+variant universal   {}
+
+configure.pre_args     PREFIX=${prefix}
+
+destroot {
+     xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+     xinstall -m 755 -W ${worksrcpath} abc2abc abc2midi mftext midi2abc \
+         yaps ${destroot}${prefix}/bin
+     xinstall -m 644 -W ${worksrcpath}/doc abc2abc.1 abc2midi.1 mftext.1 \
+         midi2abc.1 yaps.1 ${destroot}${prefix}/share/man/man1
+     xinstall -m 644 -W ${worksrcpath}/doc AUTHORS CHANGES abcguide.txt gpl.txt \
+         history.txt readme.txt yapshelp.txt \
+         ${destroot}${prefix}/share/doc/${name}
+}
+
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     abcMIDI-(20\[0-9\]+-\[0-9\]+-\[0-9\]+)
+

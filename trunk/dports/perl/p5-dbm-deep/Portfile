@@ -1,0 +1,24 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		DBM-Deep 0.96
+revision        3
+maintainers		nomaintainer
+description		A pure perl persistent multi-level hash/array DBM
+
+long_description \
+	A unique flat-file database module, written in pure perl. True multi-level \
+	hash/array support (unlike MLDBM, which is faked), hybrid OO / tie() \
+	interface, cross-platform FTPable files, and quite fast. Can handle \
+	millions of keys and unlimited hash levels without significant slow-down. \
+	Written from the ground-up in pure perl -- this is NOT a wrapper around a \
+	C-based DBM.  
+
+platforms		darwin
+
+checksums		md5 d23a451aa70bb2159f9368bbd27b4ee5
+
+supported_archs noarch

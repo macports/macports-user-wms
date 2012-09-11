@@ -1,0 +1,32 @@
+--- configure.orig	2011-06-25 10:04:48.000000000 +0200
++++ configure	2011-06-25 10:05:19.000000000 +0200
+@@ -33171,6 +33171,21 @@
+ 
+   ## fltk (www.fltk.org)
+ 
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for fltk..." >&5
++$as_echo_n "checking for fltk... " >&6; }
++
++# Check whether FLTK_CONFIG is set and equal to "no"
++use_fltk="auto detect"
++if test "${FLTK_CONFIG+set}" = set ; then
++    if test "${FLTK_CONFIG}" = "no" ; then
++	use_fltk="disabled"
++    fi
++fi
++
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${use_fltk}" >&5
++$as_echo "${use_fltk}" >&6; }
++
++if test "${use_fltk}" != "disabled"; then
+ 
+ # Check whether --with-fltk-prefix was given.
+ if test "${with_fltk_prefix+set}" = set; then :
+@@ -33247,6 +33262,7 @@
+ $as_echo "no" >&6; }
+ fi
+ 
++fi
+ 
+ 
+   warn_fltk_config=""

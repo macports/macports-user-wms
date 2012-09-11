@@ -1,0 +1,23 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Mozilla-CA 20110904
+revision            2
+platforms           darwin
+license             {MPL-1.1 GPL-2+ LGPL-2.1+}
+maintainers         l2g openmaintainer
+supported_archs     noarch
+
+description         Mozilla::CA - Mozilla's CA cert bundle in PEM format
+
+long_description \
+    Mozilla::CA provides a copy of Mozilla\'s bundle of Certificate \
+    Authority certificates in a form that can be consumed by modules and \
+    libraries based on OpenSSL.
+
+checksums           sha1    9804ab2df0d56c106a720fe96f80707998a56a52 \
+                    rmd160  8cd93f3bc01b2a06439f9df3516f2cfbeb7e8bf4

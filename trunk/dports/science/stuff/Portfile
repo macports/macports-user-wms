@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem         1.0
+
+name               stuff
+version            1.19
+revision           2
+categories         science
+platforms          darwin
+maintainers        saao.ac.za:tim
+license            CeCILL
+
+description        Generates artifical astronomical source catalogs
+long_description   Stuff is a program that generates artificial but \
+    realistic catalogs of astronomical sources. These catalogs can be loaded \
+    in SkyMaker to generate image simulations.
+
+
+homepage           http://www.astromatic.net/software/stuff/
+master_sites       ftp://ftp.iap.fr/pub/from_users/bertin/stuff/
+checksums          md5  bf44d15906f776880a528ba252924be4 \
+                   sha1  acf5b26e5cc10eac757b55b8cca59d5ca3d3ab94 \
+                   rmd160  c8ac8d3bbe7cd4a7e48b81b98de60b6c777e6e74
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 755 -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        README \
+        AUTHORS \
+        COPYRIGHT \
+        ChangeLog \
+        BUGS \
+        HISTORY \
+        THANKS \
+        ${docdir}
+}
+
+livecheck.type     regex
+livecheck.url      [lindex ${master_sites} 0]
+livecheck.regex    ${name}-(\[0-9.\]+)\\.tar

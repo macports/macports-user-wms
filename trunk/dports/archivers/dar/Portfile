@@ -1,0 +1,31 @@
+# $Id$
+
+PortSystem		1.0
+
+name			dar
+version			2.3.9
+revision        1
+categories		archivers
+platforms		darwin
+maintainers		nomaintainer
+license			GPL-2+
+
+description		Disk Archiver
+long_description	dar is a shell command that backs up directory trees \
+			and files.
+
+homepage		http://dar.sourceforge.net/
+master_sites		sourceforge:project/dar/dar/${version}
+
+checksums		md5     8dcfa94b7bac139cab05291f00c74bd3 \
+			sha1    9f49f03aa542c8132383293f3939db2457cc1524 \
+			rmd160  4d06885bcb7dc5e64d0e5b1cc61a4f8c711d3fc7
+
+depends_build		port:doxygen
+
+depends_lib		port:zlib port:bzip2 port:libiconv \
+			port:gettext port:openssl
+
+patchfiles		patch-doc-Makefile.in.diff
+
+universal_variant	no

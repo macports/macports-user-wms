@@ -1,0 +1,60 @@
+# $Id$
+
+PortSystem 1.0
+
+name            rubber
+version         1.1
+revision        6
+set branch      [join [lrange [split ${version} .] 0 1] .]
+patchfiles      patch-ab patch-ac patch-src_util.py.diff patch-spaces_in_path.diff
+categories      tex print
+maintainers     nomaintainer
+license         GPL-2
+description     An automated system for building LaTeX documents
+long_description    This is a building system for LaTeX documents.\
+    It is based on a routine that runs just as many compilations as\
+    necessary.  The module system provides a great flexibility that\
+    virtually allows support for any package with no user intervention,\
+    as well as pre- and post-processing of the document. The standard\
+    modules currently provide support for bibtex, dvips, dvipdfm,\
+    pdftex, makeindex.  A good number of standard packages are supported,\
+    including graphics/graphicx (with automatic conversion between\
+    various formats and Metapost compilation).
+
+platforms       darwin freebsd
+homepage        http://launchpad.net/rubber/
+master_sites    http://launchpad.net/rubber/trunk/${branch}/+download/
+checksums       md5 8087cdb498f51f91c2427c7d0b253189
+depends_run     bin:latex:texlive
+
+configure.args  --mandir=${destroot}${prefix}/share/man \
+                --infodir=${destroot}${prefix}/share/info
+destroot.args   prefix=${destroot}${prefix}
+
+variant python24 conflicts python25 python26 python27 description {Use python 2.4} {
+        depends_lib-append      port:python24
+        configure.args-append   --python=${prefix}/bin/python2.4
+}
+
+variant python25 conflicts python24 python26 python27 description {Use python 2.5} {
+        depends_lib-append      port:python25
+        configure.args-append   --python=${prefix}/bin/python2.5
+}
+
+variant python26 conflicts python24 python25 python27 description {Use python 2.6} {
+        depends_lib-append      port:python26
+        configure.args-append   --python=${prefix}/bin/python2.6
+}
+
+variant python27 conflicts python24 python25 python26 description {Use python 2.7} {
+        depends_lib-append      port:python27
+        configure.args-append   --python=${prefix}/bin/python2.7
+}
+
+if {![variant_isset python24] && ![variant_isset python25] && ![variant_isset python26] && ![variant_isset python27]} {
+        default_variants +python27
+}
+
+livecheck.type  regex
+livecheck.url   http://launchpad.net/rubber/+download
+livecheck.regex ${name}-(\\d+(?:\\.\\d+)+)\\.tar

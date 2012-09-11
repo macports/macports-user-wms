@@ -1,0 +1,40 @@
+# $Id$
+
+PortSystem              1.0
+PortGroup               python27 1.0
+
+name                    gnofract4d
+version                 3.13
+revision		1
+description             Gnofract4D is a descendant of gnofract.
+long_description        ${description}
+maintainers             nomaintainer
+categories              gnome math python
+platforms               darwin
+homepage                http://gnofract4d.sourceforge.net/
+master_sites            sourceforge
+
+checksums               sha1    14572fe9f30a91a83d7599127cc7d80d7537d3e2 \
+                        rmd160  89526cefe8316f9cecbc40191034bd68d1724e99
+
+dist_subdir             ${name}
+
+depends_lib-append      port:py27-gtk \
+                        port:jpeg \
+                        port:libpng
+
+post-extract {
+    # DOS to UNIX line endings so we can patch
+    reinplace "s|\r||" ${worksrcpath}/fract4dgui/gtkio.py
+}
+
+patchfiles              patch-fract4d_fractconfig.py.diff \
+                        patch-fract4d-c-imageIO.cpp.diff \
+                        patch-setup.py.diff \
+                        patch-win.diff
+
+post-patch {
+    reinplace "s|@PREFIX@|${prefix}|g" ${worksrcpath}/setup.py
+}
+
+python.link_binaries_suffix

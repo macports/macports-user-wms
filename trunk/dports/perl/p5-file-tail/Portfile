@@ -1,0 +1,21 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup	File-Tail 0.99.3
+revision    3
+license	{Artistic-1 GPL}
+maintainers	nomaintainer
+description	Perl extension for reading from continously updated files
+long_description \
+	The primary purpose of File::Tail is reading and analysing log files \
+	while they are being written, which is especialy useful if you are \
+	monitoring the logging process with a tool like Tobias Oetiker's MRTG.
+
+platforms			darwin
+
+checksums			md5 ef0fb7bcb4181ba593f4a09940f61d1c
+
+supported_archs noarch

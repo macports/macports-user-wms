@@ -1,0 +1,21 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         ExtUtils-Install 1.54
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         install files from here to there
+long_description    Handles the installing and uninstalling of perl \
+                    modules, scripts, man pages, etc...
+
+platforms           darwin
+
+checksums           md5 28d2ab1f23b26f90772d953387f32fe3 \
+                    sha1 a32c1168b3ac47e10110d7ad5f780c961b54216c \
+                    rmd160 1703beb8641c8fcfe1a937193e768e47ade0313b
+
+supported_archs noarch

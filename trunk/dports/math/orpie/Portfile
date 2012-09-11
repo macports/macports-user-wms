@@ -1,0 +1,23 @@
+# $Id$
+
+PortSystem 1.0
+
+name			orpie
+version			1.5.1
+platforms		darwin
+maintainers		moduli.net:snb
+categories		math
+description		fullscreen RPN calculator for the console
+long_description	Orpie is a fullscreen RPN calculator for the console. Its \
+				operation is similar to that of modern HP calculators, but \
+				data entry has been optimized for efficiency on a PC keyboard. \
+				Features include extensive scientific calculator \
+				functionality, command completion, and a visible interactive \
+				stack.
+homepage		http://pessimization.com/software/orpie/
+master_sites	${homepage}
+checksums		md5 4511626ed853354af1b4b5dbbf143a1f
+depends_lib		port:gsl
+depends_build	port:ocaml
+configure.args      --mandir=${prefix}/share/man
+patchfiles        patch-Makefile.in.diff

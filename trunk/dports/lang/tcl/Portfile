@@ -1,0 +1,62 @@
+# $Id$
+
+PortSystem 1.0
+
+name          tcl
+version       8.5.12
+revision      1
+# Tk (x11/tk) port depends on this version
+categories    lang
+license       Tcl/Tk
+maintainers   mww openmaintainer
+platforms     darwin freebsd
+description   Tool Command Language
+long_description \
+  Tcl (Tool Command Language) is a very powerful but easy to learn dynamic \
+  programming language, suitable for a very wide range of uses, including web \
+  and desktop applications, networking, administration, testing and many more. \
+  Open source and business-friendly, Tcl is a mature yet evolving language \
+  that is truly cross platform, easily deployed and highly extensible.
+
+homepage      http://www.tcl.tk/
+master_sites  sourceforge:project/tcl/Tcl/${version}
+
+checksums           rmd160  ada42e22f7b12413c88d9ec7dbd3789926f362d2 \
+                    sha256  20ba7a10a30571983afd3599f19b441adb5222b21f1d2b27d0fba3ed8d4707c2
+
+dist_subdir     tcltk
+distname        ${name}${version}-src
+worksrcdir      ${name}${version}/unix
+configure.args  --mandir=${prefix}/share/man \
+                --disable-corefoundation
+configure.cppflags-delete  -I${prefix}/include
+configure.ldflags-delete   -L${prefix}/lib
+
+destroot.destdir  INSTALL_ROOT=${destroot}
+post-destroot {
+    ln -s tclsh8.5 ${destroot}${prefix}/bin/tclsh
+    ln -s libtcl8.5.dylib ${destroot}${prefix}/lib/libtcl.dylib
+}
+
+# dont enable threads by default as Tcl uses thread-local storage which makes
+# passing Tcl_Obj* around between threads fatal
+variant threads description {add multithreading and corefoundation support} {
+    configure.args-append --enable-threads
+    # dont enable core-foundation by default as it is not fork()-safe and
+    # software e.g. using tk and fork() will crash
+    configure.args-delete --disable-corefoundation
+}
+
+variant memdebug description {enable memory debugging support} {
+    configure.args-append --enable-symbols=mem
+}
+
+platform darwin {
+    configure.args-append tcl_cv_type_64bit="long long"
+}
+
+# Files with failing tests: socket.test
+test.run      yes
+
+livecheck.type  regex
+livecheck.regex {Tcl/Tk (\d+(?:\.\d+)*)</a>}

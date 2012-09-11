@@ -1,0 +1,49 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+
+name            gtk-engines2
+set my_name     gtk-engines
+epoch           1
+version         2.20.2
+revision        2
+set branch      [join [lrange [split ${version} .] 0 1] .]
+categories      x11
+maintainers     nomaintainer
+license         LGPL-2.1+ GPL-2+
+platforms       darwin
+description     Theme engine for gtk2
+
+long_description \
+    gtk-engines2 is a theme engine for GTK+ 2.  It provides \
+    the ability to change the way widgets, buttons, etc. \
+    look when using GTK+ 2 applications.
+
+homepage        http://www.gtk.org/
+master_sites    gnome:sources/$my_name/$branch/
+distname        $my_name-$version
+use_bzip2       yes
+
+checksums       md5     5deb287bc6075dc21812130604c7dc4f \
+                sha1    574c7577d70eaacecd2ffa14e288ef88fdcb6c2a \
+                rmd160  941b71cd2346a349d89f68962c2ce28e3520297c
+
+depends_build   port:intltool \
+                port:pkgconfig
+
+depends_lib     port:gtk2
+
+patchfiles      patch-engines-clearlooks-src-animation.c.diff
+
+configure.args  --enable-animation
+
+variant lua description {Enable EXPERIMENTAL lua script driven engine} {
+        depends_lib-append    port:lua
+        configure.args-append --enable-lua \
+                              --with-system-lua
+}
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/$my_name/$branch/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

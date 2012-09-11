@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+
+name            gnome-common
+version         2.28.0
+set branch      [join [lrange [split ${version} .] 0 1] .]
+maintainers     nomaintainer
+categories      gnome
+platforms       darwin
+license         GPL-3
+installs_libs   no
+supported_archs noarch
+
+description     Files that should be in pretty much every GNOME application.
+
+long_description \
+    $description
+
+homepage        http://www.gnome.org/
+master_sites    gnome:sources/${name}/${branch}/
+use_bzip2       yes
+
+checksums       md5     30daabb0ca4898fea2647999e7813e8f \
+                sha1    84eeeb8ac783e3e7807da7eea83dd67afe8d826c \
+                rmd160  599fc4e4d49c351db94b039c4e2b31ee97bc73d9
+
+patchfiles      patch-gnome-autogen.sh.diff
+
+depends_build   port:pkgconfig
+
+use_parallel_build  yes
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

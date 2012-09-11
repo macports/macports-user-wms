@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name		goocanvas
+version		0.15
+revision	2
+set branch      [join [lrange [split ${version} .] 0 1] .]
+description	a Cairo Canvas Widget for GTK+
+long_description	\
+	GooCanvas is a canvas widget for GTK+ that uses the cairo 2D library \
+	for drawing.
+maintainers	nomaintainer
+categories	gnome
+license		LGPL
+platforms	darwin
+homepage	http://live.gnome.org/GooCanvas
+master_sites	gnome:sources/${name}/${branch}/
+
+use_bzip2       yes
+
+checksums       md5     3f53c01e6aa958db3463c4ce1a8f5238 \
+                sha1    1ddd882e225260c65dd1e6f429dc5a716d69bb68 \
+                rmd160  ddc04ae8e38ae1d9bb075026c6f924c8e5979913
+
+depends_build	\
+	port:pkgconfig \
+        port:intltool
+
+depends_lib	\
+	port:gtk2
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

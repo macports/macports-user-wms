@@ -1,0 +1,86 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+PortGroup  xcodeversion 1.0
+
+name		tiff
+version		3.9.5
+categories	graphics
+license		BSD
+maintainers	nomaintainer
+description	Library and tools for dealing with Tag Image File Format
+long_description \
+	This software provides support for the Tag Image File 		\
+	Format (TIFF), a widely used format for storing image 		\
+	data.  Included in this software distribution is a 		\
+	library, libtiff, for reading and writing TIFF, a small 	\
+	collection of tools for doing simple manipulations of 		\
+	TIFF images on UNIX systems, documentation on the library 	\
+	and tools.  A small assortment of TIFF-related software 	\
+	for UNIX that has been contributed by others is also 		\
+	included.  The library is capable of dealing with images 	\
+	that are written to follow the 5.0 or 6.0 TIFF spec. 		\
+	There is also considerable support for some of the more 	\
+	esoteric portions of the 6.0 TIFF spec.
+homepage	http://www.remotesensing.org/libtiff
+platforms	darwin
+master_sites	http://download.osgeo.org/libtiff/ \
+		ftp://ftp.remotesensing.org/pub/libtiff/ \
+		http://dl.maptools.org/dl/libtiff/ \
+		freebsd
+
+checksums       sha1    f40aab20fb2f609b5cbc1171c40b66a1445e3773 \
+                rmd160  c67742bf6b9b10ca0700e69ce575007d40c4f89c
+
+depends_lib	port:jpeg port:zlib
+
+test.run        yes
+test.target     check
+
+configure.args	--disable-jbig \
+		--mandir=${prefix}/share/man \
+                --with-docdir=${prefix}/share/doc/${name}-${version} \
+		--with-jpeg-include-dir=${prefix}/include \
+		--with-jpeg-lib-dir=${prefix}/lib \
+		--with-zlib-include-dir=${prefix}/include \
+		--with-zlib-lib-dir=${prefix}/lib
+
+post-configure {
+    if {[variant_isset universal]} {
+        system "cd ${worksrcpath}/libtiff \
+                && ed - tif_config.h < ${filespath}/libtiff__tif_config.h.ed \
+                && ed - tiffconf.h < ${filespath}/libtiff__tiffconf.h.ed \
+                && touch stamp-h1 && touch stamp-h2"
+    }
+}
+
+use_parallel_build  yes
+
+post-destroot {
+	xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+	file copy ${worksrcpath}/html/images \
+		${destroot}${prefix}/share/doc/${name}
+	eval xinstall -m 644 [glob ${worksrcpath}/html/*.html] \
+		${destroot}${prefix}/share/doc/${name}
+}
+
+platform macosx {
+    # Tiger does not have 64-bit OpenGL.
+    if {${os.major} > 8 || (![variant_isset universal] && ![string match *64* $build_arch])
+        || ([variant_isset universal] && ![string match *64* $universal_archs])} {
+        configure.args-append   --with-apple-opengl-framework
+    }
+}
+
+minimum_xcodeversions {9 3.1}
+
+variant jbig description {Enable JBIG support} {
+    depends_lib-append      port:jbigkit
+    configure.args-delete   --disable-jbig
+    configure.args-append   --enable-jbig
+}
+
+livecheck.type  regex
+livecheck.url   http://www.remotesensing.org/libtiff/
+livecheck.regex {v(\d+(?:\.\d+)*)</a>}

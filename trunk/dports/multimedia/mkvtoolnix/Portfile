@@ -1,0 +1,67 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           muniversal 1.0
+
+name                mkvtoolnix
+version             5.6.0
+categories          multimedia
+maintainers         nomaintainer
+license             GPL-2+ LGPL-2.1+
+
+description         Matroska media files manipulation tools.
+long_description    mkvtoolnix will evolve to a set of tools to create, \
+                    alter and inspect Matroska files under Linux and other \
+                    Unices, just what the OGMtools do for the OGM format.
+homepage            http://www.bunkus.org/videotools/mkvtoolnix/
+platforms           darwin
+master_sites        ${homepage}sources/ \
+                    http://svn.mandriva.com/svn/packages/cooker/mkvtoolnix/releases/${version}/1/SOURCES/
+use_bzip2           yes
+set configure.compiler macports-gcc-4.6
+
+checksums           rmd160  6880fca76b162e7a83d6d6dac0617a6dae7be62f \
+                    sha256  09c502de690af0ad405cf66fe9863e86260f89871e9a563f1ede56a53e71fcc3
+
+# As of 4.7.0, mkvtoolnix uses internal static libmatroska and libebml.
+depends_build       port:gcc46 \
+                    port:pkgconfig
+
+depends_lib         port:boost \
+                    port:bzip2 \
+                    port:curl \
+                    port:expat \
+                    port:file \
+                    port:flac \
+                    port:gettext \
+                    port:libogg \
+                    port:libvorbis \
+                    port:lzo2 \
+                    port:pcre \
+                    port:zlib
+
+build.cmd           ./drake
+build.target        default
+build.args          -j${build.jobs}
+
+configure.args      --mandir=${prefix}/share/man \
+                    --with-boost=${prefix} \
+                    --with-extra-libs=${prefix}/lib \
+                    --with-extra-includes=${prefix}/include \
+                    --disable-gui \
+                    --disable-wxwidgets
+
+variant wxwidgets description {Build with the wxWidgets GUI} {
+    depends_lib-append port:wxWidgets
+
+    # wxWidgets is 32-bit only
+    supported_archs i386 ppc
+
+    configure.args-delete \
+        --diable-gui \
+        --disable-wxwidgets
+    configure.args-append \
+        --enable-gui \
+        --enable-wxwidgets
+}

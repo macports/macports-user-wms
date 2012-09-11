@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         parent 0.224 ../by-authors/id/C/CO/CORION/
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Establish an ISA relationship with base classes at compile time
+long_description    ${description}
+
+platforms           darwin
+
+checksums           md5 d099b13cf30f4ab9dec79532b53abac3 \
+                    sha1 3d483b15bf9b6a58ef953879a02df90149d38553 \
+                    rmd160 50f4b4a08c36ee2d819b8b0f1147c8e8b75cb629
+
+supported_archs     noarch

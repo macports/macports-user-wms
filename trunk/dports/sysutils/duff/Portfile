@@ -1,0 +1,19 @@
+# $Id$
+
+PortSystem        1.0
+
+name              duff
+version           0.5
+categories        sysutils
+platforms         darwin
+maintainers       pmq
+
+description       Unix command-line utility for quickly finding duplicates \
+                  in a given set of files
+long_description  ${description}
+
+homepage          http://duff.sourceforge.net
+master_sites      sourceforge
+checksums         md5 5335db70849129d4210490210c1860e3 \
+                  sha1 1078dbeca52ac61b4496d388106e27c89686fbe5
+use_bzip2         yes

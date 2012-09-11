@@ -1,0 +1,76 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+if {[variant_isset qt]} {
+PortGroup               qt4 1.0
+}
+
+name                    gpsd
+version                 3.5
+revision                2
+license                 BSD
+categories              net
+maintainers             nomaintainer
+platforms               darwin
+
+description             GPS service daemon
+
+long_description        GPSD is a service daemon that handles GPSes and other navigation-related sensors \
+                        reporting over USB, serial, TCP/IP, or UDP connections and presents reports in \
+                        a well-documented JSON application.
+
+homepage                http://www.catb.org/${name}/
+master_sites            savannah
+
+checksums               rmd160  5d79e9bae1fa9d96c6104ebbec4386fbe1102a9a \
+                        sha256  5ebb0b00c49421eb8fbead81342e5ce63e82065e5ff27da586f10e342b999171
+
+depends_lib-append      port:ncurses port:python27
+depends_build-append    port:scons
+
+patchfiles              SConstruct.patch patch-pkg-config.diff
+
+use_configure           no
+
+variant universal {}
+
+build.cmd               ${prefix}/bin/scons
+build.target
+build.args              prefix=${prefix} libQgpsmm=no usb=no strip=no
+build.env-append        CC="${configure.cc} [get_canonical_archflags cc]" \
+                        CFLAGS="${configure.cflags} [get_canonical_archflags cc]" \
+                        CXX="${configure.cxx} [get_canonical_archflags cxx]" \
+                        CXXFLAGS="${configure.cxxflags} [get_canonical_archflags cxx]" \
+                        LDFLAGS="${configure.ldflags} [get_canonical_archflags ld]" \
+                        PYTHON=${prefix}/bin/python2.7
+
+destroot.args           ${build.args}
+eval destroot.env-append ${destroot.destdir} ${build.env}
+
+post-destroot {
+    foreach lib {gps gpsd} {
+        copy ${worksrcpath}/lib${lib}.dylib ${destroot}${prefix}/lib
+    }
+}
+
+variant qt description {Build Qt bindings} {
+    build.args-delete libQgpsmm=no
+}
+
+variant libusb \
+description {Include support for better USB device discovery} {
+    depends_build-append port:pkgconfig
+    depends_lib-append   port:libusb
+    build.args-delete    usb=no
+}
+
+variant dbus description {Include support for DBUS} {
+    depends_lib-append    port:dbus-glib
+    build.args-append dbus=yes dbus_export=yes
+}
+
+livecheck.type          regex
+livecheck.url           http://download.savannah.gnu.org/releases-noredirect/gpsd
+livecheck.regex         "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

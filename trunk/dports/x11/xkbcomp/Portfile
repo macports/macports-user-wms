@@ -1,0 +1,34 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xkbcomp
+version             1.2.4
+categories          x11
+license             X11
+maintainers         jeremyhu openmaintainer
+description         Compile XKB keyboard description
+long_description \
+   The xkbcomp keymap compiler converts a description of an XKB keymap into \
+   one of several output formats.  The most common use for xkbcomp is to \
+   create a compiled keymap file (.xkm extension) which can be read directly \
+   by XKB-capable X servers or utilities.  The keymap compiler can also \
+   produce C header files or XKB source files.
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           sha1    695d2f2824884d9e54aa1419282ae167fdea163b \
+                    rmd160  70409dc04e8a452b0e5b172cd54a169cc160070a \
+                    sha256  91d0c9ab445d21dfe1892dbae5ae5264f39bae68223dd092ffc547c9450b5a2d
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libxkbfile
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

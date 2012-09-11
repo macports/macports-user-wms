@@ -1,0 +1,45 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                pHash
+version             0.9.4
+categories          multimedia
+platforms           darwin
+maintainers         workisfun.ru:ivan
+license             GPL-3
+
+description         Perceptual hash library
+
+long_description    Tool to build hash from multimedia files
+
+homepage            http://phash.org/
+master_sites        ${homepage}releases/
+
+checksums           rmd160  6b33bcf07e8d54e695bd1a3ac3e60d3fcffc2000 \
+                    sha256  6f882116a0525fddc8451e334a5dca3f4144d310d97eda80b1b1ab7c1587a189
+
+depends_lib         port:ffmpeg \
+                    port:jpeg \
+                    port:libsndfile \
+                    port:libsamplerate \
+                    port:mpg123 \
+                    port:CImg
+
+# ffmpeg is not universal
+universal_variant   no
+
+patchfiles          patch-configure.ac.diff
+
+use_autoreconf      yes
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS \
+        COPYING \
+        ChangeLog \
+        ${docdir}
+}

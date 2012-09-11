@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+PortGroup       kde4 1.1
+
+name            kde-l10n-tg
+version         4.8.2
+categories      kde kde4
+maintainers     nomaintainer
+license         {LGPL-2.1 LGPL-3+ GPL-2+ MIT BSD}
+description     KDE tajik language files.
+long_description \
+                ${description}
+platforms       darwin
+homepage        http://www.kde.org/
+
+master_sites    kde:stable/${version}/src/kde-l10n/
+use_xz          yes
+
+supported_archs noarch
+depends_lib     port:kdelibs4
+
+checksums           rmd160  a72e851b99b44d84f03842528a24043825963447 \
+                    sha256  f57f6b3eeffa3a9b2c46f17e527abf13850dd590431329b8ff3bc27359a0cbf7
+
+post-destroot {
+    xinstall -d -m 755 ${destroot}${prefix}/share/doc/kde-installed-packages
+    system "touch ${destroot}${prefix}/share/doc/kde-installed-packages/kde-l10n-tajik"
+}
+
+livecheck.type  none

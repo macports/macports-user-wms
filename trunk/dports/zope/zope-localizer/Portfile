@@ -1,0 +1,25 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup zope 1.0
+
+zope.setup		Localizer 1.0.1
+revision		1
+license			GPL-2+
+maintainers		nomaintainer
+description		Localizer product for Zope for multilingual web support
+long_description	Localizer is a Zope product that provides a set of \
+					facilities to develop multilingual web applications. \
+					It offers solutions to internationalize the user \
+					interfaces and to manage multilingual content.
+homepage		http://sourceforge.net/projects/lleu/
+master_sites	sourceforge:lleu
+extract.suffix	.tgz
+checksums		md5 87d82f24d94eee8a7fa334c4c5422b69
+platforms		darwin freebsd
+
+depends_run		bin:xgettext:gettext
+
+patchfiles		patch-__init__.py
+
+test.run		yes

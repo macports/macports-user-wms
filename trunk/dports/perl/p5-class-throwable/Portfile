@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Class-Throwable 0.11
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         A minimal lightweight exception class
+long_description    This module implements a minimal lightweight exception \
+                    object. It is meant to be a compromise between more \
+                    basic solutions like Carp which can only print \
+                    information and cannot handle exception objects, \
+                    and more more complex solutions like Exception::Class \
+                    which can be used to define complex inline exceptions \
+                    and has a number of module dependencies.
+
+platforms           darwin
+
+checksums           md5 faf82871a6b471451cd65c54c6cac7e1 \
+                    sha1 e67b50b537c633f171c96868a7cbd87a55575e4c \
+                    rmd160 ed58851642d7934a3e5fed2c9b4a247f8331830d
+
+supported_archs noarch

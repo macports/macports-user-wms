@@ -1,0 +1,63 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                vlfeat
+version             0.9.14
+revision            0
+categories          graphics devel
+license             BSD
+platforms           darwin
+
+maintainers         stromnov openmaintainer
+
+description         Implementation of SIFT, MSER and other CV algorithms.
+
+long_description \
+    The VLFeat open source library implements popular computer vision \
+    algorithms including SIFT, MSER, k-means, hierarchical k-means, \
+    agglomerative information bottleneck, and quick shift.
+
+homepage            http://vlfeat.org/
+master_sites        http://vlfeat.org/download/
+
+checksums           md5     d937e0b2f4c8b7240c81deac4f170aa3 \
+                    sha1    6d9d6d61052bf9c27dcf9ae0732e665044930b7e \
+                    rmd160  fb7b7b48723e5e694e2121d25420beae8f5a76f2
+
+use_configure       no
+
+supported_archs     x86_64 i386
+
+if {$build_arch == "x86_64"} {
+    set vlfeat_arch maci64
+} elseif {$build_arch == "i386"} {
+    set vlfeat_arch maci
+}
+if {[info exists vlfeat_arch]} {
+    build.args-append   ARCH=${vlfeat_arch}
+}
+
+if {${configure.sdkroot} != ""} {
+    build.args-append   SDKROOT="${configure.sdkroot}"
+} else {
+    build.args-append   SDKROOT=/
+}
+
+post-patch {
+    reinplace "s|-install_name @loader_path/|-install_name ${prefix}/lib/|g" ${worksrcpath}/make/dll.mak
+}
+
+destroot {
+    xinstall -m 755 -W ${worksrcpath}/bin/${vlfeat_arch} libvl.dylib ${destroot}${prefix}/lib
+    xinstall -m 755 -W ${worksrcpath}/bin/${vlfeat_arch} sift mser ${destroot}${prefix}/bin
+    xinstall -d -m 755 ${destroot}${prefix}/include/vl
+    foreach header [glob -directory ${worksrcpath}/vl *.h] {
+         xinstall -m 644 $header ${destroot}${prefix}/include/vl
+    }
+}
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

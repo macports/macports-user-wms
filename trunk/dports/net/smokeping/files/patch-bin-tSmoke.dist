@@ -1,0 +1,57 @@
+--- bin/tSmoke.dist.orig	2008-07-24 10:37:05.000000000 -0700
++++ bin/tSmoke.dist	2009-02-03 17:51:31.000000000 -0800
+@@ -51,8 +51,8 @@
+ # -- Getopt::Long
+ #
+ # Point the lib variables to your implementation
+-use lib qw(lib);
+-use lib qw(/usr/local/rrdtool-1.0.39/lib/perl);
++use lib qw(__PREFIX__/lib/smokeping/lib);
++use lib qw(__PERL5__ARCHLIB__/auto/RRDs);
+ 
+ use Smokeping 2.004002;
+ use Net::SMTP;
+@@ -61,7 +61,7 @@
+ use RRDs;
+ 
+ # Point to your Smokeping config file
+-my $cfgfile = "etc/config.dist";
++my $cfgfile = "__PREFIX__/etc/smokeping/config";
+ 
+ # global variables
+ my $cfg;
+@@ -482,33 +482,7 @@
+ 
+ =head1 SETUP
+ 
+-When installing tSmoke, some variables must be adjusted to fit your local system.
+-
+-We need to use the following B<libraries>:
+-
+-=over
+-
+-=item Smokeping
+-
+-=item RRDTool Perl bindings
+-
+-=item Getopt::Long
+-
+-=back
+-
+-Set up your libraries:
+-
+- use lib "/usr/local/smokeping/lib";
+- use lib "/usr/local/rrdtool-1.0.39/lib/perl";
+-
+-Point to your Smokeping B<config> file
+-
+- my $cfgfile = "/usr/local/smokeping/etc/config";
+-
+-Modify the Smokeping config file to include a path for tmail in the
+-General section:
+-
+- tmail = /usr/local/smokeping/etc/tmail
++Paths for this file are set by MacPorts so they should not be modified.
+ 
+ =head1 COPYRIGHT
+ 

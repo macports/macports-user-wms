@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem		1.0
+PortGroup		perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		PodToHTML 0.08
+revision        3
+
+maintainers		nomaintainer
+description		Deprecated program convert POD documentation to HTML.
+
+long_description	${description}
+
+master_sites		http://search.cpan.org/CPAN/authors/id/B/BD/BDFOY/
+
+checksums	md5	fec09c1e062ed4c670b6b982649e2f24 \
+		sha1	c4ec0783b0033cb849886bce1f44712e00d40d7b \
+		rmd160	a07fc59bbb00878359d3d6a0935bcd12952e2732
+
+platforms		darwin
+
+if {${perl5.major} != ""} {
+depends_lib-append	port:p${perl5.major}-html-tree \
+			port:p${perl5.major}-html-format
+}

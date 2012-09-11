@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup			XML-Atom 0.13
+revision            3
+maintainers			cyberscript.net:ryan
+categories-append	textproc
+license				{Artistic-1 GPL}
+description			Perl5 modules for Atom feed and API implementation.
+long_description	Atom is a syndication, API, and archiving format \
+					for weblogs and other data. XML::Atom implements \
+					the feed format as well as a client for the API.
+homepage			http://search.cpan.org/dist/XML-Atom/
+checksums			md5 8785f3ce9a1c035bafdae46cfc05a78c
+platforms			darwin
+
+if {${perl5.major} != ""} {
+depends_lib-append	port:p${perl5.major}-xml-libxml \
+					port:p${perl5.major}-digest-sha1 \
+					port:p${perl5.major}-libwww-perl \
+					port:p${perl5.major}-lwp-authen-wsse \
+					port:p${perl5.major}-datetime
+}

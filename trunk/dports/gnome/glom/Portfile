@@ -1,0 +1,43 @@
+# $Id$
+PortSystem 1.0
+name		glom
+version		1.4.2
+
+description	Glom is an easy-to-use database designer and user interface.
+long_description        ${description}
+maintainers	landonf
+categories	gnome databases
+platforms	darwin 
+
+homepage	http://www.glom.org/
+master_sites    gnome:sources/glom/1.4/
+
+checksums	md5 71c868a2e8e85e96bdbbf78608228bc8
+use_bzip2 	yes
+
+depends_lib	port:bakery port:libgdamm port:libgnomecanvasmm \
+		port:gnome-session port:python24 \
+		port:iso-codes port:libgtksourceviewmm \
+		port:libiconv port:postgresql81 port:gettext \
+		port:gnome-python-extras
+
+post-patch {
+	reinplace s/-lutil//g	${worksrcpath}/glom/libglom/Makefile.in \
+				${worksrcpath}/glom/Makefile.in \
+				${worksrcpath}/glom/python_embed/python_module/Makefile.in
+}
+
+configure.cflags-append "-I${prefix}/include -L${prefix}/lib"
+configure.env	PYTHON_EXEC_PREFIX="${prefix}" \
+		PYTHON_PREFIX="${prefix}"
+
+configure.args	--with-postgres-utils=${prefix}/lib/postgresql81/bin \
+		--disable-scrollkeeper
+
+build.args	MSGFMT="${prefix}/bin/msgfmt" GMSGFMT="${prefix}/bin/msgfmt"
+
+post-destroot {
+	file delete "${destpath}${prefix}/share/mime/globs"
+	file delete "${destpath}${prefix}/share/mime/magic"
+	file delete "${destpath}${prefix}/share/mime/XMLnamespaces"
+}

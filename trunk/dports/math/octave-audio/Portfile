@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        audio 1.1.4
+platforms           darwin
+license             GPL-2+ public-domain
+maintainers         nomaintainer
+description         Audio recording, processing and playing tools.
+long_description    ${description}
+
+checksums           md5     643dac1ecf0f31c870b4bd9ce7bbd98c \
+                    sha1    36b4257737481394302243cdf1731edbbaee5139 \
+                    rmd160  0f38a8ef8b7d6571ce6d20ca00f6a636f32976f0

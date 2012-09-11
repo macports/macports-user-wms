@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        splines 1.0.7
+platforms           darwin
+license             GPL-2+ public-domain
+maintainers         nomaintainer
+description         Additional Cubic spline functions.
+long_description    ${description}
+
+checksums           md5     6fbe9bd3c8b8ee5199d3866599409b1b \
+                    sha1    f972b7224ed896e1bee8df3f41938dd01c488a0c \
+                    rmd160  f66e5c5b69b4f4aef67d00b0a412a63a21418dd5

@@ -1,0 +1,32 @@
+# $Id$
+
+PortSystem 1.0
+
+name		protobuf-c
+version		0.15
+categories	devel
+license		Apache-2
+maintainers	landonf openmaintainer
+description	Pure C code generator and runtime libraries for Protocol Buffers
+
+long_description \
+        This package provides a code generator and runtime libraries \
+        to use Protocol Buffers from pure C (not C++). \
+        \
+        Library ABI and API compatibility changes are expected until \
+        version 1.0 is released.
+
+
+homepage	http://code.google.com/p/protobuf-c/
+master_sites	googlecode
+
+checksums           md5    73ff0c8df50d2eee75269ad8f8c07dc8 \
+                    sha1   4fbd93f492c52154713de1951c0a2133ddd43abb \
+                    rmd160 50319bba2b173aafb96dd1fe70550d378e69f871
+
+platforms	darwin
+
+depends_lib	port:protobuf-cpp
+
+test.run	yes
+test.target	check

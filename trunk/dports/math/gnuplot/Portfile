@@ -1,0 +1,188 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                  1.0
+PortGroup                   xcodeversion 1.0
+
+name                        gnuplot
+version                     4.6.0
+revision                    2
+categories                  math science
+# the license has some inconvenient requirements that we're not meeting
+# to be allowed to distribute binaries
+license                     Restrictive
+# luckily nothing has to link against this
+installs_libs               no
+platforms                   darwin
+maintainers                 gmail.com:mojca.miklavec.lists openmaintainer
+
+description                 A command-driven interactive function plotting program
+
+long_description            Gnuplot is a command-driven interactive function \
+                            plotting program. Plots any number of functions, \
+                            built up of C operators, C library functions, and \
+                            some things C does not have like **, sgn(), etc. \
+                            Also support for plotting data files, to compare \
+                            actual data to theoretical curves.
+
+homepage                    http://gnuplot.sourceforge.net/
+master_sites                sourceforge:project/gnuplot/gnuplot/${version}
+dist_subdir                 ${name}/${version}
+
+distfiles-append            ${name}.pdf
+extract.only                ${distname}.tar.gz
+checksums                   ${distname}.tar.gz \
+                            rmd160  2c06500f45fb81850b45713a2cd0e38f0021b065 \
+                            sha256  6e60adb5039a3541f407c2ade670004178b376754c424c13f0be24c7960c17be \
+                            ${name}.pdf \
+                            rmd160  374614145a7b78e263b0cfbb695eb22d07dede9a \
+                            sha256  57bd4d88e1321968ba06f29dfa322b4cd9e6beb4e0f42e1a4775d9c9a41af170
+
+depends_lib                 port:expat \
+                            port:fontconfig \
+                            port:gd2 \
+                            port:jpeg \
+                            port:pdflib \
+                            port:libiconv \
+                            port:libpng \
+                            port:ncurses \
+                            port:readline \
+                            port:zlib
+
+patchfiles                  patch-src-variable.c.diff \
+                            patch-upstream-compilerwarnings.diff \
+                            patch-upstream-wxt-scroll.diff \
+                            patch-upstream-qt.diff \
+                            patch-configure-qt.diff \
+                            patch-configure-aquaterm.diff
+
+# upstream patches:
+#
+# - patch-upstream-compilerwarnings.diff
+#   2012-03-18 17:30:42 Hans-Bernhard Broeker (cvs commit:broeker)
+# - patch-upstream-wxt-scroll.diff
+#   2012-02-29 19:29:25 Mojca Miklavec (cvs commit:sfeam)
+# - patch-upstream-qt.diff
+#   2012-04-01 08:49:45 Jérôme Lodewyck (cvs commit:lodewyck)
+
+minimum_xcodeversions       {9 3.1}
+
+configure.args              --with-readline=${prefix} \
+                            --with-gd=${prefix} \
+                            --with-pdf=${prefix} \
+                            --with-png=${prefix} \
+                            --without-aquaterm \
+                            --without-x \
+                            --enable-datastrings \
+                            --enable-histograms \
+                            --infodir='\${prefix}/share/info' \
+                            --mandir='\${prefix}/share/man' \
+                            --without-lisp-files \
+                            --disable-wxwidgets \
+                            --without-latex \
+                            --without-tutorial \
+                            --without-cairo \
+                            --without-lua
+
+configure.ccache            no
+
+variant aquaterm description "Enable AquaTerm terminal" {
+    depends_lib-append      port:aquaterm
+    configure.args-delete   --without-aquaterm
+    configure.args-append   --with-aquaterm=${frameworks_dir}
+}
+
+variant x11 conflicts no_x11 {
+    configure.args-delete   --without-x
+    configure.args-append   --with-x
+    depends_lib-append      port:xpm
+}
+# remove this in August 2013
+variant no_x11 conflicts x11 description {Legacy compatibility variant} {}
+if {[variant_isset no_x11]} {
+    default_variants -x11
+} else {
+    default_variants +x11
+}
+
+variant emacs description "An emacs mode for working with gnuplot" {
+    depends_build-append    path:bin/emacs:emacs
+    configure.args-delete   --without-lisp-files
+    configure.args-append   --with-lisp-files --with-lispdir=${prefix}/share/emacs/site-lisp
+}
+
+variant luaterm description "Enable lua-based terminals" {
+    depends_lib-append      port:lua
+    configure.args-delete   --without-lua
+    configure.args-append   --with-lua
+}
+
+variant pangocairo description "Enable cairo-based terminals" {
+    depends_lib-append      path:lib/pkgconfig/pango.pc:pango
+    configure.args-delete   --without-cairo
+}
+
+# One can in principle choose between wxWidgets and wxWidgets-devel,
+# but only 2.9 allows building 64-bit binaries.
+# If it is acceptable to depend on wxWidgets-devel only,
+# one could delete the variant that depends on wxWidgets 2.8.
+variant wxwidgets conflicts wxwidgets_devel description "Enable wxt terminal (wxWidgets 2.8, 32-bit only)" {
+    depends_lib-append      port:wxWidgets path:lib/pkgconfig/pango.pc:pango
+    configure.args-delete   --disable-wxwidgets
+    configure.args-append   --with-wx-config=${prefix}/bin/wx-config
+}
+if {[variant_isset wxwidgets]} {
+    # wxWidgets is not universal and is 32-bit only
+    universal_variant       no
+    supported_archs         i386 ppc
+}
+
+variant wxwidgets_devel conflicts wxwidgets description "Enable wxt terminal (using wxWidgets 2.9, supports 64-bit)" {
+    depends_lib-append      port:wxWidgets-devel path:lib/pkgconfig/pango.pc:pango
+    configure.args-delete   --disable-wxwidgets
+    configure.args-append   --with-wx-config=${prefix}/bin/wx-config
+}
+
+variant qt description "Enable qt terminal" {
+    depends_lib-append      port:qt4-mac
+    configure.args-append   --enable-qt
+}
+
+variant tutorial description "Build the tutorial (requires a tex install)" {
+    depends_lib-append      port:texlive-latex-extra
+    configure.args-delete   --without-tutorial --without-latex
+    configure.args-append   --with-tutorial
+}
+
+default_variants            +aquaterm +luaterm +pangocairo +x11
+
+post-destroot {
+    xinstall -d -m 0755 ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 0644 ${distpath}/${name}.pdf \
+        ${destroot}${prefix}/share/doc/${name}/
+}
+
+# this temporary workaround removes files that accidentally circumvented destroot
+# and were installed straight into ${prefix}/share/texmf/tex/latex/gnuplot
+#
+# it may be removed after a while; it is only a problem for those who installed
+# with +tutorial
+pre-activate {
+    if [file exists ${prefix}/share/texmf/tex/latex/gnuplot/gnuplot.cfg] {
+        delete ${prefix}/share/texmf/tex/latex/gnuplot/gnuplot.cfg
+    }
+    if [file exists ${prefix}/share/texmf/tex/latex/gnuplot/gnuplot-lua-tikz.sty] {
+        delete ${prefix}/share/texmf/tex/latex/gnuplot/gnuplot-lua-tikz.sty
+    }
+
+    # only since 4.6.0
+    if [file exists ${prefix}/share/texmf/tex/latex/gnuplot/gnuplot-lua-tikz.tex] {
+        delete ${prefix}/share/texmf/tex/latex/gnuplot/gnuplot-lua-tikz.tex
+    }
+    if [file exists ${prefix}/share/texmf/tex/latex/gnuplot/gnuplot-lua-tikz-common.tex] {
+        delete ${prefix}/share/texmf/tex/latex/gnuplot/gnuplot-lua-tikz-common.tex
+    }
+    if [file exists ${prefix}/share/texmf/tex/latex/gnuplot/t-gnuplot-lua-tikz.tex] {
+        delete ${prefix}/share/texmf/tex/latex/gnuplot/t-gnuplot-lua-tikz.tex
+    }
+}

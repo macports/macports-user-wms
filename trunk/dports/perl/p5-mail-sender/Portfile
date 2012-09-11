@@ -1,0 +1,23 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Mail-Sender 0.8.16
+revision            2
+platforms           darwin
+maintainers         l2g openmaintainer
+supported_archs     noarch
+
+description         Module for sending mails with attachments through an SMTP \
+                    server
+
+long_description    Mail-Sender provides an object oriented interface to \
+                    sending mails. It doesn't need any outer program. It \
+                    connects to a mail server directly from Perl, using \
+                    Socket.
+
+checksums           sha1    59963d520e04207db770428f535924b5aded3363 \
+                    rmd160  8223cd3269d45bb024572cfa45b53fccb27dce04

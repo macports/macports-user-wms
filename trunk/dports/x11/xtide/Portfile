@@ -1,0 +1,59 @@
+# $Id$
+
+PortSystem 1.0
+
+name					xtide
+version					2.11
+revision				1
+
+categories				x11 science
+platforms				darwin
+license                 GPL-3+
+maintainers				jberry openmaintainer
+
+description				Tide prediction software, with a large database of locations.
+long_description		XTide is a package that provides tide and current predictions \
+						in a wide variety of formats. Graphs, text listings, and calendars \
+						can be generated, or a tide clock can be provided on your desktop. \
+						For x11, plain command line, and as an http server.
+
+homepage				http://www.flaterco.com/xtide
+master_sites			ftp://www.flaterco.com/xtide
+use_bzip2				yes
+
+set harmonics_version	20110410
+set harmonics_file		harmonics-dwf-${harmonics_version}-free.tar.bz2
+
+distfiles-append		${harmonics_file}
+checksums				${distname}${extract.suffix} \
+                            md5 1d85890bb13b3345154e0f68831b7ebd \
+                            sha1 6f2386ba0e6e1df0d304d3ef037317462d9cc24d \
+                            rmd160 8c302774f244e958de529653a903d9be2f45b07b \
+						${harmonics_file} \
+						    md5 985c2f69eea343782142fa459fc34128 \
+						    sha1 9a33ade09c5ba0a6db007adb4075f7b1475b1130 \
+						    rmd160 43a788ce9864236d45087ba6ba0a9c6b8287c07d
+
+depends_lib				port:libpng port:libtcd port:xorg-libXaw
+
+post-patch {
+	# Make the default harmonics path conveniently point to our directory
+	reinplace s|harmonics.tcd|${prefix}/share/${name}/harmonics| ${worksrcpath}/HarmonicsPath.cc
+}
+
+post-destroot {
+	xinstall -d -m 755 ${destroot}${prefix}/share/${name}/harmonics \
+	                   ${destroot}${prefix}/share/doc/${name}
+	xinstall -m 644 ${workpath}/harmonics-dwf-${harmonics_version}-free.tcd ${destroot}${prefix}/share/${name}/harmonics
+    xinstall -m 644 ${workpath}/harmonics_boilerplate.txt ${destroot}${prefix}/share/doc/${name}
+}
+
+notes "
+Only public domain harmonics for the United States are included in this port.\
+Additional harmonics licensed for non-commercial use only can be downloaded\
+from
+
+ftp://ftp.flaterco.com/xtide/harmonics-dwf-20110410-nonfree.tar.bz2
+
+and extracted into ${prefix}/share/${name}/harmonics to make them available to ${name}.
+"

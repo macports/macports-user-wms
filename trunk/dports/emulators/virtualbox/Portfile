@@ -1,0 +1,324 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                virtualbox
+version             4.1.20
+# Note: On virtualbox version changes please update the checksums of all
+# subports, and update extension_pack_build to match the current build
+# of the extension pack.
+set extension_pack_build   80170
+
+categories          emulators
+platforms           darwin
+license             GPL-2
+maintainers         nomaintainer
+
+description         open source virtualization technology from Oracle
+long_description \
+    VirtualBox is a powerful x86 and AMD64/Intel64 virtualization product for \
+    enterprise as well as home use. Not only is VirtualBox an extremely \
+    feature rich, high performance product for enterprise customers, it is \
+    also the only professional solution that is freely available as Open \
+    Source Software.
+
+homepage            http://www.virtualbox.org/
+master_sites        http://download.virtualbox.org/virtualbox/${version}
+
+if {${name} == ${subport}} {
+
+    PortGroup           qt4 1.0
+    # virtualbox installs a kernel extension so it has to build
+    # for the same architecture as the kernel
+    set kernel_arch [exec uname -m]
+    switch ${kernel_arch} {
+        i386 -
+        x86_64 {
+            supported_archs ${kernel_arch}
+        }
+        default {
+            supported_archs i386 x86_64
+        }
+    }
+
+    universal_variant   no
+
+    distname            VirtualBox-${version}
+    use_bzip2           yes
+
+    checksums           rmd160  ba91d9284c47bac69d064f9bdf98a152fab7672b \
+                        sha256  b132dbc5c6e9ed77aba737ec35b488ac152aa362c3ad49d466897bc410324aeb
+
+    depends_lib-append          port:curl \
+                                port:libidl \
+                                path:lib/pkgconfig/libxml-2.0.pc:libxml2 \
+                                path:lib/pkgconfig/libxslt.pc:libxslt \
+                                path:lib/pkgconfig/openssl.pc:openssl \
+                                path:lib/pkgconfig/sdl.pc:libsdl
+
+    patchfiles                  patch-build.diff \
+                                patch-glext.h.diff \
+                                patch-startup.diff \
+                                patch-configure.diff
+
+    configure.compiler          gcc-4.2
+
+    # Use the apple-gcc-4.2 compiler because Xcode 4.2 no longer
+    # provides gcc-4.2 and builds with llvm-gcc-4.2 crash.
+    if {![file executable ${configure.cc}]} {
+
+        depends_build-append    port:apple-gcc42
+        depends_skip_archcheck-append apple-gcc42
+        patchfiles-append       patch-apple-gcc42.diff
+        configure.compiler      apple-gcc-4.2
+    }
+
+    configure.pre_args-delete   --prefix=${prefix}
+
+    configure.args              --with-qt-dir=${prefix} \
+                                --with-openssl-dir=${prefix} \
+                                --with-gcc=${configure.cc} \
+                                --with-g++=${configure.cxx}
+
+    # VirtualBox uses kBuild.
+    build.cmd                   ". env.sh && kmk"
+
+    # This is the open source edition of VirtualBox.
+    worksrcdir                  VirtualBox-${version}
+
+    set kext_dir                /Library/Extensions
+    set startup_items_dir       /Library/StartupItems
+    post-patch {
+        if {[vercmp $xcodeversion "4.4"] >= 0} {
+            set oldest_supported_SDK 10.7
+        } elseif {[vercmp $xcodeversion "4.1"] >= 0} {
+            set oldest_supported_SDK 10.6
+        } else {
+            set oldest_supported_SDK "10.[expr [lindex [split ${macosx_deployment_target} "."] 1] - 1]"
+        }
+
+        reinplace "s|@APPLICATIONS_DIR@|${applications_dir}|g" \
+            ${worksrcpath}/LocalConfig.kmk
+        reinplace "s|@MACOSX_DEPLOYMENT_TARGET@|${oldest_supported_SDK}|g" \
+           ${worksrcpath}/LocalConfig.kmk
+        reinplace "s|@KEXT_DIR@|${prefix}${kext_dir}|g" \
+            ${worksrcpath}/src/VBox/Installer/darwin/VBoxStartupItems/VirtualBox/VirtualBox
+
+        if {[variant_isset vde2]} {
+            reinplace "s|@PREFIX@|${prefix}|g" ${worksrcpath}/include/VBox/VDEPlugSymDefs.h
+        }
+    }
+
+    destroot {
+
+        set release_dir [lindex [glob -- ${worksrcpath}/out/darwin.*/release/dist] 0]
+
+        xinstall -m 755 -d ${destroot}${applications_dir}
+        copy ${release_dir}/VirtualBox.app ${destroot}${applications_dir}
+        copy ${release_dir}/sdk ${destroot}${applications_dir}/VirtualBox.app
+
+        # Set the owner and group to root:wheel, which is required for kernel extensions
+        # and possibly startup items.
+
+        xinstall -m 755 -o root -g wheel -d ${destroot}${prefix}${kext_dir}
+
+        foreach kext [glob -- ${release_dir}/*.kext] {
+            copy ${kext} ${destroot}${prefix}${kext_dir}
+        }
+
+        xinstall -m 755 -o root -g wheel -d ${destroot}${prefix}${startup_items_dir}
+        copy ${worksrcpath}/src/VBox/Installer/darwin/VBoxStartupItems/VirtualBox ${destroot}${prefix}${startup_items_dir}
+
+        # Create proxies for binaries bundled with VirtualBox.app.
+
+        foreach app_proxy [list VirtualBox VBoxBalloonCtrl VBoxManage VBoxHeadless] {
+
+            set app_proxy_file [open ${destroot}${prefix}/bin/${app_proxy} w]
+
+            puts $app_proxy_file "#!/usr/bin/env bash"
+            puts $app_proxy_file "exec -- ${applications_dir}/VirtualBox.app/Contents/MacOS/${app_proxy} \"\$@\""
+
+            close $app_proxy_file
+
+            file attributes ${destroot}${prefix}/bin/${app_proxy} -permissions "+x"
+        }
+
+        foreach executable [list VirtualBox VirtualBoxVM VBoxHeadless VBoxNetAdpCtl VBoxNetDHCP] {
+            file attributes ${destroot}${applications_dir}/VirtualBox.app/Contents/MacOS/${executable} -permissions "u+s"
+        }
+    }
+
+    pre-activate {
+
+        set head_path ${applications_dir}
+
+        while {${head_path} != "/"} {
+
+            if {[file attributes ${head_path} -owner] != "root" || [file attributes ${head_path} -group] != "admin"
+                || [expr [file attributes ${head_path} -permissions] & 00002] != 0} {
+                error "VirtualBox requires the \"${applications_dir}\" directory and its parent directories to be\
+root:admin owned and not world writeable."
+            }
+
+            set head_path [file dirname ${head_path}]
+        }
+    }
+
+    variant vde2 description {Enable support for VDE} {
+
+        depends_lib-append      port:vde2
+        patchfiles-append       patch-vde.diff
+        configure.args-append   --enable-vde
+    }
+
+    variant vnc description {Enable support for VNC} {
+
+        depends_lib-append      path:lib/pkgconfig/libvncserver.pc:LibVNCServer
+        configure.args-append   --enable-vnc
+    }
+
+    default_variants            +vde2 +vnc
+
+    startupitem.create          yes
+    startupitem.name            VirtualBox
+    startupitem.start           "${prefix}${startup_items_dir}/VirtualBox/VirtualBox start"
+    startupitem.stop            "${prefix}${startup_items_dir}/VirtualBox/VirtualBox stop"
+    startupitem.restart         "${prefix}${startup_items_dir}/VirtualBox/VirtualBox restart"
+    startupitem.pidfile         none
+
+    livecheck.type              regex
+    if {[lindex [split ${version} .] 2] == 0} {
+        livecheck.version       [join [lrange [split ${version} .] 0 1] .]
+    }
+    livecheck.url               ${homepage}
+    livecheck.regex             "VirtualBox (\\d+\\.\\d+(?:\\.\\d+)?) released!"
+
+}
+
+subport virtualbox-guest-additions {
+
+    license                 VirtualBoxPUEL
+
+    description             guest additions for VirtualBox
+
+    long_description        ${description}
+
+    supported_archs         noarch
+
+    distfiles               VBoxGuestAdditions_${version}.iso
+
+    checksums               rmd160  52741ca396fb507dcebfb4af04df61e567d2bba3 \
+                            sha256  04ab744725c17db441077ef471eeb41db5fc6e4569ac54e6c4f52923737b0494
+
+    depends_run             port:virtualbox
+
+    extract.only
+
+    use_configure           no
+
+    build {}
+
+    destroot {
+        set dir ${destroot}${applications_dir}/VirtualBox.app/Contents/MacOS/additions
+        xinstall -d ${dir}
+        copy ${distpath}/${distfiles} ${dir}/VBoxGuestAdditions.iso
+    }
+
+    livecheck.type          none
+}
+
+subport virtualbox-extension-pack {
+
+    # We want to match the supported arch
+    set kernel_arch [exec uname -m]
+    switch ${kernel_arch} {
+        i386 -
+        x86_64 {
+            supported_archs ${kernel_arch}
+        }
+        default {
+            supported_archs i386 x86_64
+        }
+    }
+    array set archs_map {
+         i386       "darwin.x86"
+         x86_64     "darwin.amd64"
+    }
+    set extension_archs {}
+    foreach {arch} ${supported_archs} {
+        lappend extension_archs $archs_map($arch)
+    }
+    set name_extpack    Oracle_VM_VirtualBox_Extension_Pack
+    set app_dir VirtualBox.app
+    set lib_dir ${app_dir}/Contents/MacOS
+    set ext_dir ${lib_dir}/ExtensionPacks
+
+    version             ${version}-${extension_pack_build}
+
+    license             VirtualBoxPUEL
+
+    description         Oracle VM VirtualBox Extension Pack
+    long_description    ${description}
+
+    depends_run         port:virtualbox
+
+    distname            ${name_extpack}-${version}
+
+    checksums           rmd160  84c1662501fe7be803f3ab470cfc6b2a3739414c \
+                        sha256  3aa9a2d65e63b8fcf3fc02070bde23d27f4e061953c8c8f1a1e1d492244bfa2a
+
+    worksrcdir          ${name_extpack}
+    extract.suffix      .vbox-extpack
+    extract.mkdir       yes
+
+    use_configure       no
+
+    build {
+
+        # The pre-built libraries use weird prefixes and Oracle recommends setting
+        # DYLD_LIBRARY_PATH to deal with this. I would rather fix the paths in the
+        # libraries at install time.
+        foreach {arch} $extension_archs {
+
+            foreach lib [glob -directory ${worksrcpath}/${arch} *.dylib*] {
+
+                system "install_name_tool -id ${applications_dir}/${ext_dir}/${name_extpack}/${arch}/[strsed ${lib} /^.*\\///] ${lib}"
+
+                # Then for each dependent dylib with a weird path that this dylib
+                # references, fix the reference to use ${lib_dir}.
+                foreach dep [exec otool -L ${lib}] {
+
+                    if [string match "/Applications/${lib_dir}/*" ${dep}] {
+
+                        system "install_name_tool -change ${dep} ${applications_dir}/${lib_dir}/[strsed ${dep} /^.*\\///] ${lib}"
+                    }
+                }
+            }
+        }
+    }
+
+    destroot {
+
+        xinstall -d -o root -g admin -m 755 ${destroot}${applications_dir}/${ext_dir}/${name_extpack}
+        foreach {f} [glob -directory ${worksrcpath} -type f *] {
+
+            xinstall -o "root" -g "admin" -m 0755 ${f} \
+                ${destroot}${applications_dir}/${ext_dir}/${name_extpack}
+        }
+        foreach {arch} $extension_archs {
+
+            xinstall -o "root" -g "admin" -m 0755 -d \
+                ${destroot}${applications_dir}/${ext_dir}/${name_extpack}/${arch}
+            foreach {f} [glob -directory ${worksrcpath}/${arch} *] {
+
+                xinstall -o "root" -g "admin" -m 0755 ${f} \
+                    ${destroot}${applications_dir}/${ext_dir}/${name_extpack}/${arch}
+            }
+        }
+    }
+
+    livecheck.type      regex
+    livecheck.url       https://www.virtualbox.org/wiki/Downloads
+    livecheck.regex     "/Oracle_VM_VirtualBox_Extension_Pack-(\\d(?!\\${extract.suffix}).*)\\${extract.suffix}"
+}

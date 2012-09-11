@@ -1,0 +1,22 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup python24 1.0
+
+name			py-sisynala
+version			0.9.18
+revision		1
+categories		python www
+platforms		darwin
+maintainers		nomaintainer
+description		Sisynala is a web log file analyser
+long_description	${description}
+
+homepage		http://mithrandr.moria.org/code/sisynala/
+master_sites	http://mithrandr.moria.org/dist/sisynala/
+distname		sisynala-${version}
+checksums		md5 4fa799bc587189293af5a92cdb207313
+patchfiles		patch-setup.py.diff
+
+depends_run		port:py24-geoip \
+				port:py-gd

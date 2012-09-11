@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Class-Inspector 1.25 ../by-authors/id/A/AD/ADAMK/
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Get information about a class and its structure
+long_description    Class::Inspector allows you to get information about a \
+                    loaded class. Most or all of this information can be \
+                    found in other ways, but they aren't always very \
+                    friendly, and usually involve a relatively high level of \
+                    Perl wizardry, or strange and unusual looking code. \
+                    Class::Inspector attempts to provide an easier, more \
+                    friendly interface to this information.
+
+platforms           darwin
+
+checksums           md5 5830bff10a0966993edd14435b8a579b \
+                    sha1 85a9cf2667dce01f32bbd11ef10328c14bd36c45 \
+                    rmd160 f13abef727683db84d1c7c0a9273e6d66c740ccb
+
+supported_archs     noarch

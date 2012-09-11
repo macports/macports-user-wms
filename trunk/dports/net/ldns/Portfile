@@ -1,0 +1,43 @@
+# $Id$
+
+PortSystem 1.0
+
+name                ldns
+version             1.6.13
+categories          net devel
+platforms           darwin
+license             BSD
+maintainers         durchmesser.ch:marius.rieder
+description         DNS library in C
+long_description    ldns is a library with the aim of simplifying DNS \
+                    programming in C. It is heavily based upon the Net::DNS module from \
+                    Perl.
+
+homepage            http://www.nlnetlabs.nl/projects/ldns/
+master_sites        http://www.nlnetlabs.nl/downloads/ldns/
+
+checksums           sha1    859f633d10b763f06b602e2113828cbbd964c7eb \
+                    rmd160  c01c30699be2df5712a397516cd1a17bd8b155be
+
+depends_build       bin:glibtool:libtool
+depends_lib         port:openssl
+
+configure.args      --mandir=${prefix}/share/man --with-ssl=${prefix}
+configure.cppflags  -I${worksrcpath}/include
+build.type          gnu
+
+post-destroot {
+    # Install pkg-config files not installed by the Makefile
+    reinplace "s/-arch \[^ \]*//g" ${worksrcpath}/packaging/libldns.pc
+    file mkdir ${destroot}${prefix}/lib/pkgconfig/
+    file copy ${worksrcpath}/packaging/libldns.pc \
+        ${destroot}${prefix}/lib/pkgconfig/libldns.pc
+}
+
+platform darwin 9 {
+    macosx_deployment_target 10.4
+}
+
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     "The latest release is (\\d+(?:\\.\\d+)*)"

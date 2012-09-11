@@ -1,0 +1,21 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                log4cplus
+version             1.0.4.1
+categories          devel
+maintainers         randomhacks.net:macports
+description         Logging library for C++
+long_description    log4cplus is a third-party reimplementation of log4j \
+                    for C++, with fewer dependencies than the official \
+                    log4cxx port.
+homepage            http://log4cplus.sourceforge.net/
+platforms           darwin
+master_sites        sourceforge
+use_xz              yes
+
+checksums           md5 306f758596f3a78cbe21a41e2362bac2 \
+                    sha1 cffac9b8c6f7b7c2f6e19a029403b2f844aaf5fc \
+                    rmd160 962ec0a49af0d345ce452799a2395cbe7eda3868

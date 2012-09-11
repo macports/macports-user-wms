@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         TimeDate 1.20 Time
+revision            3
+platforms           darwin
+maintainers         l2g
+license             Artistic GPL
+supported_archs     noarch
+
+description         Time and date parsing routines
+
+long_description    This module replaces Graham Barr\'s earlier GetDate \
+                    module, which was only a date parser. The date parser \
+                    contained in this distribution is far superior to the \
+                    yacc based parser, and a *lot* faster.  The parser \
+                    contained here will only parse absolute dates\; if you \
+                    want a date parser that can parse relative dates then \
+                    take a look at the Time modules by David Muir Sharnoff \
+                    on CPAN (p5-time-modules in MacPorts).
+
+checksums           sha1    6394cd243e05c3c2073fa73348a4ad90d8d5963e \
+                    rmd160  513094a2d2fb3678c1ad893abc28c94d344ec7b8

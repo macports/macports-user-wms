@@ -1,0 +1,31 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xfontsel
+version             1.0.4
+categories          x11 graphics
+maintainers         jeremyhu openmaintainer
+description         Point and click selection of X11 font names
+long_description \
+   The xfontsel application provides a simple way to display the fonts \
+   known to your X server, examine samples of each, and retrieve the X \
+   Logical Font Description ("XLFD") full name for a font.
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           sha1    8e3da9d050ad71531bfeb98d5f1071c7b392b3bd \
+                    rmd160  9fbb2092540e26f0a0f67104cf3e40aef95aaef3 \
+                    sha256  25491e9b7762607299f8a7099c97452d9b83e92266f8b0579b380ca01e5a5f7e
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libXaw
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

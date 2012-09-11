@@ -1,0 +1,29 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup 		cmake 1.0
+
+name			gccxml-devel
+version			20120517
+categories		lang
+platforms		darwin
+license			{GPL-2 BSD}
+maintainers		mnick openmaintainer
+# See http://public.kitware.com/GCC_XML/HTML/Copyright.html for license details
+license         {GPL-2 BSD}
+description		generates XML description of C++ code
+long_description	generates an XML description of a C++ program from GCC's \
+				internal representation
+
+homepage		http://www.gccxml.org/
+master_sites        https://downloads.sourceforge.net/project/ompl/dependencies/
+distname            gccxml-2012-05-17
+extract.suffix      .tgz
+checksums           rmd160  8095d9eb91fa79815d13ddf525dacdab4c6fba13 \
+                    sha256  511a42b8d9ee8f3a49c02df67d512027db1cca4e69896caeb0426821a198f8eb
+worksrcdir          gccxml
+
+universal_variant no
+if {${configure.compiler} == "clang"} {
+     configure.compiler llvm-gcc-4.2
+}

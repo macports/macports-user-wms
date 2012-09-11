@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-pyproj
+version             1.9.2
+revision            0
+categories-append   devel
+license             MIT
+platforms           darwin
+
+maintainers         landonf stromnov openmaintainer
+
+description         Python interfaces to PROJ.4 functions.
+long_description    Pyrex wrapper to provide python interfaces to PROJ.4 \
+                    (http://proj.maptools.org) functions.  Performs \
+                    cartographic transformations and geodetic computations.
+
+homepage            http://code.google.com/p/pyproj/
+master_sites        googlecode:pyproj
+distname            pyproj-${version}
+
+checksums           rmd160  52a02fbf34dd2e6789538d16d46a132e976f71c3 \
+                    sha256  6ddbe24de3fc063f422cb2c3a80ab186f056c46dd9608ac5de430e13434feb0e
+
+depends_lib-append  port:proj
+
+python.versions     24 25 26 27
+
+if {$subport != $name} {
+    depends_lib-append  port:py${python.version}-distribute
+    post-destroot {
+        xinstall -m 644 -W ${worksrcpath} \
+            README PKG-INFO \
+            ${destroot}${prefix}/share/doc/${subport}
+    }
+}

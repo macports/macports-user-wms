@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        combinatorics 1.0.9
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Combinatorics functions, incuding partitioning.
+long_description    ${description}
+
+checksums           md5     3dd36eb5cbc5511be0d72250ebb28799 \
+                    sha1    068f22bf8feb69a401bb8267bb2cd87d145df9ef \
+                    rmd160  f57b4bbf6bb87ba329ba70640bd97e4f3ecc43c1

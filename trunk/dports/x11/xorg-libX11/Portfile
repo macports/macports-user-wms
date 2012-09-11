@@ -1,0 +1,74 @@
+# $Id$
+
+PortSystem 1.0
+
+name        xorg-libX11
+version     1.5.0
+categories  x11 devel
+license     X11
+maintainers jeremyhu openmaintainer
+description X.org libX11
+homepage    http://www.x.org
+platforms   darwin macosx
+long_description libX11 is the main library used by X Window System applications to communicate with the X server.
+master_sites     xorg:individual/lib/
+
+distname    libX11-${version}
+checksums           sha1    8177535c9c59d8c3ab98d55ce53520b5737ccd1a \
+                    rmd160  53873128000cb6827941ee81cb005f5b730a7940 \
+                    sha256  c382efd7e92bfc3cef39a4b7f1ecf2744ba4414a705e3bc1e697f75502bd4d86
+use_bzip2   yes
+use_parallel_build      yes
+
+depends_build   port:pkgconfig \
+                port:xorg-xtrans \
+                port:xorg-bigreqsproto \
+                port:xorg-xcmiscproto \
+                port:xorg-xextproto \
+                port:xorg-xf86bigfontproto \
+                port:xorg-inputproto
+
+depends_lib     port:xorg-libXdmcp \
+                port:xorg-libXau \
+                port:xorg-libxcb \
+                port:xorg-xproto \
+                port:xorg-kbproto
+
+configure.env-append RAWCPP=${configure.cpp}
+
+configure.args \
+    --without-xmlto \
+    --without-fop \
+    --disable-specs
+
+build.args V=1
+
+# Depending on ghostscript for the PDF documentation creates a dependency
+# loop, so you may want to install first without the docs variant
+variant docs description "Install extra documentation" {
+    depends_build-append \
+        port:xmlto \
+        port:fop \
+        port:xorg-sgml-doctools
+
+    depends_skip_archcheck-append \
+        xmlto
+
+    configure.args-delete \
+        --without-xmlto \
+        --without-fop \
+        --disable-specs
+
+    configure.args-append \
+        --with-xmlto \
+        --with-fop \
+        --enable-specs
+
+    configure.env-append \
+        FOP="${prefix}/bin/fop" \
+        XMLTO="${prefix}/bin/xmlto"
+}
+
+livecheck.type  regex
+livecheck.url   http://xorg.freedesktop.org/archive/individual/lib/?C=M&O=D
+livecheck.regex libX11-(\\d+(?:\\.\\d+)*)

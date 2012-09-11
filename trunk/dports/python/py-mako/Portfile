@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-mako
+version             0.7.2
+revision            0
+python.versions     24 25 26 27
+categories-append   www
+license             MIT
+platforms           darwin
+supported_archs     noarch
+
+maintainers         dh akitada stromnov
+
+description         A super-fast templating language that borrows \
+                    the best ideas from the existing templating \
+                    languages.
+
+long_description    Mako is a template library written in Python. \
+                    It provides a familiar, non-XML syntax which \
+                    compiles into Python modules for maximum \
+                    performance. Mako's syntax and API borrows from \
+                    the best ideas of many others, including Django \
+                    templates, Cheetah, Myghty, and Genshi. Conceptually, \
+                    Mako is an embedded Python (i.e. Python Server Page) \
+                    language, which refines the familiar ideas of \
+                    componentized layout and inheritance to produce one \
+                    of the most straightforward and flexible models \
+                    available, while also maintaining close ties to \
+                    Python calling and scoping semantics.
+
+homepage            http://www.makotemplates.org/
+master_sites        http://pypi.python.org/packages/source/M/Mako/
+
+distname            Mako-${version}
+
+checksums           rmd160  24872540e993573eb803368908d1b40f8dee39a3 \
+                    sha256  fe8698e845035586bd711a6748e4e40a208a58de276b9138026164700494b68f
+
+if {$subport != $name} {
+    depends_lib     port:py${python.version}-distribute \
+                    port:py${python.version}-beaker \
+                    port:py${python.version}-markupsafe
+}
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "Mako-(\\d+(?:\\.\\d+)*)${extract.suffix}"

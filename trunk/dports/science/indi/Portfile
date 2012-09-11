@@ -1,0 +1,59 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           cmake 1.0
+
+name                indi
+
+version             0.9.5
+set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          science
+license             LGPL-2.1+
+maintainers         gmail.com:ferran.casarramona
+
+description         distributed control protocol for astronomical instrumentation
+long_description    INDI is a distributed control protocol designed to \
+                    operate astronomical instrumentation. INDI is small, \
+                    flexible, easy to parse, and scalable. It supports common \
+                    DCS functions such as remote control, data acquisition, \
+                    monitoring, and a lot more.  With INDI, you have a total \
+                    transparent control over your instruments so you can get \
+                    more science with less time.
+
+homepage            http://www.indilib.org/
+#master_sites        sourceforge:project/indi/indilib/${branch}
+master_sites        macports_distfiles
+
+platforms           darwin
+
+distname            libindi_${version}
+
+checksums           rmd160  1e2900f5f1c9f61e9fa0930be43c9fd254200839 \
+                    sha256  4c8d373e464c941ef42324f559e0087127030fcb2e93d49afb69fb9d52c77b9c
+
+depends_lib         port:libnova \
+                    port:zlib \
+                    port:libusb \
+                    port:libusb-compat \
+                    port:cfitsio
+
+worksrcdir          libindi-${version}
+
+configure.args-append \
+                    -DWITH_CFITSIO=ON \
+                    -DWITH_FLI=OFF \
+                    -DNOVA_INCLUDE_DIR=${prefix}/include/libnova \
+                    -DNOVA_LIBRARIES=${prefix}/lib/libnova.dylib \
+                    -DBUILD_ROOT=${destroot} \
+                    ${worksrcpath}
+
+pre-activate {
+    # Remove symlinks left behind by indi 0.8_0 and earlier.
+    foreach file {indi_lx200_16 indi_lx200ap indi_lx200autostar indi_lx200classic indi_lx200gps indi_tcfs3_focus} {
+        file delete -force ${prefix}/bin/${file}
+    }
+}
+
+livecheck.type      sourceforge
+livecheck.regex     /libindi_(\[0-9.\]+)${extract.suffix}

@@ -1,0 +1,19 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        communications 1.0.10
+revision            1
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Digital Communications, Error Correcting Codes (Channel \
+                    Code), Source Code functions, Modulation and Galois Fields
+long_description    ${description}
+
+checksums           md5     cae9f1e4ce2b1c2358e028abe947d168 \
+                    sha1    b51523d8b10f10fd5519bd218e9bf6d37f698a70 \
+                    rmd160  210f98df17a5501be36b8fe02535b4ea0da38aad
+
+depends_lib-append  port:octave-signal

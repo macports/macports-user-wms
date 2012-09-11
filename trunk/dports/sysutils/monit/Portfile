@@ -1,0 +1,50 @@
+# $Id$
+
+PortSystem 1.0
+
+name                monit
+version             5.4
+categories          sysutils
+platforms           darwin freebsd linux netbsd openbsd solaris
+license             GPL-3
+maintainers         nomaintainer
+
+description         monit is a utility for managing and monitoring, processes, \
+                    files, directories and devices on a UNIX system.
+long_description    Monit can start a process if it does not run, restart a process \
+                    if it does not respond and stop a process if it uses too many resources. \
+                    You can use monit to monitor files, directories and devices for changes, \
+                    such as timestamp changes, checksum changes or size changes. You can also \
+                    monitor remote hosts\; monit can ping a remote host and can check TCP/IP \
+                    port connections and server protocols. Monit is controlled via an easy \
+                    to use control file based on a free-format, token-oriented syntax. Monit \
+                    logs to syslog or to its own log file and notifies you about error \
+                    conditions and recovery status via customizable alert.
+
+homepage            http://mmonit.com/monit/
+master_sites        ${homepage}dist/
+
+checksums           rmd160  1f011399d4e04a1d85277ed5ed2ba7750a2e855e \
+                    sha256  805c6545de2dd7f3d9e6e0c68018b2aadd5fc98b243c8868178f247a60906038
+
+depends_build       bin:flex:flex bin:bison:bison 
+depends_lib         port:openssl
+
+platform freebsd {
+    build.type      gnu
+}
+
+platform netbsd {
+    build.type      gnu
+}
+
+platform openbsd {
+    build.type      gnu
+}
+
+post-destroot {
+    xinstall -m 444 ${worksrcpath}/monitrc ${destroot}${prefix}/etc/monitrc.sample
+    xinstall -d ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 444 -W ${worksrcpath} CHANGES COPYING README \
+        ${destroot}${prefix}/share/doc/${name}
+}

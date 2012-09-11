@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-metapost
+version             26926
+revision            0
+
+categories          tex
+maintainers         dports
+license             Copyleft Permissive
+description         TeX Live: MetaPost (and Metafont) drawing packages
+long_description    MetaPost (and Metafont) drawing packages
+
+checksums           texlive-metapost-26926-run.tar.xz \
+                    rmd160  8df72845e049a170c772ab566e57ac6837c0fe48 \
+                    sha256  9183348cb05fdc85092b4d8a32aab813a381951fe566b396c0295f50a1f81e75 \
+                    texlive-metapost-26926-doc.tar.xz \
+                    rmd160  c1dfb01f4483afe39760f14d2f2025fbf545bf60 \
+                    sha256  3433e80381f2ce0de49f72f2561e79fd5d49377d51df653bc1bc62ac18521747 \
+                    texlive-metapost-26926-src.tar.xz \
+                    rmd160  2128317f9d88062e9212795af28c0cbf5fff1ec0 \
+                    sha256  b5300be90e9349225cce57c127eca912b928ac9e8fee147d8ee1f6d7abeedeaa
+
+depends_lib         port:texlive-basic
+
+texlive.maps      \
+    {Map troff-updmap.map}
+
+texlive.binaries    dvitomp mfplain mpost
+
+
+texlive.texmfport

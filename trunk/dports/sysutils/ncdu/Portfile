@@ -1,0 +1,26 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                ncdu
+version             1.8
+categories          sysutils
+maintainers         snc openmaintainer
+license             MIT
+description         NCurses Disk Usage
+long_description    ncdu is an ncurses version of the famous old 'du' unix \
+                    command. It provides a fast and easy interface to your \
+                    harddrive. Where is your disk space going? Why is your \
+                    home directory that large? ncdu can answer those questions \
+                    for you in just a matter of seconds!
+platforms           darwin freebsd
+homepage            http://dev.yorhel.nl/ncdu/
+master_sites        sourceforge
+
+depends_lib         port:ncurses
+
+checksums           rmd160  37ffe863e66cb99c0398f68951296c4f7579c929 \
+                    sha256  42aaf0418c05e725b39b220166a9c604a9c54c0fbf7692c9c119b36d0ed5d099
+
+livecheck.regex     ${name}-(\\d\\.\\d)${extract.suffix}

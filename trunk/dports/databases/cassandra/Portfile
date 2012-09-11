@@ -1,0 +1,156 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    cassandra
+version                 0.8.2
+categories              databases
+maintainers             singingwolfboy openmaintainer
+homepage                http://cassandra.apache.org/
+platforms               darwin
+license                 Apache-2
+master_sites            apache
+master_sites.mirror_subdir  ${name}/${version}
+distname                apache-${name}-${version}-src
+
+description             A highly scalable, eventually consistent, \
+                        distributed, structured key-value store.
+long_description        \
+    The Apache Cassandra Project develops a highly scalable second-generation \
+    distributed database, bringing together Dynamo's fully distributed design \
+    and Bigtable's ColumnFamily-based data model. Cassandra was open sourced \
+    by Facebook in 2008, and is now developed by Apache committers and \
+    contributors from many companies.
+
+checksums               md5     f9f06527fd2a043ea04e2852144f7d21 \
+                        sha1    48ebc3644972260eae9de85fb704de7088549f62 \
+                        rmd160  4a68ef1e6370f01861e90132870d2d9aefb601bb
+
+depends_build           bin:ant:apache-ant port:apache-ivy
+depends_run             port:antlr3 port:junit port:jline port:slf4j \
+                        port:commons-cli port:commons-lang port:commons-collections \
+                        port:commons-codec port:jakarta-log4j \
+                        port:google-collections  port:google-guava \
+                        port:servlet25-api
+set mp_libs {antlr junit jline slf4j-api slf4j-log4j12 commons-cli \
+    commons-lang commons-collections commons-codec jakarta-log4j \
+    google-collect google-guava servlet25-api }
+
+use_configure           no
+
+build.cmd               ant
+build.target            jar
+
+destroot {
+    # create directories
+    set cas_home ${destroot}${prefix}/share/java/${name}
+    set doc_dir ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 755 -d ${cas_home}/lib ${doc_dir}
+    
+    # move in docs
+    eval move [glob ${worksrcpath}/*.txt] ${doc_dir}/
+    
+    # fix cassandra include file
+    move ${worksrcpath}/bin/cassandra.in.sh ${cas_home}/
+    reinplace "s|CASSANDRA_HOME=.*|CASSANDRA_HOME=${prefix}/share/java/${name}|" ${cas_home}/cassandra.in.sh
+    
+    # install bin scripts
+    eval delete [glob ${worksrcpath}/bin/*.bat]
+    eval reinplace "s|/opt/cassandra/cassandra.in.sh|${prefix}/share/java/${name}/cassandra.in.sh|" [glob ${worksrcpath}/bin/*]
+    eval xinstall -m 755 [glob ${worksrcpath}/bin/*] ${destroot}${prefix}/bin
+
+    # install jars
+    xinstall -m 644 ${worksrcpath}/build/apache-${name}-${version}-SNAPSHOT.jar \
+        ${cas_home}/lib/${name}.jar
+    xinstall -m 644 ${worksrcpath}/build/apache-${name}-thrift-${version}-SNAPSHOT.jar \
+        ${cas_home}/lib/${name}-thrift.jar
+    if {[variant_isset no_deps]} {
+        eval xinstall -m 644 [glob ${worksrcpath}/lib/*.jar] ${cas_home}/lib/
+    } else {
+        foreach lib $mp_libs {
+            ln -s ${prefix}/share/java/$lib.jar ${cas_home}/lib/$lib.jar
+            file delete ${worksrcpath}/lib/$lib.jar
+        }
+        eval xinstall -m 644 [glob ${worksrcpath}/lib/*.jar] ${cas_home}/lib/
+    }
+    
+    # install conf, contrib, interface
+    move ${worksrcpath}/conf ${worksrcpath}/contrib ${worksrcpath}/interface ${cas_home}
+    
+    # update file storage location to be within Macports hierarchy
+    eval reinplace "s|/var|${prefix}/var|" [glob ${cas_home}/conf/*]
+    
+    # create these files
+    xinstall -m 755 -d ${destroot}${prefix}/var/log/cassandra/ ${destroot}${prefix}/var/lib/cassandra/data/
+    touch ${destroot}${prefix}/var/log/cassandra/system.log
+}
+destroot.keepdirs   ${destroot}${prefix}/var/log/cassandra/ \
+                    ${destroot}${prefix}/var/lib/cassandra/
+
+
+pre-build {
+    # help Ant find Ivy
+    xinstall -d ${worksrcpath}/build
+    ln -s ${prefix}/share/java/ivy.jar ${worksrcpath}/build/ivy.jar
+    reinplace "s|ivy-\${ivy\.version}\.jar|ivy.jar|" ${worksrcpath}/build.xml
+    
+    if {[variant_isset no_deps]} {} else {
+        file delete ${worksrcpath}/lib/antlr-3.2.jar
+        ln -s ${prefix}/share/java/antlr.jar ${worksrcpath}/lib/antlr.jar
+        reinplace "s|antlr-3.2.jar|antlr.jar|" ${worksrcpath}/build.xml
+        
+        file delete ${worksrcpath}/lib/junit-4.6.jar
+        ln -s ${prefix}/share/java/junit.jar ${worksrcpath}/lib/junit.jar
+        reinplace "s|junit-4.6.jar|junit.jar|" ${worksrcpath}/build.xml
+        
+        file delete ${worksrcpath}/lib/commons-cli-1.1.jar
+        ln -s ${prefix}/share/java/commons-cli.jar ${worksrcpath}/lib/commons-cli.jar
+        reinplace "s|commons-cli-1.1.jar|commons-cli.jar|" ${worksrcpath}/build.xml
+        
+        file delete ${worksrcpath}/lib/commons-lang-2.4.jar
+        ln -s ${prefix}/share/java/commons-lang.jar ${worksrcpath}/lib/commons-lang.jar
+        reinplace "s|commons-lang-2.4.jar|commons-lang.jar|" ${worksrcpath}/build.xml
+        
+        file delete ${worksrcpath}/lib/commons-collections-3.2.1.jar
+        ln -s ${prefix}/share/java/commons-collections.jar ${worksrcpath}/lib/commons-collections.jar
+        reinplace "s|commons-collections-3.2.1.jar|commons-collections.jar|" ${worksrcpath}/build.xml
+
+        file delete ${worksrcpath}/lib/commons-codec-1.2.jar
+        ln -s ${prefix}/share/java/commons-codec.jar ${worksrcpath}/lib/commons-codec.jar
+        reinplace "s|commons-codec-1.2.jar|commons-codec.jar|" ${worksrcpath}/build.xml
+        
+        file delete ${worksrcpath}/lib/log4j-1.2.16.jar
+        ln -s ${prefix}/share/java/jakarta-log4j.jar ${worksrcpath}/lib/jakarta-log4j.jar
+        reinplace "s|log4j-1.2.16.jar|jakarta-log4j.jar|" ${worksrcpath}/build.xml
+        
+        file delete ${worksrcpath}/lib/google-collect-1.0-rc1.jar
+        ln -s ${prefix}/share/java/google-collect.jar ${worksrcpath}/lib/google-collect.jar
+        reinplace "s|google-collect-1.0-rc1.jar|google-collect.jar|" ${worksrcpath}/build.xml
+
+        file delete ${worksrcpath}/lib/guava-r08.jar
+        ln -s ${prefix}/share/java/google-guava.jar ${worksrcpath}/lib/google-guava.jar
+        reinplace "s|guava-r08.jar|google-guava.jar|" ${worksrcpath}/build.xml
+        
+        file delete ${worksrcpath}/lib/jline-0.9.94.jar
+        ln -s ${prefix}/share/java/jline.jar ${worksrcpath}/lib/jline.jar
+        reinplace "s|jline-0.9.94.jar|jline.jar|" ${worksrcpath}/build.xml
+        
+        file delete ${worksrcpath}/lib/slf4j-api-1.6.1.jar
+        ln -s ${prefix}/share/java/slf4j-api.jar ${worksrcpath}/lib/slf4j-api.jar
+        reinplace "s|slf4j-api-1.6.1.jar|slf4j-api.jar|" ${worksrcpath}/build.xml
+        
+        file delete ${worksrcpath}/lib/slf4j-log4j12-1.6.1.jar
+        ln -s ${prefix}/share/java/slf4j-log4j12.jar ${worksrcpath}/lib/slf4j-log4j12.jar
+        reinplace "s|slf4j-log4j12-1.6.1.jar|slf4j-log4j12.jar|" ${worksrcpath}/build.xml
+
+        file delete ${worksrcpath}/lib/servlet-api-2.5-20081211.jar
+        ln -s ${prefix}/share/java/servlet25-api.jar ${worksrcpath}/lib/servlet25-api.jar
+        reinplace "s|servlet-api-2.5-20081211.jar|servlet25-api.jar|" ${worksrcpath}/build.xml
+    }
+}
+
+variant no_deps description {Use jar files that came with Cassandra distribution for dependencies, instead of using Macports to install dependencies} {
+    # clear all runtime deps
+    depends_run
+}

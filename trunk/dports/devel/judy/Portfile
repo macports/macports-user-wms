@@ -1,0 +1,39 @@
+# $Id$
+
+PortSystem 1.0
+
+name            judy
+version         1.0.5
+categories      devel
+license         LGPL
+platforms       darwin
+maintainers     nomaintainer
+
+description     general purpose dynamic array as a C callable library
+long_description    Judy is a general purpose dynamic array implemented as a C \
+                callable library. Judy's speed and memory usage are typically \
+                better than other data storage models and improves with very \
+                large data sets.
+
+homepage        http://judy.sourceforge.net/
+master_sites    sourceforge:project/judy/judy/Judy-${version}
+distname        Judy-${version}
+worksrcdir      judy-${version}
+
+checksums       md5     115a0d26302676e962ae2f70ec484a54 \
+                sha1    3540f003509acac3b1260424380ddf97914f7745 \
+                rmd160  00cc2d28fd385e64c8fb9a564e186aee4bd52b4f
+
+configure.args  --mandir=${prefix}/share/man
+
+if {$build_arch == "x86_64" || $build_arch == "ppc64"} {
+    configure.args-append   --enable-64-bit
+} elseif {$build_arch == "i386" || $build_arch == "ppc"} {
+    configure.args-append   --enable-32-bit
+}
+
+use_parallel_build 	no
+test.run        yes
+test.target     check
+
+livecheck.regex /Judy-(\[0-9.\]+)${extract.suffix}

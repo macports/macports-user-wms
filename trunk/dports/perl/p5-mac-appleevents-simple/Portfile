@@ -1,0 +1,24 @@
+# $Id$
+
+PortSystem			1.0
+PortGroup			perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup			Mac-AppleEvents-Simple 1.18
+revision			3
+license				{Artistic-1 GPL}
+maintainers			nomaintainer
+description			Simple interface to Mac::AppleEvents
+long_description \
+	This is Mac::AppleEvents::Simple.  It provides a more simplified interface \
+	to Mac::AppleEvents for building, sending, and receiving events, as well \
+	as for retrieving data from descriptors.
+
+platforms			darwin
+
+checksums			md5 84817e2a47eb54860a239856eb152ad1
+
+if {${perl5.major} != ""} {
+supported_archs		i386 ppc
+depends_lib-append			port:p${perl5.major}-mac-carbon port:p${perl5.major}-test-pod
+}

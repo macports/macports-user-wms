@@ -1,0 +1,44 @@
+# $Id$
+
+PortSystem              1.0
+
+name                    dsniff
+conflicts               dsniff-devel
+version                 2.3
+revision                5
+categories              net
+license                 BSD ISC
+maintainers             nomaintainer
+platforms               darwin
+
+description             network auditing and penetration testing tools
+
+long_description        dsniff is a collection of tools for network auditing \
+                        and penetration testing. dsniff, filesnarf, mailsnarf, \
+                        msgsnarf, urlsnarf, and webspy passively monitor a \
+                        network for interesting data (passwords, e-mail, \
+                        files, etc.). arpspoof, dnsspoof, and macof facilitate \
+                        the interception of network traffic normally \
+                        unavailable to an attacker (e.g, due to layer-2 \
+                        switching). sshmitm and webmitm implement active \
+                        monkey-in-the-middle attacks against redirected SSH \
+                        and HTTPS sessions by exploiting weak bindings in \
+                        ad-hoc PKI.
+
+homepage                http://monkey.org/~dugsong/dsniff/
+master_sites            ${homepage}
+checksums               md5     183e336a45e38013f3af840bddec44b4
+
+depends_build           port:libnids
+
+depends_lib             port:libpcap \
+                        port:openssl \
+                        port:xorg-libXmu
+
+patchfiles              patch-pcaputil.c \
+                        patch-sshcrypto.c
+
+configure.args          --mandir=${prefix}/share/man
+configure.cflags-append -DBIND_8_COMPAT
+
+destroot.destdir        install_prefix=${destroot}

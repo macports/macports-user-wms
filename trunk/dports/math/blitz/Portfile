@@ -1,0 +1,72 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                blitz
+version             0.10
+revision            1
+categories          math devel
+license             {LGPL-3+ BSD Artistic-2}
+platforms           darwin
+maintainers         nomaintainer
+
+description         a C++ class library for scientific computing
+
+long_description    Blitz++ is ${description} which provides performance on \
+                    par with Fortran 77/90. It uses template techniques to \
+                    achieve high performance.
+
+homepage            http://web.archive.org/web/20110721185508/http://www.oonumerics.org/blitz/
+master_sites        sourceforge:project/blitz/blitz/Blitz%2B%2B%20${version}
+
+# 0.10 was stealth-updated 2012-07-03
+dist_subdir         ${name}/${version}_1
+
+checksums           rmd160  c48e8a01ebfb8ae907a8a2c2c8d345b1625b4ad5 \
+                    sha256  804ef0e6911d43642a2ea1894e47c6007e4c185c866a7d68bad1e4c8ac4e6f94
+
+configure.args      --enable-shared \
+                    --disable-doxygen \
+                    --disable-dot \
+                    --disable-fortran \
+                    --disable-latex-docs
+
+destroot.args       docdir=${prefix}/share/doc/${name}
+
+variant gcc43 conflicts gcc44 gcc45 gcc46 gcc47 description {Use the gcc43 compiler} {
+    depends_lib-append  port:gcc43
+    configure.compiler  macports-gcc-4.3
+}
+variant gcc44 conflicts gcc43 gcc45 gcc46 gcc47 description {Use the gcc44 compiler} {
+    depends_lib-append  port:gcc44
+    configure.compiler  macports-gcc-4.4
+}
+variant gcc45 conflicts gcc43 gcc44 gcc46 gcc47 description {Use the gcc45 compiler} {
+    depends_lib-append  port:gcc45
+    configure.compiler  macports-gcc-4.5
+}
+variant gcc46 conflicts gcc43 gcc44 gcc45 gcc47 description {Use the gcc46 compiler} {
+    depends_lib-append  port:gcc46
+    configure.compiler  macports-gcc-4.6
+}
+variant gcc47 conflicts gcc43 gcc44 gcc45 gcc46 description {Use the gcc47 compiler} {
+    depends_lib-append  port:gcc47
+    configure.compiler  macports-gcc-4.7
+}
+
+pre-build {
+    build.env-append    CC="${configure.cc}" \
+                        CXX="${configure.cxx}" \
+                        F77="${configure.f77}"
+}
+pre-destroot {
+    destroot.env-append CC="${configure.cc}" \
+                        CXX="${configure.cxx}" \
+                        F77="${configure.f77}"
+}
+
+# does not build universal software
+universal_variant   no
+
+livecheck.regex     /${name}-(\[0-9.\]+)${extract.suffix}

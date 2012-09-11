@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem      1.0
+
+name            libzip
+version         0.10
+categories      archivers
+license         BSD
+platforms       darwin
+maintainers     nomaintainer
+description     libzip is a C library for reading, creating, and modifying zip archives.
+long_description This is a C library for reading, creating, and modifying zip archives.\
+    Files can be added from data buffers, files, or compressed data  \
+    copied directly from other zip archives. Changes made without \
+    closing the archive can be reverted. 
+homepage        http://www.nih.at/libzip/
+master_sites    ${homepage}
+use_bzip2       yes
+
+checksums       sha1    957a56acc9b269f597af839196a77eb53b09529e \
+                rmd160  7672a7bb8d18f147b19577681b74a9aa9bfb9e5b
+
+depends_lib     port:zlib
+
+livecheck.type  regex
+livecheck.regex ${name}-(\[0-9.\]+)\\.tar

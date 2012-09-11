@@ -1,0 +1,17 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        gsl 1.0.8
+platforms           darwin
+license             GPL-2+ GPL-3+
+maintainers         nomaintainer
+description         Octave bindings to the GNU Scientific Library
+long_description    ${description}
+
+checksums           md5     9f45ab71dc77b57646d6bfab5984cccd \
+                    sha1    2a7d06963e00d44f92682edd7ec1d5036574bf41 \
+                    rmd160  34c9d705ffc5b59c656219a0a5bcadceda73d6f7
+
+depends_lib-append  port:gsl

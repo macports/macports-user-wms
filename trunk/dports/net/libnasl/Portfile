@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem 1.0
+
+name		libnasl
+version		2.2.6
+categories	net security
+license		GPL-2
+maintainers	nomaintainer
+description	Nessus security scanner
+long_description Nessus is a security scanner that crawls across a network, looking \
+                for well-known vulnerabilities and common misconfigurations.
+
+homepage        http://www.nessus.org/
+platforms       darwin
+master_sites    ftp://ftp.nessus.org/pub/nessus/nessus-${version}/src/ \
+                ftp://ftp.gwdg.de/pub/linux/misc/nessus/nessus-${version}/src/ \
+                http://ftp.gwdg.de/pub/linux/misc/nessus/nessus-${version}/src/ \
+                ftp://sunsite.cnlab-switch.ch/mirror/nessus/nessus-${version}/src/ \
+                ftp://ftp.chg.ru/pub/security/nessus/nessus-${version}/src/ \
+                ftp://ftp.sekure.net/pub/nessus/nessus-${version}/src/
+checksums	md5 06f90680d20953fb9806b8c54e021683 \
+		sha1 323475d7c11b045abd93f8adad3e7ca7ca05ed0a
+worksrcdir      libnasl/
+depends_lib     lib:libnessus.${version}:nessus-libraries
+
+configure.args  --mandir=\\\${prefix}/share/man \
+                --infodir=\\\${prefix}/share/info

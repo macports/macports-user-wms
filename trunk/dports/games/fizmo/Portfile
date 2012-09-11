@@ -1,0 +1,62 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                fizmo
+version             0.7.3
+revision            1
+categories          games
+platforms           darwin linux
+maintainers         spellbreaker.org:Christoph.Ender
+license             BSD
+
+description         Console-based Z-Machine interpreter for Infocom games.
+
+long_description    Fizmo is a Z-Machine interpreter (Fizmo Interprets \
+                    Z-Machine Opcodes) which allows you to run Infocom- and \
+                    most other Z-Machine based games -- except version 6 -- on \
+                    POSIX-like systems which provide a ncursesw (note the 'w') \
+                    library. It has been successfully compiled on Debian based \
+                    Linux, Mac OS X (with MacPorts providing ncursesw) and \
+                    Windows (using Cygwin and a self-compiled ncursesw \
+                    library). This is a console-style application, meaning \
+                    that it runs in textmode and does not provide any GUI \
+                    whatsoever. For more information about Infocom and \
+                    interactive fiction, see the 'New to IF' section at \
+                    http://www.ifarchive.org. Games are available from \
+                    http://www.ifarchive.org/indexes/if-archiveXgamesXzcode.html
+
+homepage            http://spellbreaker.org/~chrender/fizmo/
+master_sites        http://spellbreaker.org/~chrender/fizmo/source/
+
+checksums           rmd160 4de03b4fa32108db5d85e7f54d9a58e427398760 \
+                    sha256 cfc449e843937fcf1e82228d32628b2d57d278d8a9a85e1aa4df001e7ad9f9d2
+
+depends_build       port:pkgconfig
+
+depends_lib         port:ncurses \
+                    port:libsdl_sound \
+                    port:libsndfile \
+                    port:libxml2 \
+                    port:xorg-libX11 \
+                    port:jpeg \
+                    port:libpng
+
+post-patch {
+    file copy ${worksrcpath}/config.macports.mk ${worksrcpath}/config.mk
+    reinplace "s|prefix = /opt/local|prefix = ${destroot}${prefix}|g" ${worksrcpath}/config.mk
+}
+
+use_configure       no
+
+build.args          CC="${configure.cc}" CFLAGS="[get_canonical_archflags]" prefix=${prefix}
+build.target        fizmo-console fizmo-ncursesw
+
+destroot.args       CC="${configure.cc}" CFLAGS="[get_canonical_archflags]" prefix=${prefix}
+destroot.target     install-locales install-fizmo-console install-fizmo-ncursesw
+
+post-destroot {
+    file link -symbolic ${destroot}${prefix}/bin/fizmo fizmo-ncursesw
+    file link -symbolic ${destroot}${prefix}/share/man/man6/fizmo.6 fizmo-ncursesw.6
+}

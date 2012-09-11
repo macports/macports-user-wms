@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        time 1.0.9
+platforms           darwin
+license             GPL-2+ GPL-3+
+maintainers         nomaintainer
+description         Additional date manipulation tools.
+long_description    ${description}
+
+checksums           md5     333d00919b63959aa5f345f134c01c5e \
+                    sha1    6f37ce459fdcf2667847cc046266cddbaa0d6528 \
+                    rmd160  64ff0fcf0f07c185d77b1e9682857e960a7922ec

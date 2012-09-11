@@ -1,0 +1,28 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name            wavpack
+version         4.60.1
+categories      audio
+license         BSD
+maintainers     rmstonecipher openmaintainer
+description     Hybrid lossless audio compression
+long_description        WavPack is a completely open audio compression format \
+                        providing lossless, high-quality lossy, and a unique \
+                        hybrid compression mode. Although the technology is \
+                        loosely based on previous versions of WavPack, the new \
+                        version 4 format has been designed from the ground up \
+                        to offer unparalleled performance and functionality.
+homepage        http://www.wavpack.com/
+platforms       darwin
+master_sites    ${homepage}
+checksums           md5     7bb1528f910e4d0003426c02db856063 \
+                    sha1    003c65cb4e29c55011cf8e7b10d69120df5e7f30 \
+                    rmd160  66107e91f61a79c406b164b679e1f29078939ce4
+use_bzip2       yes
+
+livecheck.type  regex
+livecheck.url   ${homepage}/downloads.html
+livecheck.regex "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

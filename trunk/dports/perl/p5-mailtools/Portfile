@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         MailTools 2.08 Mail
+revision            2
+platforms           darwin
+maintainers         l2g
+license             Artistic GPL
+supported_archs     noarch
+
+description         Mail-related Perl modules (recommended legacy use only)
+
+long_description    MailTools is a set of Perl modules related to mail \
+                    applications. These modules are very old (partially \
+                    written before MIME!). If you're starting a new e-mail \
+                    application, consider using MailBox instead (p5-mail-box \
+                    in MacPorts). It is a little harder to learn, but at \
+                    least implements all RFCs correctly.
+
+checksums           sha1    dca3a781273ec37f3aacb729c559ba1fbb41bc30 \
+                    rmd160  d67c8006c8ae42a5b7d109c899da00abc8b05493
+
+if {${perl5.major} != ""} {
+depends_lib-append  port:p${perl5.major}-timedate
+}

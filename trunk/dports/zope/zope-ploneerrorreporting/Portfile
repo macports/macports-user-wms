@@ -1,0 +1,21 @@
+# $Id$
+
+PortSystem		1.0
+PortGroup		zope 1.0
+
+zope.setup		PloneErrorReporting 0.11
+revision		2
+license			GPL-2+
+maintainers		nomaintainer
+description		PloneErrorReporting product for Zope CMF/Plone
+long_description	PloneErrorReporting replaces default_error_message \
+					and prefs_error_log_showEntry with pages that \
+					facilitate the submission of useful bug reports to \
+					Plone.  It is designed with the goal of improving \
+					the information provided by bug reporters.
+homepage		http://sourceforge.net/projects/collective
+master_sites	sourceforge:collective
+checksums		md5 0314f3457e4669764e125c583bc3fba2
+platforms		darwin freebsd
+
+depends_lib-append		port:zope-cmf

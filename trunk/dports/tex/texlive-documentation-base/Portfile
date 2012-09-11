@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-documentation-base
+version             26923
+revision            0
+
+categories          tex
+maintainers         dports
+license             Copyleft Permissive
+description         TeX Live: TeX Live documentation
+long_description    TeX Live documentation
+
+checksums           texlive-documentation-base-26923-run.tar.xz \
+                    rmd160  a453d846570d7231320080f684fde1271caca0c7 \
+                    sha256  2f14b17d1eb9a194d3b073546d3f1256b58e1715b3469e3c0a1ef9f5ea217f71 \
+                    texlive-documentation-base-26923-doc.tar.xz \
+                    rmd160  83f82025cc60de4f6e6683839fbae5f65ad31660 \
+                    sha256  7a00c0543354ef83033c13c72d697c3bca3b3c9bfdd06a5b92304cba4d9a74d1 \
+                    texlive-documentation-base-26923-src.tar.xz \
+                    rmd160  67a28782790325f71fce9341b1c66ae9121810a4 \
+                    sha256  103b6b7c8151cfffa8358edbeafb9a4039b7d45e7fcb33867ce5636383b3320a
+
+texlive.exclude     doc.html
+
+# This port is installed prior to texlive-basic, so mktexlsr is not
+# available yet. Do not try to run it in post-activate.
+texlive.use_mktexlsr no
+
+texlive.texmfport

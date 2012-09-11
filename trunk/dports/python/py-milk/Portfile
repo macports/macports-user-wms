@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-milk
+version             0.4.2
+revision            0
+categories          python science
+license             MIT
+platforms           darwin
+
+maintainers         stromnov openmaintainer
+
+description         Machine Learning Toolkit
+long_description    ${description}
+
+homepage            http://luispedro.org/software/milk
+master_sites        http://pypi.python.org/packages/source/m/milk/
+
+distname            milk-${version}
+
+checksums           md5     f4b9489ac550b5b32fb5810422b438f1 \
+                    sha1    a5c4c383904c845082851c209a0ea55afb3057cb \
+                    rmd160  428b2b7425b9e3203e9b281f278a26ee95417db9
+
+python.versions     26 27
+python.default_version  27
+
+if {$subport != $name} {
+    depends_build-append  port:py${python.version}-distribute
+    depends_lib-append    port:py${python.version}-numpy
+}
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "milk-(\\d+(?:\\.\\d+)*)${extract.suffix}"

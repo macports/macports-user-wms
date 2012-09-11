@@ -1,0 +1,27 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           ocaml 1.0
+
+name                ocamlmod
+version             0.0.3
+revision            1
+platforms           darwin
+categories          devel
+maintainers         landonf openmaintainer
+license             LGPL-2.1
+description         Generate OCaml modules from source files
+long_description    ${description}
+homepage            http://forge.ocamlcore.org/projects/ocamlmod/
+master_sites        http://forge.ocamlcore.org/frs/download.php/856/
+
+checksums           rmd160  a0a6c80cdc3b0c204ee02879d5c4d13accee611d \
+                    sha256  23740d023c38b0aa8d8010d8df3ba69b1b93a5c5ebdd5ef5058ced18f88cbb70
+depends_lib         port:ocaml
+
+use_oasis           yes
+
+pre-destroot {
+    reinplace "s|prefix=.*|prefix=\"${destroot}${prefix}\"|g" ${worksrcpath}/setup.data
+}
+

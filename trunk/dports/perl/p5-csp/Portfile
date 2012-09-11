@@ -1,0 +1,32 @@
+# $Id$
+
+PortSystem	1.0
+PortGroup	perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup	CSP 0.34
+revision    3
+# Package contains no license info
+license     Unknown
+maintainers	ecronin openmaintainer
+description	A Perl tool for managing Certificate Authorities
+long_description \
+	CSP is a Perl class and script for running multiple CAs. \
+	OpenSSL is used for all operations. CSP can also generate a \
+	small CA website used to distribute certificates and CRLs.
+homepage	http://devel.it.su.se/projects/CSP/
+
+platforms	darwin
+
+checksums \
+	md5	    eb16bc1f4393b4ad44a3f7b67cb36c1d \
+	sha1	13440461ffc119421a6a97f62d94d35a38fde2e7 \
+    rmd160  68a7e3ad1ccac9628aaffd5331e2877f29e2cb38
+
+master_sites	ftp://ftp.su.se/pub/users/leifj
+
+if {${perl5.major} != ""} {
+depends_lib-append	port:p${perl5.major}-date-calc port:p${perl5.major}-term-prompt port:p${perl5.major}-ipc-run
+
+supported_archs noarch
+}

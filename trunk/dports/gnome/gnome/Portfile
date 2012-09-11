@@ -1,0 +1,75 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+
+name            gnome
+version         2.30.2
+categories      gnome
+platforms       darwin
+maintainers     devans openmaintainer
+description     The GNOME Desktop mega-port.
+
+long_description    GNOME is a complete, free and easy-to-use desktop environment for users, \
+                    as well as a powerful application development framework for software developers. \
+                    This port includes the GNOME desktop, GNOME platform, and, optionally GNOME \
+                    office and graphics applictions, GNOME administration applications, \
+                    bindings for C++, Python and Perl and a set of GNOME developer tools.
+
+homepage        http://www.gnome.org/
+master_sites
+depends_lib     port:gnome-platform-suite \
+                port:gnome-desktop-suite
+
+distfiles
+use_configure   no
+build       { }
+
+destroot    {
+    file mkdir ${destroot}${prefix}/share/doc
+    system "echo ${long_description} > ${destroot}${prefix}/share/doc/README.${name}.txt"
+}
+
+post-activate {
+    system "${prefix}/bin/gtk-update-icon-cache -f -t ${prefix}/share/icons/hicolor"
+    system "${prefix}/bin/scrollkeeper-update; true"
+    system "${prefix}/bin/update-desktop-database -q ${prefix}/share/applications; true"
+    system "${prefix}/bin/update-mime-database ${prefix}/share/mime; true"
+    system "export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` && \
+        gconftool-2 --makefile-install-rule ${prefix}/etc/gconf/schemas/*.schemas"
+}
+
+notes "
+To start gnome, create a file called ~/.xinitrc.d/99-gnome.sh which contains this line:
+
+    USERWM=${prefix}/bin/gnome-session
+
+See also http://trac.macports.org/wiki/GNOME for instructions and examples
+Make sure you do not have a custom ~/.xinitrc file, or you can run into problems.
+"
+
+variant office description {Include GNOME office applications} {
+    depends_lib-append port:gnumeric \
+                       port:abiword-x11 \
+                       port:dia \
+                       port:planner
+}
+
+variant graphics description {Include GNOME graphics applications} {
+    depends_lib-append path:bin/inkscape:inkscape \
+                       port:gimp
+}
+
+variant bindings description {Include GNOME bindings suite for C++, perl and python} {
+    depends_lib-append port:gnome-bindings-suite
+}
+
+variant tools description {Include GNOME developer tools} {
+    depends_lib-append port:gnome-developer-tools
+}
+
+variant admin description {Include GNOME admin tools} {
+    depends_lib-append port:pessulus
+}
+
+livecheck.type  none

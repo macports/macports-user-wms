@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                khangman
+version             4.8.3
+categories          kde kde4
+maintainers         sharky michaelld
+license             GPL-2+ GFDL-1.2
+description         hangman game
+long_description    KDE ${description}
+homepage            http://www.kde.org
+
+platforms           darwin
+depends_lib-append  port:libkdeedu
+
+master_sites        kde:stable/${version}/src/
+use_xz              yes
+
+checksums           rmd160  292ec214d0853c66af0bdcf8c785d9e62d67d8f0 \
+                    sha256  417f27ae52458cfbab472575926f6f1c7d671fd9ac970b742a1f11ac089e5742
+
+if {![variant_isset doc]} {
+    patchfiles-append   patch-CMakeLists.txt.diff
+}
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/latest/src/
+livecheck.regex     ${name}-(\\d+(\\.\\d+)+)

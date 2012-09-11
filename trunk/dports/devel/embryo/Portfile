@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    embryo
+epoch                   2
+version                 1.7.0
+maintainers             ryandesign openmaintainer
+categories              devel lang
+platforms               darwin
+license                 BSD
+
+description             A C like scripting language
+
+long_description        Embryo implements a C like scripting language \
+                        used in various parts of the Enlightenment project, \
+                        namely Edje. Embryo\'s scripting language is based \
+                        on CompuPhase\'s Small language that was introduced \
+                        in Dr Dobb\'s Journal in 1999. Embryo allows scripting \
+                        capabilities in places that otherwise wouldnt \
+                        support basic programming structures such as in Edje EDCs.
+
+homepage                http://trac.enlightenment.org/e/wiki/Embryo
+master_sites            http://download.enlightenment.org/releases/
+use_bzip2               yes
+
+checksums               rmd160  8296feb99ad47b9045970220820dea12f7123acd \
+                        sha256  95125651f1a3edbf0ef4fac40ecaec03d31cb383ae7dba7708b547a419f9e10e
+
+depends_build           port:pkgconfig
+
+depends_lib             port:eina
+
+use_parallel_build      yes
+
+livecheck.type          regex
+livecheck.url           [lindex ${master_sites} 0]
+livecheck.regex         ${name}-(\[0-9a-z.\]+)${extract.suffix}

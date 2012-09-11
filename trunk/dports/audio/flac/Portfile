@@ -1,0 +1,62 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+
+name            flac
+version         1.2.1
+revision        1
+categories      audio
+platforms       darwin
+license         GPL-2+ BSD
+maintainers     nomaintainer
+description     Free Lossless Audio Codec
+
+long_description \
+    FLAC stands for Free Lossless Audio Codec. Grossly oversimplified,FLAC is similar to MP3, but lossless, \
+    meaning that audio iscompressed in FLAC without throwing away any information. This issimilar to how Zip \
+    works, except with FLAC you will get much better compression because it is designed specifically for \
+    audio, and you canplay back compressed FLAC files in your favorite player (or your car or home stereo) \
+    just like you would an MP3 file.
+
+homepage        http://flac.sourceforge.net/
+master_sites    sourceforge:project/flac/flac-src/flac-${version}-src/
+
+checksums           sha1    bd54354900181b59db3089347cc84ad81e410b38 \
+                    rmd160  bd3223c848054f0a75d11200b30f903bdd375bfc \
+                    sha256  9635a44bceb478bbf2ee8a785cf6986fba525afb5fad1fd4bba73cf71f2d3edf
+
+depends_lib     port:libogg port:libiconv
+
+patchfiles      patch-nasm.h.diff \
+                patch-build_lib.mk.diff \
+                autoconf-no-xmms.patch
+
+configure.args  --disable-xmms-plugin
+
+post-configure {
+    if {[variant_isset universal]} {
+        system "cd ${worksrcpath} && ed - ${worksrcpath}/config.h < ${filespath}/config.h.ed && touch stamp-h1"
+    }
+    reinplace "s|CC -dynamiclib|CC -dynamiclib [get_canonical_archflags]|g" ${worksrcpath}/libtool
+}
+
+build.args      OBJ_FORMAT=macho
+
+test.run        yes
+test.target     check
+
+variant xmms_plugin description "Build xmms plugin" {
+    configure.args-delete   --disable-xmms-plugin
+    depends_lib-append      port:xmms
+}
+
+use_autoreconf  yes
+autoreconf.args -fvi
+
+platform darwin i386 {
+    configure.args-append   --disable-asm-optimizations
+}
+
+livecheck.url   http://sourceforge.net/projects/${name}/files/${name}-src
+livecheck.regex "${name}-(\\d+(?:\\.\\d+)*)"

@@ -1,0 +1,50 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name		midgard2-core
+conflicts	midgard-core
+license		GPL-2
+
+version		10.05.7.1
+
+categories	devel
+maintainers	jwa
+description	A content repository system
+long_description Midgard is a content repository system platform \
+    with bindings in PHP, Python etc.
+platforms	darwin
+homepage    http://www.midgard-project.org/
+
+master_sites	https://github.com/midgardproject/midgard-core/downloads
+
+#use_bzip2	yes
+checksums           rmd160  3fb5267d5cebec38881cea77facea7da187d68d1 \
+                    sha256  2c177791cfcc7ba91dcd18da8f162489b8cff21d464be9d1a059346f2f6c101c
+
+depends_build  port:pkgconfig
+
+depends_lib    port:gettext \
+    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+    port:dbus-glib \
+    port:libxml2 \
+    port:libgda4
+
+configure.args	--sysconfdir=${prefix}/etc/midgard/ \
+    --with-dbus-support
+
+platform darwin 11 {
+    configure.compiler	llvm-gcc-4.2
+}
+
+post-install	{
+    ui_msg "NB! The other parts of the package are:"
+    ui_msg "php5-midgard2, and python bindings for 2.5/2.6"
+}
+
+notes "libgda4 needs introspection installed with variant +introspection"
+
+livecheck.type	regex
+livecheck.url	${master_sites}
+livecheck.regex	${name}-(\[0-9.\]+)\\.tar\\.\[bg\]z

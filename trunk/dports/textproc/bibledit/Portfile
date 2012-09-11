@@ -1,0 +1,37 @@
+# $Id$
+
+PortSystem        1.0
+
+name              bibledit
+version           4.5
+categories        textproc
+maintainers       nomaintainer
+platforms         darwin
+
+description       A USFM text editor for Bible translators using Linux and Mac OS X.
+
+long_description  Bibledit is a USFM text editor that works in Linux or Mac OS X \
+		  for Bible translators to create Bible text. It is unique in that \
+		  it is organized in two distinct hierarchies. One, it has sections \
+		  and paragraphs, like any other text. Second, it is made up of \
+		  books that contain chapters that contain verses.
+
+homepage          http://www.nongnu.org/bibledit/
+master_sites	  http://download.savannah.gnu.org/releases/bibledit/source/gtk/ \
+                  http://download-mirror.savannah.gnu.org/releases/bibledit/source/gtk/
+
+checksums 	md5 f720b32928fad86d69265be95d2ff4f0
+
+depends_build	port:pkgconfig
+depends_lib	port:gtk2  \
+		port:libgtkhtml3 \
+		port:sqlite3 \
+		port:git-core \
+		port:enchant \
+		port:nspr \
+		port:gtksourceview2 \
+		port:libsoup \
+		port:webkit-gtk
+
+distname                        ${name}-gtk-${version}
+worksrcdir                      ${name}-gtk-${version}

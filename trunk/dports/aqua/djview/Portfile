@@ -1,0 +1,67 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           qt4 1.0
+
+name                djview
+version             4.9
+categories          aqua graphics www
+license             GPL-2+ MIT
+maintainers         nicos openmaintainer
+platforms           darwin
+
+description         DjVu files viewer.
+long_description    DjVu can advantageously replace PDF, PS, TIFF,JPEG, and GIF for \
+                    distributing scanned documents, digital documents, or high-resolution \
+                    pictures. DjVu content downloads faster, displays and renders faster, \
+                    looks nicer on a screen and consume less client resources than competing \
+                    formats.
+
+homepage            http://djvu.sourceforge.net/
+
+master_sites        sourceforge:djvu
+
+checksums           rmd160  c0d6b33767096ee9f1aeee3f3bf82b0dc10b5b42 \
+                    sha256  d150f557aaa073356d77c1f5e566a6a566281df5f92395b6822139f0e5c90e0c
+
+worksrcdir          ${name}4-${version}
+
+depends_lib-append \
+    port:djvulibre
+
+universal_variant yes
+
+configure.ldflags
+configure.args \
+    --disable-nsdejavu \
+    --disable-desktopfiles \
+    QMAKESPEC=${qt_mkspecs_dir}/macx-g++
+
+# when Qt is installed without +universal, and qmake is called with
+# "QMAKE_LDFLAGS += -arch foo", and "foo" is the native arch, then, at
+# least sometimes, qmake will erroneously remove the second "foo" but
+# leave the "-arch" flag -- generating an error at linking.  Not sure
+# if this is the case with +debug; does not matter for this port,
+# since it has not debug variant.
+post-configure {
+    if {![variant_isset universal]} {
+        reinplace "s|\\(-arch ${build_arch}\\) -arch|\\1|" \
+            ${worksrcpath}/src/Makefile
+    }
+}
+
+# allow ccache, if specified by the user
+pre-build {
+    if {[tbool configure.ccache]} {
+        build.post_args "CCACHE=ccache"
+    }
+}
+
+destroot {
+    xinstall -m 755 -d ${destroot}${applications_dir}
+    copy ${worksrcpath}/src/djview.app ${destroot}${applications_dir}
+}
+
+livecheck.name      djvu
+livecheck.distname  DjView

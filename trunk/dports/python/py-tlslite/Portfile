@@ -1,0 +1,34 @@
+# $Id$
+
+PortSystem			1.0
+PortGroup			python24 1.0
+name				py-tlslite
+version				0.3.0
+revision			1
+categories-append	crypto security
+maintainers			nomaintainer
+description			Python library for TLSv1 and SSLv3 operations
+long_description \
+	TLS Lite is a free python library that implements SSL v3 and TLS v1. \
+	It supports non-traditional authentication methods such as SRP, shared \
+	keys, and cryptoIDs, in addition to X.509 certificates.  TLS Lite is \
+	pure python, however it can access OpenSSL or cryptlib for faster \
+	crypto operations.
+
+platforms			darwin
+
+homepage			http://trevp.net/tlslite/
+master_sites		${homepage}
+
+distname			tlslite-${version}
+checksums			md5 2d5f7efafa5d04598b21f1889e981207
+
+post-destroot {
+	file mkdir ${destroot}${prefix}/share/doc/${name}
+	xinstall -m 644 ${worksrcpath}/readme.txt \
+		${destroot}${prefix}/share/doc/${name}
+	foreach f {tls.py tlsdb.py} {
+		reinplace "s|#! python|#!${python.bin}|g" ${destroot}${prefix}/bin/${f}
+	}
+}
+

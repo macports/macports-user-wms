@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                  1.0
+
+name                        cliclick
+version                     2.0
+platforms                   macosx
+categories                  sysutils
+maintainers                 ryandesign
+license                     freeware
+supported_archs             i386 ppc
+configure.universal_archs   i386 ppc
+
+description                 a command-line utility for simulating mouse clicks
+
+long_description            ${name} emulates mouse clicks or series of mouse \
+                            clicks (including double-clicks and Control-clicks) \
+                            at arbitrary screen coordinates
+
+homepage                    http://www.bluem.net/en/mac/cliclick/
+master_sites                http://www.bluem.net/files/
+
+use_dmg                     yes
+distname                    ${name}
+dist_subdir                 ${name}/${version}
+
+checksums                   rmd160  d2f8b80e183a1d40b7b06e1596f66d69ade04763 \
+                            sha256  537683c8458ae2cea9038732c574e501d34b164e719f6a9437cd6a1ffe7b2edc
+
+use_configure               no
+
+build {
+    if {![variant_isset universal]} {
+        system -W ${worksrcpath} "lipo -extract ${configure.build_arch} ${name} -output ${name}"
+    }
+}
+
+destroot {
+    xinstall -W ${worksrcpath} ${name} ${destroot}${prefix}/bin
+    xinstall -d ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} {Read me.html} ${destroot}${prefix}/share/doc/${name}
+}
+
+variant universal {}
+
+livecheck.type              regex
+livecheck.regex             {Version: ([0-9.]+)}

@@ -1,0 +1,56 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                  1.0
+PortGroup                   muniversal 1.0
+
+# Keep relevant lines in sync between ming and php-ming.
+
+name                        ming
+version                     0.4.4
+revision                    1
+categories                  multimedia graphics
+platforms                   darwin
+maintainers                 ryandesign
+license                     {GPL-2 LGPL-2.1}
+homepage                    http://www.libming.org/
+master_sites                sourceforge:project/ming/Releases
+use_bzip2                   yes
+
+description                 an SWF output library
+
+long_description            Ming is an SWF ("Flash") file format output \
+                            library. It is written in C, with wrappers for \
+                            C++, Python, and PHP, plus rudimentary support \
+                            for Ruby and Perl.
+
+checksums                   rmd160  2070cd694b9a1ff8dd0a577df2f551d5d810e4fe \
+                            sha256  40e09d781741ac961338ed8dec7ba2ed06217de9da44dd67af6b881b95d2af7e
+
+depends_lib                 port:giflib \
+                            port:libpng \
+                            port:zlib \
+                            port:freetype
+
+use_parallel_build          yes
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS \
+        COPYING \
+        HISTORY \
+        LICENSE \
+        LICENSE_GPL2 \
+        NEWS \
+        README \
+        TODO \
+        ${docdir}
+}
+
+# You can build ming as a php, perl and python module
+# Please do this with separate Portfiles and not by
+# variants.
+
+livecheck.regex             /${name}-(\[0-9.\]+)${extract.suffix}

@@ -1,0 +1,41 @@
+# $Id$
+
+PortSystem         1.0
+PortGroup          python27 1.0
+
+name               buildbot
+version            0.8.6p1
+categories         devel python
+platforms          darwin
+supported_archs    noarch
+license            GPL-2
+maintainers        ram openmaintainer
+
+description        compile/test cycle automation system
+long_description   The BuildBot is a system to automate the compile/test \
+  cycle required by most software projects to validate code changes.
+
+homepage           http://buildbot.net/
+master_sites       googlecode:buildbot
+dist_subdir        ${name}
+
+checksums          rmd160 37dee66c33de2e3e8e0e480e474ef5dfe9ef8631 \
+                   sha256 4d10a27809bf82b367cf6230e4e3628f4df8940787d6affed7d787dc52016c2c
+
+depends_lib-append port:py27-twisted \
+                   port:py27-jinja2 \
+                   port:py27-sqlalchemy \
+                   port:py27-sqlalchemy-migrate
+
+python.link_binaries_suffix
+
+post-destroot {
+  xinstall -m 644 -W ${worksrcpath} README COPYING CREDITS NEWS \
+    ${destroot}${prefix}/share/doc/${name}
+}
+
+# note some tests need py27-mock
+test.run           yes
+test.env           PYTHONPATH=.
+test.cmd           ${prefix}/bin/trial-${python.branch}
+test.target        buildbot.test

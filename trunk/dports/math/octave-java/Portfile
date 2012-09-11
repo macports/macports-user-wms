@@ -1,0 +1,16 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        java 1.2.6
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Provides Java interface with OO-like Java objects \
+                    manipulation
+long_description    ${description}
+
+checksums           md5     c6b1dc49493fd7ede6fd369538321161 \
+                    sha1    b2bdb114dc84b9ecd9be8f529156ab7324ffe294 \
+                    rmd160  a61788055ee1e55af536eb62cc87ff92eaf05f06

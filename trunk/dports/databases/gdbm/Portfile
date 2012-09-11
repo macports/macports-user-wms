@@ -1,0 +1,53 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                gdbm
+version             1.10
+revision            2
+categories          databases
+license             GPL-3+
+maintainers         nomaintainer
+description         The GNU database manager
+long_description    \
+        The GNU `dbm' is a library of database functions that \
+        use extendible hashing and works similar to the standard \
+        UNIX `dbm' functions. \
+        These routines are provided to a programmer needing to \
+        create and manipulate a hashed database.
+homepage            http://www.gnu.org/software/gdbm/gdbm.html
+platforms           darwin
+master_sites        gnu
+
+checksums           rmd160  32207388952acc2e9123fd1fd1f8880031cfb8d6 \
+                    sha256  23f8134c5b94bbfb06d756a6b78f074fba6e6028cf2fe01341d40b26db773441
+
+depends_lib         port:gettext
+
+configure.args      --mandir=${prefix}/share/man --infodir=${prefix}/share/info
+configure.ldflags-append \
+                    -Wl,-headerpad_max_install_names
+configure.ccache    no
+
+post-patch {
+    reinplace "s|-o \$(BINOWN) -g \$(BINGRP)||g" ${worksrcpath}/Makefile.in
+}
+
+post-install {
+    # gdbm @1.8.3_1 installed files outside the destroot; remove them if found
+    foreach file {share/info/gdbm.info share/man/man3/gdbm.3} {
+        set filepath ${prefix}/${file}
+        if {[file exists ${filepath}] && [registry_file_registered ${filepath}] == "0"} {
+            if {[catch {delete ${filepath}}]} {
+                ui_warn "Cannot delete ${filepath}; please remove it manually"
+            }
+        }
+    }
+}
+
+variant compat description {Install dbm/ndbm compatibility files} {
+    configure.args-append --enable-libgdbm-compat
+}
+
+livecheck.regex     ${name}-(\\d+(?:\\.\\d+)*)\\.tar

@@ -1,0 +1,81 @@
+# $Id$
+
+PortSystem	1.0
+
+name		petsc
+version     3.3-p2
+categories  math science
+maintainers	mmoll
+description	Portable, Extensible Toolkit for Scientific Computation
+long_description	PETSc, pronounced PET-see (the S is silent), is a suite \
+        of data structures and routines for the scalable (parallel) solution \
+        of scientific applications modeled by partial differential equations. \
+        It employs the MPI standard for all message-passing communication.
+
+notes       "Add the following line to your .bash_profile if you plan to use\
+            the PETSC makefile rules in $prefix/lib/petsc/conf: \n\
+            \texport PETSC_DIR=${prefix}/lib/petsc"
+
+platforms	darwin
+homepage	http://www.mcs.anl.gov/petsc/petsc-as/
+master_sites	ftp://ftp.mcs.anl.gov/pub/petsc/release-snapshots/ \
+		http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/
+distname	${name}-lite-${version}
+worksrcdir	${name}-${version}
+universal_variant   no
+
+checksums           rmd160  200d049d691bce307d576aec27a4af6799e19802 \
+                    sha256  75c0b127f1ba5077ae9d87d39331fb7cf1258c98ca7fd1dcf0f29f6d29ad3ff5
+
+depends_build-append  port:cmake
+depends_lib-append  port:hdf5-18 \
+                    port:libyaml
+
+configure.args      --prefix=${prefix}/lib/petsc \
+                    --with-mpi=1 \
+                    --with-clanguage=C++ \
+                    --download-ml \
+                    --download-metis \
+                    --download-parmetis \
+                    --download-blacs \
+                    --download-scalapack \
+                    --download-mumps \
+                    --download-ptscotch \
+                    --with-hdf5-dir=${prefix} \
+                    --with-yaml-dir=${prefix}
+
+pre-configure {
+    configure.args-append \
+        --COPTFLAGS="${configure.optflags}" \
+        --CXXOPTFLAGS="${configure.optflags}" \
+        --FOPTFLAGS="${configure.optflags}" \
+        --LDFLAGS="${configure.ldflags}" \
+        --CFLAGS="${configure.cflags}" \
+        --CXXFLAGS="${configure.cxxflags}" \
+}
+
+variant openmpi description {Build using the OpenMPI compiler} conflicts mpich2 {
+    depends_lib-append port:openmpi
+    configure.args-append \
+        --with-cc=${prefix}/bin/openmpicc \
+        --with-cxx=${prefix}/bin/openmpicxx \
+        --with-fc=${prefix}/bin/openmpif90 \
+        --with-mpiexec=${prefix}/bin/openmpiexec
+}
+
+variant mpich2 description {Build using the MPICH2 compiler} conflicts openmpi {
+    depends_lib-append port:mpich2
+    configure.args-append \
+        --with-cc=${prefix}/bin/mpicc \
+        --with-cxx=${prefix}/bin/picxx \
+        --with-fc=${prefix}/bin/mpif90 \
+        --with-mpiexec=${prefix}/bin/mpiexec
+}
+
+default_variants +openmpi
+
+destroot.destdir DESTDIR=${destroot}${prefix}/lib/petsc
+
+livecheck.type  regex
+livecheck.url   http://www.mcs.anl.gov/petsc/petsc-2/download/index.html
+livecheck.regex petsc-lite-(\[0-9.\]+(-p\[0-9\]+))\\.tar\\.gz

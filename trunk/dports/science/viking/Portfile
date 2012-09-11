@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                viking
+version             1.3
+revision            1
+categories          science
+license             GPL-2
+maintainers         chimeric.de:chi
+description         GTK2 GPS Program
+long_description    Viking is a free/open source program to manage GPS data.
+homepage            http://viking.sourceforge.net/
+platforms           darwin
+master_sites        sourceforge:project/viking/viking/${version}
+
+checksums           rmd160  5bc6fe8b8e017a7a2473fcb397cd4fc42129dad6 \
+                    sha256  54dc43b0136722118b8402d51ac8d78180ad59cc37e37ddf3fb6a7ee6bf04fdf
+
+depends_build       bin:gnutar:gnutar \
+                    port:gnome-doc-utils \
+                    port:intltool \
+                    port:pkgconfig
+
+depends_lib         port:gpsd \
+                    port:gtk2 \
+                    port:libexif \
+                    port:curl
+
+depends_run         port:gpsbabel \
+                    port:expect

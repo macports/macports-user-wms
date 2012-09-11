@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-documentation-slovenian
+version             15878
+revision            1
+
+categories          tex
+maintainers         dports
+license             Copyleft Permissive
+description         TeX Live: Slovenian documentation
+long_description    Slovenian documentation
+
+checksums           texlive-documentation-slovenian-15878-run.tar.xz \
+                    rmd160  e899ef7c53936295ce7fd5c9ab2e8af2c4dfbafe \
+                    sha256  e9bf7760f9456dd12b3987cc314def9fc3ddf9c5f49249bc4d5e44ff8eba1251 \
+                    texlive-documentation-slovenian-15878-doc.tar.xz \
+                    rmd160  ec420fd5c96d9862ad090a435dd7058f1d3472c6 \
+                    sha256  dcfc74934eb7e21474ddb191c7b66876417556123a18dc8afdb0205839c3ea3b \
+                    texlive-documentation-slovenian-15878-src.tar.xz \
+                    rmd160  337958df4b0047fb5f6382daf36d7b66621c0f17 \
+                    sha256  b6be612d8b17f02ddc99a0de9fe96efb3608f34a0f0514225e7edf14a784a170
+
+depends_lib         port:texlive-documentation-base
+
+
+texlive.texmfport

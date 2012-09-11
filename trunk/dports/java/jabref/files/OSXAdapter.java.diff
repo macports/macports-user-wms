@@ -1,0 +1,26 @@
+--- src/osx/osxadapter/OSXAdapter.java.orig	2012-05-05 05:11:43.000000000 +0900
++++ src/osx/osxadapter/OSXAdapter.java	2012-05-17 11:25:49.000000000 +0900
+@@ -52,7 +52,7 @@
+     04092003  mdrance    added comments
+ 
+ */
+-/*package osxadapter;
++package osxadapter;
+ 
+ import net.sf.jabref.JabRefFrame;
+ import com.apple.eawt.*;
+@@ -99,7 +99,7 @@
+       /  routine that chooses whether or not to quit, so the functionality is identical
+       /  on all platforms.  This example simply cancels the AppleEvent-based quit and
+       /  defers to that universal method.
+-      *//*
++      */
+       ae.setHandled(false);
+       mainApp.quit();
+     } else {
+@@ -130,4 +130,4 @@
+     }
+     theApplication.setEnabledPreferencesMenu(enabled);
+   }
+-}   */
++} 

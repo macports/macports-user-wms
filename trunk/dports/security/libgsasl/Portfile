@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    libgsasl
+version                 1.6.1
+maintainers             ryandesign
+categories              security net
+license                 LGPL-2.1+
+platforms               darwin
+homepage                http://josefsson.org/libgsasl/
+master_sites            gnu:gsasl
+
+description             GNU SASL: an authentication library.
+
+long_description        GNU SASL is an implementation of the Simple \
+                        Authentication and Security Layer framework and \
+                        a few common SASL mechanisms. SASL is used by \
+                        network servers (e.g., IMAP, SMTP) to request \
+                        authentication from clients, and in clients to \
+                        authenticate against servers.
+
+checksums               sha1    2942886514f14801193e505fc5367330d5c6b7de \
+                        rmd160  db576a3d365c9d6a8e4b7f9291b52d69bfa9c289
+
+depends_lib             port:libiconv \
+                        port:gettext \
+                        port:gss \
+                        port:libidn
+
+use_parallel_build      yes
+
+livecheck.type          regex
+livecheck.url           ftp://ftp.gnu.org/pub/gnu/gsasl/
+livecheck.regex         "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"
+
+variant gssapi_mit description {Use MIT GSS-API implementation} {
+    depends_lib-delete port:gss
+    configure.args-append --with-gssapi-impl=mit
+}

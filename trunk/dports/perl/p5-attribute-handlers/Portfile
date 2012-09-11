@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Attribute-Handlers 0.88
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Simpler definition of attribute handlers
+long_description    ${description}
+
+platforms           darwin
+
+checksums           md5 cfc775abb5871adb25f4d292348ce5a9 \
+                    sha1 e8dedd01ca336498a2c830693d9fd34cb8fca715 \
+                    rmd160 cf0d80afef63a8c4346dcc1643df6f40a70ef489
+
+supported_archs noarch

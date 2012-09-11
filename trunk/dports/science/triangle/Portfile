@@ -1,0 +1,52 @@
+# $Id$
+
+PortSystem		1.0
+
+name			triangle
+version			1.6
+revision                3
+categories		science
+maintainers		jwa openmaintainer
+description		A Two-Dimensional Quality Mesh Generator and Delaunay Triangulator
+long_description	Triangle generates exact Delaunay triangulations, \
+    constrained Delaunay triangulations, conforming Delaunay \
+    triangulations, Voronoi diagrams, and high-quality triangular \
+    meshes. The latter can be generated with no small or large \
+    angles, and are thus suitable for finite element analysis.
+
+platforms		darwin
+
+homepage		http://www.cs.cmu.edu/~quake/triangle.html
+master_sites		http://www.netlib.org/voronoi/
+distname		${name}
+
+checksums		md5 10aff8d7950f5e0e2fb6dd2e340be2c9 \
+			sha1 63d11e0b5bf097eb946a4da4ee18ddf279e16fc4 \
+			rmd160 12be39ae4e34fc14ef3f9982e28a242abe200307
+
+use_zip			yes
+
+extract.mkdir		yes
+
+post-patch	{
+    reinplace "s/-DLINUX//" ${worksrcpath}/makefile
+    reinplace "s|/usr/X11R6|${prefix}|g" ${worksrcpath}/makefile
+    reinplace "s|CC = cc|CC = ${configure.cc}|g" ${worksrcpath}/makefile
+    reinplace "s|CSWITCHES = -O|CSWITCHES = ${configure.cflags} ${configure.cc_archflags}|" ${worksrcpath}/makefile
+}
+
+depends_lib		port:xorg-libX11
+
+use_configure		no
+
+destroot	{
+    xinstall -d ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} A.poly README ${destroot}${prefix}/share/doc/${name}
+    xinstall -W ${worksrcpath} triangle showme ${destroot}${prefix}/bin
+    xinstall -d ${destroot}${prefix}/share/${name}
+    xinstall -m 644 -W ${worksrcpath} triangle.h triangle.c ${destroot}${prefix}/share/${name}
+}
+
+livecheck.type	regex
+livecheck.url	${homepage}
+livecheck.regex	Version (1\.\[0-9\]+)

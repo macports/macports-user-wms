@@ -1,0 +1,48 @@
+# $Id$
+
+PortSystem 1.0
+
+name		stardict
+version		3.0.2
+revision    1
+categories	textproc
+maintainers	gmail.com:alexandernx
+platforms	darwin
+description	A full featured gtk2 dictionary
+long_description \
+	Very nice gnome dictionary. \
+	Can handle both local and web dictionaries. \
+	Though it needs a handful of gnome libraries for \
+	installation.
+#I changed the portfile so by default it builds stardict without gnome support.
+
+homepage	http://stardict.sf.net
+master_sites	sourceforge
+use_bzip2	yes
+checksums	md5 329cc21228cd77f6ae8ae2a1ea6972eb \
+            sha1 301875657cd39b5f25e5933ece22936a28db1230 \
+            rmd160 5b3372447b5a16a036946a1985508de73dff1350
+depends_build	port:pkgconfig \
+		port:intltool \
+		port:gnome-doc-utils
+depends_lib	port:gtk2 \
+		port:popt \
+		port:p5.12-xml-parser
+
+patchfiles	patch-glib-2.32.diff
+
+configure.args	--disable-gnome-support \
+		--disable-spell \
+		--disable-gucharmap \
+		--disable-festival \
+		--disable-espeak
+
+variant gnome description {Add Gnome support} {
+#Should be more stable slower and with gnome deps.
+configure.args-delete	--disable-gnome-support
+depends_lib-append	port:libgnome port:libgnomeui
+}
+
+platform darwin {
+	configure.args-append --enable-darwin-support
+}

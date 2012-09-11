@@ -1,0 +1,37 @@
+# $Id$
+
+PortSystem 1.0
+
+name			tkdiff
+version			4.1.4
+categories		x11 devel
+platforms		darwin
+maintainers		nomaintainer
+description		graphical front end to the diff program
+long_description	tkdiff is a graphical front end to the diff program. It \
+				provides a side-by-side view of the differences between two \
+				files, along with several innovative features such as diff \
+				bookmarks and a graphical map of differences for quick \
+				navigation.
+
+homepage		http://tkdiff.sourceforge.net/
+master_sites	sourceforge
+distname		${distname}-unix
+checksums		md5 f904fbbb71ab2ab5390f747e6c1114ee \
+				sha1 b44386cde4ff46cff0ee563dd96d004fe8028943
+
+depends_run		port:tk
+
+configure {
+	reinplace "s|exec wish|exec ${prefix}/bin/wish|g" ${worksrcpath}/tkdiff
+}
+
+build	{}
+
+destroot {
+	xinstall -m 755 ${worksrcpath}/tkdiff ${destroot}${prefix}/bin
+	xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}/
+	xinstall -m 644 -W ${worksrcpath} COPYING Changelog \
+		${destroot}${prefix}/share/doc/${name}/
+}
+

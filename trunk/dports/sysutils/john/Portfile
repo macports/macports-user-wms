@@ -1,0 +1,83 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                john
+conflicts           john-devel
+version             1.7.9
+revision            0
+categories          sysutils security
+maintainers         nomaintainer
+license             GPL-2
+
+description         Featureful Unix password cracker
+long_description    John the Ripper is a UNIX password cracker, currently available for \
+                    UNIX (tested with Linux x86, FreeBSD x86, Solaris 2.x SPARC, OSF/1 \
+                    Alpha), DOS, WinNT/Win95.
+homepage            http://www.openwall.com/john/
+platforms           darwin
+master_sites        http://download.openwall.net/pub/projects/john/${version}/ \
+                    ftp://ftp2.msk.ru.openwall.com/pub/projects/john/${version}/ \
+                    ftp://ftp.cert.dfn.de/pub/tools/net/Openwall/projects/john/${version}/ \
+                    http://distro.ibiblio.org/openwall/projects/john/${version}/ \
+                    ftp://ftp1.msk.ru.openwall.com/pub/projects/john/${version}/ \
+                    ftp://ftp.spb.ru.openwall.com/pub/projects/john/${version}/ \
+                    ftp://ftp.mathematik.uni-marburg.de/pub/mirror/openwall/projects/john/${version}/
+use_bzip2           yes
+
+checksums           rmd160  6b8bf7423d8e138c5bfa30bfd348363887e7a4c6 \
+                    sha256  1d40083e37a7bc1ba1177651cbb27898dcf2a812b8ccf1430db0c372ac6dc199
+
+patchfiles          patch-src-params.h.diff
+
+post-patch {
+    reinplace "s|@PREFIX@|${prefix}|g" ${worksrcpath}/src/params.h
+}
+
+use_configure       no
+
+use_parallel_build  no
+
+build.dir           ${worksrcpath}/src
+build.args          CC=${configure.cc}
+build.target        clean
+switch ${configure.build_arch} {
+    i386 {
+        build.target-append macosx-x86-sse2
+    }
+    x86_64 {
+        # x86_64 is only supported on Leopard and up
+        if {${os.major} >= 9} {
+            build.target-append macosx-x86-64
+        } else {
+            configure.build_arch i386
+            build.target-append macosx-x86-sse2
+        }
+    }
+    ppc {
+        # Use altivec if available
+        if {[exec sysctl -n hw.vectorunit] == 1} {
+            build.target-append macosx-ppc32-altivec
+        } else {
+            build.target-append macosx-ppc32
+        }
+    }
+    ppc64 {
+        build.target-append macosx-ppc64
+    }
+}
+
+destroot {
+    file copy ${worksrcpath}/run ${destroot}${prefix}/share/john
+    system "chmod -R a+rX ${destroot}${prefix}/share/john"
+    system "ln -s ${prefix}/share/john/john ${destroot}${prefix}/bin/john"
+    xinstall -d ${destroot}${prefix}/share/doc
+    file copy ${worksrcpath}/doc ${destroot}${prefix}/share/doc/john
+    system "chmod -R a+rX ${destroot}${prefix}/share/doc/john"
+}
+
+notes "You'll find the john files under ${prefix}/share/john/"
+
+livecheck.type      regex
+livecheck.regex     /${name}-(\[0-9.\]+)${extract.suffix}

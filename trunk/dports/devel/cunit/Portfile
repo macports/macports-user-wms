@@ -1,0 +1,43 @@
+# $Id$
+
+PortSystem          1.0
+
+name                cunit
+version             2.1-2
+categories          devel
+license             LGPL
+maintainers         nomaintainer
+description         Unit testing library for C
+long_description \
+   CUnit is a lightweight system for writing, administering, and running \
+   unit tests in C.  It provides C programmers a basic testing functionality \
+   with a flexible variety of user interfaces.
+
+platforms           darwin
+
+homepage            http://cunit.sourceforge.net/
+master_sites        sourceforge:project/cunit/CUnit/${version}
+distname            CUnit-${version}-src
+use_bzip2           yes
+worksrcdir          [strsed ${distname} {s/-src$//}]
+
+checksums           md5     31c62bd7a65007737ba28b7aafc44d3a \
+                    sha1    6c2d0627eb64c09c7140726d6bf814cf531a3ce0 \
+                    rmd160  1da78d739d1036c4a70caa1479171388e228953e
+
+depends_lib         port:ncurses
+
+patchfiles          patch-doc_Makefile.in.diff \
+                    patch-cunit_sources_curses_curses.c.diff
+
+configure.args      --enable-curses \
+                    --mandir=${prefix}/share/man
+
+post-destroot {
+   # For some reason CUnit has a headers/ subdir in doc/ which just repeats
+   # the headers already in include/ (plus Win.h which we don't need)
+   delete ${destroot}${prefix}/doc
+}
+
+livecheck.type      sourceforge
+livecheck.regex     /CUnit-(\[0-9.-\]+)-src${extract.suffix}

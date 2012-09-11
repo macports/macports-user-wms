@@ -1,0 +1,31 @@
+# $Id$
+
+PortSystem      1.0
+
+name            terminus-font
+version         4.28
+categories      x11
+maintainers     pobox.com:rlonstein
+
+description     A clean monospaced font
+long_description Terminus Font is designed for long (8 and more hours \
+                per day) work with computers. It contains a total of \
+                about 110 language sets. Also included are IBM VGA, \
+                vt100 and xterm pseudographic characters.
+platforms       darwin
+homepage        http://www.is-vn.bg/hamster/
+master_sites    ${homepage}
+
+checksums       md5     15bf2f17b625312383fd9dae0925a17e \
+                sha1    5134a39dd6f50f07e77d20e0718fe8cd00cc16b4 \
+                rmd160  79bc8e60c660cf166825974dd76e5a3772131ac4
+
+depends_build   path:bin/perl:perl5 \
+                port:bdftopcf
+depends_lib     port:mkfontdir
+
+configure.args  --x11dir=${prefix}/share/fonts
+
+post-activate {
+    system "mkfontdir ${prefix}/share/fonts"
+}

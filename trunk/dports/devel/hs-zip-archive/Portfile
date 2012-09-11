@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           haskell 1.0
+haskell.setup       zip-archive 0.1.1.7
+maintainers         singingwolfboy openmaintainer
+description         Zip archive access for Haskell
+long_description \
+   The zip-archive library provides functions for creating, modifying, and \
+   extracting files from zip archives.
+
+platforms           darwin
+
+checksums           md5     d48994de906df9cb7432fa30f25b30a2 \
+                    sha1    ae873998fdb33a1f143c76b3ebff42aad8cefdcf \
+                    rmd160  c9736be11aaacf303a8f48a74ed26a8738bea313
+
+depends_lib         port:hs-binary port:hs-digest port:hs-zlib \
+                    port:hs-utf8-string
+

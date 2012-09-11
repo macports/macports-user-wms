@@ -1,0 +1,71 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                  1.0
+
+name                        pianobar
+version                     2012.06.24
+categories                  audio
+platforms                   darwin
+maintainers                 gmail.com:aguynamedryan+pianobar
+license                     MIT
+homepage                    http://6xq.net/projects/pianobar/
+master_sites                http://6xq.net/static/projects/pianobar/
+use_bzip2                   yes
+
+description                 Console-based pandora.com player
+
+long_description            pianobar is a console client for the \
+                            personalized web radio pandora \
+                            (http://www.pandora.com).\
+                            Play and manage stations, rate songs and \
+                            see why they were selected, show upcoming \
+                            configure keybindings, last.fm scrobbling, \
+                            proxy support for listening outside of USA.
+
+checksums                   sha256  a80307dcfc8786c28d6025f54820664eca0cf26f888bd608c95d486762f908aa \
+                            rmd160  f442583c1f41204aa398c35cf6807612b53d09b5
+
+depends_build               port:pkgconfig
+
+depends_lib                 port:gnutls \
+                            port:libgcrypt \
+                            port:json-c
+
+configure.cflags-append     -std=c99
+
+# Prevent upgrade failure.
+configure.cppflags-append   -isystem${prefix}/include
+configure.cppflags-delete   -I${prefix}/include
+
+use_configure               no
+
+variant universal {}
+
+build.args                  CC="${configure.cc} [get_canonical_archflags cc]" \
+                            PREFIX=${prefix} \
+                            CFLAGS="${configure.cflags} ${configure.cppflags}" \
+                            LDFLAGS="${configure.ldflags}"
+
+destroot.args               PREFIX=${prefix}
+
+if {$subport == $name} {
+    depends_lib-append      port:faad2 \
+                            port:libao \
+                            port:libmad
+}
+
+subport libpiano {
+    build.target            libpiano.so.0
+    destroot.target         install-libpiano
+    platform darwin {
+        build.target        libpiano.0.dylib
+    }
+}
+
+platform darwin {
+    patchfiles-append       patch-Makefile.diff
+}
+
+livecheck.type              regex
+livecheck.regex             ${name}-(\[0-9.\]+)${extract.suffix}

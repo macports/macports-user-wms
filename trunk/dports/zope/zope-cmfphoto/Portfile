@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup zope 1.0
+
+zope.setup		CMFPhoto 0.5.0
+revision		2
+categories-append	graphics
+license			GPL-2+
+maintainers		nomaintainer
+description		Zope CMF based Photo object
+long_description	${description}
+homepage		http://sourceforge.net/projects/collective
+master_sites	sourceforge:collective
+checksums		md5 460f13f2ecc18c80a13324dd4eaafabb
+platforms		darwin freebsd
+
+depends_lib-append	port:zope-cmf \
+					port:py24-pil
+depends_run			bin:convert:ImageMagick

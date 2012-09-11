@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem  1.0
+
+name        libksba
+version     1.0.8
+categories  devel
+license     GPL-3+
+maintainers nomaintainer
+description X.509 and CMS library
+homepage    http://www.gnupg.org/related_software/libksba/index.en.html
+platforms   darwin
+use_bzip2   yes
+
+long_description \
+    Libksba is a library to make the tasks of working with \
+    X.509 certificates, CMS data and related objects more easy. It \
+    a highlevel interface to the implemented protocols and presents \
+    the data in a consistent way. There is no more need to worry \
+    about all the nasty details of the protocols. The API gives the \
+    C programmer an easy way of interacting with the data. It copes \
+    with the version details X.509 protocols tend to have as well as \
+    with the many different versions and dialects. Applications \
+    must usually cope with all of this and it has to be coded over \
+    and over again. Libksba hides this by providing just one \
+    API which does the Right Thing.
+
+master_sites    gnupg
+
+checksums   md5     8acac0b3cbd0030dfc6d0f6a58c9b5b2\
+            sha1    268e424e94e62abb51eeca9c66d886dbee8455ab\
+            rmd160  97cb162af21a21cc587ebfeb02ab890fa4bbc3f8
+
+depends_lib port:libgpg-error port:gettext port:libiconv
+test.run    yes
+test.target check
+
+livecheck.type  regex
+livecheck.url   ftp://ftp.gnupg.org/gcrypt/${name}/
+livecheck.regex ${name}-(\\d+\\.\\d+\\.\\d+)

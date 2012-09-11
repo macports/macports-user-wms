@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4 1.1
+
+name                kdenlive
+version             0.9.2
+categories          multimedia
+maintainers         dennedy.org:dan
+license             GPL-2+
+
+description         A non-linear video editing suite.
+long_description    Kdenlive is a non-linear video editing suite, \
+                    which supports DV, HDV and much more formats. \
+                    Kdenlive relies on the MLT video engine and \
+                    FFmpeg for video formats, thus offering a comprehensive solution.
+
+homepage            http://www.kdenlive.org/
+use_bzip2           yes 
+master_sites        http://download.kde.org/stable/${name}/${version}/src/
+platforms           darwin
+
+checksums           sha1    e943884ad88d106b80d1723055dca790c864fa20 \
+                    rmd160  5680a6b6765fcc51c4b97196d308a0686296fc14
+
+depends_lib-append  port:mlt \
+                    port:kdelibs4 \
+                    port:kde4-runtime
+
+depends_run-append  port:cdrtools \
+                    port:dvdauthor
+
+# mlt is not universal
+universal_variant   no
+
+configure.args-append -DNO_JOGSHUTTLE=1
+
+build.env-append    -DNO_JOGSHUTTLE=1
+
+platform darwin {
+    patchfiles      patch-BUNDLE_INSTALL_DIR.diff
+}

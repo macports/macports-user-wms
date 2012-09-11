@@ -1,0 +1,22 @@
+# $Id$
+
+PortSystem 1.0
+
+name			re2c
+version			0.13.5
+categories		devel
+platforms		darwin
+maintainers		landonf
+description		A tool for generating C-based recognizers from regular \
+			expressions.
+long_description	re2c is a tool for generating C-based recognizers from \
+			regular expressions. re2c-based scanners are efficient: an \
+			re2c-based scanner is said to be typically almost twice as fast as \
+			a flex-based scanner with little or no increase in size.
+
+homepage		http://re2c.org/
+master_sites		sourceforge:re2c
+checksums		sha1 3d334efab53a4a051a2b189b49a849e13523b6c0
+
+configure.args	--mandir=${prefix}/share/man
+

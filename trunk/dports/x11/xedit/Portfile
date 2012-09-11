@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xedit
+version             1.2.0
+categories          x11 editors
+maintainers         jeremyhu openmaintainer
+description         Simple text editor for X11
+long_description    ${description}
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           md5     f55e84713542a36887e966fc0648dd7b \
+                    sha1    e6f8735d09c9da67bba3cd3c39f34f5d1fc79a70 \
+                    rmd160  ec7c27a9b8915579d5578f774792ae06c35ff7b3
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libXaw
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

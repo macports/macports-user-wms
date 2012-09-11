@@ -1,0 +1,25 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           Class-DBI-Plugin 0.03
+revision              3
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+description           Abstract base class for Class::DBI plugins
+long_description      Class::DBI::Plugin is an abstract base class for \
+                      Class::DBI plugins. Its purpose is to make writing \
+                      plugins easier. Writers of plugins should be able to \
+                      concentrate on the functionality their module \
+                      provides, instead of having to deal with the symbol \
+                      table hackery involved when writing a plugin module.
+
+platforms             darwin
+
+checksums             md5 b020611a93fe51cbcdfd78f2cbf872cb
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-class-dbi
+}

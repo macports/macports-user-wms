@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        nan 1.0.9
+platforms           darwin
+license             GPL-2+ GPL-3+
+maintainers         nomaintainer
+description         Missing value statistical toolbox
+long_description    ${description}
+
+checksums           md5     0621816fb2bdf111e4697f3b08ed8c3c \
+                    sha1    dfdf4071bd14e62951b84522aef8f38949ecabe4 \
+                    rmd160  e760c8a7361191afb5b3ee2408d09b6eff13d9b6

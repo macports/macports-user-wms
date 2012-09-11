@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        bim 0.1.1
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Package for solving Diffusion Advection Reaction (DAR) \
+                    Partial Differential Equaltions based on the Finite Volume \
+                    Scharfetter-Gummel (FVSG) method a.k.a Box Integration \
+                    Method (BIM)
+long_description    ${description}
+
+checksums           md5     7e7a3856127c0f17bf98df5d564b224d \
+                    sha1    573b31f8e0e3f6ed733303c6a47a948b67cd338f \
+                    rmd160  a917e90a2d0fac5c9569220c3b50d3533f88065f
+
+depends_lib-append  port:octave-fpl port:octave-msh

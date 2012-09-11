@@ -1,0 +1,48 @@
+# $Id$
+
+PortSystem			1.0
+PortGroup			python 1.0
+name				py-apsw
+python.versions 	24 25 26 27 31 32
+version				3.7.13-r1
+revision			0
+maintainers			phw openmaintainer
+description			Very thin SQLite 3 wrapper for python
+long_description \
+	APSW provides an SQLite 3 wrapper that provides the thinnest layer \
+	over SQLite 3 possible.  Everything you can do from the C API to \
+	SQLite 3, you can do from Python.  Although APSW looks vaguely \
+	similar to the DBAPI, it is not compliant with that API and instead \
+	works the way SQLite 3 does.
+
+platforms			darwin
+homepage            http://code.google.com/p/apsw/
+master_sites		googlecode:apsw
+distname			apsw-${version}
+use_zip				yes
+
+checksums           md5     d892908912985b33d8eed6e8fd90278a \
+                    sha1    58c2596ca1801ce210fe593893935ecf84d73d50 \
+                    rmd160  68792ed759afb14536c78f102f7f869f167f05a4
+
+
+if { ${name} != ${subport} } {
+
+	depends_lib-append	port:sqlite3
+	
+	post-extract {
+		file copy ${filespath}/setup.cfg ${worksrcpath}/setup.cfg
+		reinplace "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/setup.cfg
+	}
+	
+	post-destroot {
+		xinstall -m 755 -d ${destroot}${prefix}/share/doc/${subport}
+		xinstall -m 644 -W ${worksrcpath}/doc/ apsw.html \
+			${destroot}${prefix}/share/doc/${subport}
+	}
+}
+
+livecheck.type  regex
+livecheck.url   http://code.google.com/p/apsw/downloads/list
+livecheck.regex {apsw-([0-9\.]+(-r1)?).zip}
+

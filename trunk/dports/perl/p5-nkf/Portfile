@@ -1,0 +1,45 @@
+# $Id$
+
+PortSystem      1.0
+PortGroup       perl5 1.0
+
+set nkf_ver     2.1.2
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup     NKF [string range ${nkf_ver} 0 2][string range ${nkf_ver} 4 end]
+revision        1
+categories-append \
+                textproc japanese
+maintainers     nifty.com:pelopor takanori openmaintainer
+description     A perl extension module to use nkf.
+long_description \
+                ${description}
+platforms       darwin
+license         zlib
+homepage        http://sourceforge.jp/projects/nkf/
+master_sites    sourceforge_jp:nkf/53171/
+distname        nkf-${nkf_ver}
+dist_subdir     nkf
+if {${perl5.major} != ""} {
+distfiles       [suffix ${distname}]:nkf
+patchfiles      nkf.git-ecf2a983ff0945462d731afa9b4d7327cfeb9b5a.patch
+checksums       rmd160  91c0d413a70299246591d314d33f45e71eba51a7
+
+worksrcdir  ${distname}/NKF.mod
+
+patch.pre_args  -p1
+pre-patch {
+    worksrcdir  ${distname}
+}
+post-patch {
+    worksrcdir  ${distname}/NKF.mod
+}
+
+post-destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}/doc
+    xinstall -m 644 -W ${worksrcpath} Changes README ${destroot}${prefix}/share/doc/${name}
+}
+}
+livecheck.type      regex
+livecheck.url       ${homepage}files/
+livecheck.version   ${nkf_ver}
+livecheck.regex     nkf-(\[0-9.a-z\]+)\\.tar

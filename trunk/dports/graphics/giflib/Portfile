@@ -1,0 +1,68 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                      1.0
+
+name                            giflib
+version                         4.2.0
+revision                        2
+set major                       [lindex [split ${version} .] 0]
+categories                      graphics
+maintainers                     ryandesign
+license                         MIT
+platforms                       darwin
+homepage                        http://sourceforge.net/projects/giflib/
+master_sites                    sourceforge:project/giflib/giflib-${major}.x
+use_bzip2                       yes
+
+description                     GIF library using patented LZW algorithm
+
+long_description                GIF loading and saving shared library. \
+                                Uses the LZW algorithm.
+
+checksums                       rmd160  4f04517dad1dca7bde4646c561d327d957c10eff \
+                                sha256  5f3e06e025b87c13eeb3ee46dc9881398bdf7ad578d8135548e1ae3073a4c8ce
+
+# 4.2.0 was stealth-updated hours after its release
+dist_subdir                     ${name}/${version}_1
+
+patchfiles                      patch-gif_lib.h.diff
+
+configure.args                  --disable-x11
+
+use_parallel_build              yes
+
+set docdir ${prefix}/share/doc/${name}
+post-destroot {
+    xinstall -d ${destroot}${docdir}
+    xinstall -W ${worksrcpath} AUTHORS BUGS COPYING NEWS README TODO api.txt history.txt ${destroot}${docdir}
+    eval xinstall -m 644 [glob ${worksrcpath}/doc/*.1] ${destroot}${prefix}/share/man/man1
+}
+
+variant doc description {Install HTML documentation} {
+    depends_build-append        port:xmlto
+    post-destroot {
+        xinstall -d ${destroot}${docdir}/html
+        eval xinstall -m 644 [glob ${worksrcpath}/doc/*.html] ${destroot}${docdir}/html
+    }
+}
+
+if {![variant_isset doc]} {
+    patchfiles-append           patch-no-docs.diff
+}
+
+variant no_x11 conflicts x11 description {Legacy compatibility variant} {}
+variant x11 {
+    depends_lib-append          port:xorg-libsm \
+                                port:xorg-libX11
+    
+    configure.args-delete       --disable-x11
+}
+
+if {[variant_isset no_x11]} {
+    default_variants -x11
+} else {
+    default_variants +x11
+}
+
+livecheck.regex                 /${name}-(${major}\\.\[0-9.\]+)${extract.suffix}

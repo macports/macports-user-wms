@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name                    gtkglarea2
+version                 2.0.1
+set branch              [join [lrange [split ${version} .] 0 1] .]
+categories              x11 devel
+maintainers             nomaintainer
+platforms               darwin
+
+description             OpenGL widget to GTK+
+
+long_description        Just as GTK+ is built on top of GDK, GtkGLArea is built on top of \
+                        gdkgl which is basically wrapper around GLX functions. The widget \
+                        itself is very similar to GtkDrawinigArea widget and adds only three \
+                        extra functions. Lower level gdkgl functions make it easy to render \
+                        on any widget that has OpenGL capable visual, rendering to off-screen \
+                        pixmaps is also supported.
+
+homepage                http://ftp.gnome.org/mirror/gnome.org/sources/gtkglarea
+master_sites            gnome:sources/gtkglarea/${branch}
+distname                gtkglarea-${version}
+use_bzip2               yes
+
+checksums               sha1    436f3c1e267a421a6df11248b250c82e93a8331d \
+                        rmd160  9e758a6f2e160192ee7ef29fb6ea582fcd97ff3a
+
+depends_build           port:pkgconfig
+depends_lib             port:mesa \
+                        port:gtk2
+
+configure.args          --with-GL-prefix=${prefix}

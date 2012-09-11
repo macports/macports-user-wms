@@ -1,0 +1,146 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                  1.0
+PortGroup                   muniversal 1.0
+PortGroup                   archcheck 1.0
+PortGroup                   xcodeversion 1.0
+
+name                        cairo-devel
+conflicts                   cairo
+set my_name                 cairo
+version                     1.11.4
+revision                    1
+categories                  graphics
+maintainers                 ryandesign
+license                     {LGPL-2.1 MPL-1.1}
+homepage                    http://cairographics.org/
+master_sites                ${homepage}snapshots/
+platforms                   darwin macosx
+use_parallel_build          yes
+dist_subdir                 ${my_name}
+distname                    ${my_name}-${version}
+
+description                 a vector graphics library with cross-device output support
+
+long_description            Cairo is ${description}. It is designed to produce \
+                            identical output on all output media while taking \
+                            advantage of display hardware acceleration when \
+                            available (e.g. through the X Render Extension).
+
+checksums                   rmd160  18d4c3eb62727bbff02da36fef6426c485d535a5 \
+                            sha256  aa78ac12294b34f31cf2462343564996ea9f90de8c9f9da4eb6f9b3d10317e68
+
+depends_build               port:pkgconfig
+
+depends_lib                 path:lib/pkgconfig/pixman-1.pc:libpixman \
+                            path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                            port:fontconfig \
+                            port:freetype \
+                            port:libpng \
+                            port:zlib \
+                            port:expat
+
+archcheck.files             lib/libpixman-1.dylib \
+                            lib/libglib-2.0.dylib \
+                            lib/libfontconfig.dylib \
+                            lib/libfreetype.dylib \
+                            lib/libpng.dylib \
+                            lib/libz.dylib \
+                            lib/libexpat.dylib
+
+minimum_xcodeversions       {8 2.4.1}
+
+# Prevent cairo from using librsvg, libspectre, poppler.
+patchfiles-append           patch-configure.diff
+
+pre-configure {
+    set pixman_minimum_version 0.20.2
+    set pixman_installed_version [exec ${prefix}/bin/pkg-config pixman-1 --modversion]
+    if {[vercmp ${pixman_installed_version} ${pixman_minimum_version}] < 0} {
+        ui_error "${name} ${version} requires libpixman ${pixman_minimum_version} or later but you have libpixman ${pixman_installed_version}."
+        return -code error "incompatible libpixman version"
+    }
+}
+
+configure.args              --disable-gl \
+                            --disable-quartz \
+                            --disable-quartz-font \
+                            --disable-quartz-image \
+                            --disable-silent-rules \
+                            --disable-xlib \
+                            --disable-xcb \
+                            --without-x \
+                            --enable-ft \
+                            --enable-pdf \
+                            --enable-png \
+                            --enable-ps \
+                            --enable-script \
+                            --enable-svg \
+                            --enable-tee \
+                            --enable-xml
+
+# Prevent cairo from using ghostscript.
+configure.args-append       ac_cv_prog_GS=""
+
+variant opengl requires x11 conflicts no_x11 description {Add OpenGL graphics interface} {
+    depends_lib-append      port:mesa
+    archcheck.files-append  lib/libGL.dylib
+    configure.args-delete   --disable-gl
+    configure.args-append   --enable-gl --enable-glx
+}
+
+platform macosx {
+variant quartz {
+    configure.args-delete   --disable-quartz \
+                            --disable-quartz-font \
+                            --disable-quartz-image
+    configure.args-append   --enable-quartz \
+                            --enable-quartz-font \
+                            --enable-quartz-image
+}
+}
+
+# https://trac.macports.org/ticket/34137
+if {${configure.compiler}=="clang"} {
+    configure.compiler  llvm-gcc-4.2
+}
+
+if {${configure.compiler} == "llvm-gcc-4.2"} {
+    patchfiles-append       patch-llvm-gcc-lto.diff
+}
+
+platform darwin 9 {
+    configure.compiler      gcc-4.2
+}
+
+variant no_x11 conflicts opengl x11_xcb x11 description {Legacy compatibility variant} {}
+variant x11 conflicts no_x11 description {Enable X11 support} {
+    depends_lib-append      port:xrender port:xorg-xcb-util
+    configure.args-delete   --disable-xlib \
+                            --without-x \
+                            --disable-xcb
+    configure.args-append   --enable-xlib \
+                            --enable-xlib-xrender \
+                            --enable-xcb \
+                            --enable-xcb-shm \
+                            --enable-xlib-xcb \
+                            --with-x \
+                            --x-include=${prefix}/include \
+                            --x-lib=${prefix}/lib
+}
+
+variant x11_xcb requires x11 conflicts no_x11 description {Legacy compatibility variant} {}
+
+if {[variant_isset no_x11]} {
+    default_variants -x11
+} else {
+    default_variants +x11
+}
+
+test.run                    yes
+test.target                 check
+
+livecheck.type              regex
+livecheck.url               ${homepage}news/
+livecheck.regex             ${my_name}-(\[0-9\]+\\.\[0-9\]*\[13579\]\\.\[0-9\]+)

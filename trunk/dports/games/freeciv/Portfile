@@ -1,0 +1,75 @@
+# -*- Mode: Tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                freeciv
+version             2.3.2
+revision        2
+set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          games
+maintainers         nomaintainer
+description         An empire-building strategy game
+long_description \
+   Freeciv is a Free and Open Source empire-building strategy game inspired \
+   by the history of human civilization. The game commences in prehistory \
+   and your mission is to lead your tribe from the stone age to the space \
+   age...
+
+homepage            http://www.freeciv.org/
+master_sites        sourceforge:project/${name}/Freeciv%20${branch}/${version}/ \
+                    ftp://ftp.freeciv.org/freeciv/stable/
+use_bzip2           yes
+
+checksums           rmd160  63bea690cfd6953bfb30d320a3e3f7a69353b64c \
+                    sha256  95b1c8cb1bc859abc883221e3e89f67a53799071fdb1fea7b8727fbab0cb4c4e
+
+depends_lib         port:libiconv \
+                    port:libsdl_mixer \
+                    port:readline \
+                    port:zlib
+
+patchfiles          patch-client-options.c.diff
+
+configure.args      --with-readline \
+                    --enable-nls --with-libiconv-prefix=${prefix} \
+                    --mandir=${prefix}/share/man --with-sdl-prefix=${prefix} \
+                    --disable-sdltest
+
+if {${name} == ${subport}} {
+    conflicts               freeciv-x11
+    
+    platforms               macosx
+    
+    depends_lib-append      port:freetype \
+                            port:libpng \
+                            port:libsdl \
+                            port:libsdl_image
+    
+    configure.args-append   --enable-client=sdl
+    
+    PortGroup               app 1.0
+    app.executable          freeciv-sdl
+    app.icon                data/icons/128x128/freeciv-client.png
+}
+
+subport freeciv-x11 {
+    conflicts               freeciv
+    
+    platforms               darwin
+    
+    depends_build-append    port:pkgconfig
+    
+    depends_lib-append      port:gettext \
+                            port:gtk2
+    
+    configure.args-append   --enable-client=gtk2 \
+                            --disable-gtktest
+}
+
+if {${name} == ${subport}} {
+    livecheck.type          regex
+    livecheck.regex         ${name}-(\[0-9.\]+)${extract.suffix}
+} else {
+    livecheck.type          none
+}

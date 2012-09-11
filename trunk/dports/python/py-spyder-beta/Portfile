@@ -1,0 +1,45 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+name                py-spyder-beta
+version             2.1.1
+epoch               20111107
+
+PortGroup           python 1.0
+
+python.versions     26 27
+python.default_version 27
+
+categories          python devel
+platforms           darwin
+maintainers         nomaintainer
+license             MIT
+homepage            http://packages.python.org/spyder/
+description         Spyder is the Scientific PYthon Development EnviRonment
+long_description    ${description}. \
+                    Spyder provides a powerful interactive development \
+                    environment for the Python language with advanced \
+                    editing, interactive testing, debugging and introspection \
+                    features as well as a numerical computing environment \
+                    thanks to the support of IPython (enhanced interactive \
+                    Python interpreter) and popular Python libraries such as \
+                    NumPy (linear algebra), SciPy (signal and image \
+                    processing) or matplotlib (interactive 2D/3D plotting) \
+                    development environment with advanced editing, \
+                    interactive testing, debugging and introspection features.
+
+distname            spyder-${version}
+supported_archs     noarch
+
+if {${subport} != ${name}} {
+   replaced_by         py${python.version}-spyder
+   distfiles
+   depends_lib
+   pre-configure {
+      ui_error "Please do not install this port since it has been replaced by 'py${python.version}-spyder'."
+      return -code error
+   }
+}
+
+livecheck.type      none

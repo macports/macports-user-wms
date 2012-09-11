@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python27 1.0
+
+github.setup        rg3 youtube-dl 2012.02.27
+categories          net
+platforms           darwin
+maintainers         ryandesign openmaintainer
+supported_archs     noarch
+license             public-domain
+
+description         command-line program to download videos from YouTube.com and other sites
+
+long_description    ${name} is a small ${description}.
+
+homepage            http://rg3.github.com/youtube-dl/
+dist_subdir         ${name}
+
+checksums           rmd160  3e7edd4fe1747a54bf5a844910cb5d41d16d529d \
+                    sha256  cac5966e0637ed737704e31390dd9c9701b6c3d721a9bc2bdcae9aa09495cf6e
+
+post-patch {
+    reinplace "s|#!/usr/bin/env python|#!${python.bin}|g" ${worksrcpath}/${name}
+}
+
+use_configure       no
+
+build {}
+
+destroot {
+    copy ${worksrcpath}/${name} ${destroot}${prefix}/bin
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    copy ${worksrcpath}/README.md ${docdir}
+}

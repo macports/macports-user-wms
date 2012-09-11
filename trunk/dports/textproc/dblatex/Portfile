@@ -1,0 +1,92 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                dblatex
+version             0.3.4
+categories          textproc tex
+maintainers         cal openmaintainer
+license             GPL-2+
+platforms           darwin
+description         DocBook to LaTeX Converter
+long_description    Dblatex transforms a DocBook XML/SGML document to LaTeX. \
+                    Once transformed into LaTeX, standard LaTeX tools are \
+                    used to produce DVI, Postcript or PDF files. \
+                    dblatex tries to hide as much as possible the latex \
+                    compiling stuff by providing a single clean script to \
+                    produce directly DVI, PostScript and PDF output. \
+                    The actual output rendering is done not only by the \
+                    XSL stylesheets transformation, but also by a dedicated \
+                    LaTeX package. The goal is to allow a deep LaTeX \
+                    customisation without changing the XSL stylesheets. \
+                    Post-processing is done by Python, to make publication \
+                    faster, convert the images if needed, and do the whole \
+                    compilation.
+
+homepage            http://dblatex.sourceforge.net
+master_sites        sourceforge:project/dblatex/dblatex/dblatex-${version}
+
+checksums           sha256  2009c8de332edca9edc75b42cd623834f2bb45e512b6975f98a0e3032a1f1c88 \
+                    rmd160  bd6fcc97582cb3c75716987b1cd6a9763c3b9b9b
+
+use_bzip2           yes
+
+depends_lib         port:texlive-latex-extra \
+                    port:texlive-latex-recommended \
+                    port:texlive-math-extra \
+                    port:dejavu-fonts \
+                    port:ImageMagick \
+                    port:docbook-xml \
+                    port:docbook-xsl
+
+patchfiles          patch-setup.py-remove-debian-installer.diff
+
+python.link_binaries no
+
+variant python25 conflicts python26 python27 {
+    python.default_version 25
+}
+
+variant python26 conflicts python25 python27 {
+    python.default_version 26
+}
+
+variant python27 conflicts python25 python26 {
+    python.default_version 27
+}
+
+if {![variant_isset python25] && ![variant_isset python26]} {
+    default_variants +python27
+}
+
+# this gets assigned before python.bin is set to the version selected by the variant
+#destroot.cmd        ${python.bin} setup.py
+destroot.destdir    --root=${destroot} \
+                    --catalogs=${destroot}${prefix}/etc/xml/catalog
+
+post-destroot {
+    reinplace "s|${destroot}${prefix}|${prefix}|g" ${destroot}${python.prefix}/bin/dblatex
+    reinplace "s|#!/usr/bin/env python|#!${python.bin}|" ${destroot}${python.prefix}/bin/dblatex
+
+    fs-traverse f ${destroot}${python.prefix}/share {
+        if {[file isfile $f]} {
+            set f [string range $f [string length ${destroot}${python.prefix}/share/] end]
+            file mkdir [file dirname ${destroot}${prefix}/share/$f]
+            ln -s ${python.prefix}/share/$f ${destroot}${prefix}/share/$f
+        }
+    }
+    ln -s ${python.prefix}/bin/dblatex ${destroot}${prefix}/bin/
+
+    xinstall -d ${destroot}${prefix}/share/texmf/tex
+    copy ${destroot}${python.prefix}/share/dblatex/latex ${destroot}${prefix}/share/texmf/tex/
+}
+
+post-activate {
+    system "${prefix}/bin/mktexlsr"
+}
+
+livecheck.type      regex
+livecheck.url       http://sourceforge.net/projects/${name}/files/
+livecheck.regex     /${name}-(\[0-9.\]+)/

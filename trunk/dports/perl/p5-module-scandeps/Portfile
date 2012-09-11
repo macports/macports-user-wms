@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           Module-ScanDeps 1.08
+revision        1
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+description           Recursively scan Perl code for dependencies
+long_description      This module scans potential modules used by \
+                      perl programs, and returns a hash reference\; its keys \
+                      are the module names as appears in %INC \
+                      (e.g. Test/More.pm)\; the values are hash references \
+                      with this structure:
+
+platforms             darwin
+
+checksums             rmd160  8b5983e3c6cbe2478cf0076c7b944469095b5fb2 \
+                      sha256  a72c92aedd0eeb938fe59a3e66b02c412d4da9e5c0c7db9632b8e66f222bb722
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-module-build \
+                      port:p${perl5.major}-version
+
+supported_archs       noarch
+}

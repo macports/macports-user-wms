@@ -1,0 +1,143 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           app 1.0
+
+name                pspp-devel
+set buildstamp      20120827000503
+set buildhash       gc091e5
+version             0.7.9
+revision            23
+# depends_test port:p5.12-text-diff
+# 2011-08-14: no_* variants obsoleted
+categories          math
+license             GPL-3+
+maintainers         snc
+conflicts           pspp
+description         Statistical analysis of sampled data (free \
+                    replacement for SPSS).
+long_description    PSPP is a program for \
+                    statistical analysis of sampled data. It is a Free \
+                    replacement for the proprietary program SPSS, and \
+                    appears very similar to it with a few exceptions.
+
+homepage            http://www.gnu.org/software/pspp/
+platforms           darwin
+
+master_sites        http://pspp.benpfaff.org/~blp/pspp-master/${buildstamp}
+distname            pspp-${version}-${buildhash}
+
+depends_lib-append  port:gsl \
+                    port:libffi \
+                    port:libiconv \
+                    port:libpng \
+                    port:libtool \
+                    port:libxml2 \
+                    port:readline \
+                    port:zlib \
+
+checksums           rmd160  32e8317bcbb8f1641460cdb9cdb912189d590032 \
+                    sha256  985c910a76488e85d28e70152c96a01c3963ebd49bb4da692734b1da58c5c25e
+
+#configure.cflags-append -g
+configure.perl      ${prefix}/bin/perl
+configure.args      --disable-rpath \
+                    --without-libpq \
+                    --with-packager=snc \
+                    --with-packager-version=${version}-${buildstamp} \
+                    --with-packager-bug-reports=${maintainers}
+
+if {${configure.compiler} == "llvm-gcc-4.2"} {
+    configure.cflags-append -fno-inline-functions
+}
+
+use_parallel_build  yes
+
+test.run            yes
+test.target         check
+#test.env            TESTSUITEFLAGS='776 777 778 779 780 781'
+
+if {[variant_isset no_gui]} {
+    default_variants -gui
+} else {
+    default_variants +gui
+}
+if {[variant_isset no_graph]} {
+    default_variants -graph
+} else {
+    default_variants +graph
+}
+
+variant help requires gui conflicts no_gui description {Provide in-application help via yelp} {
+    depends_run-append  port:yelp
+}
+
+variant doc description {Build documentation} {
+    depends_lib-append   port:texinfo
+    build.target-append  pdf html
+}
+
+variant postgres description {Enables reading of postgresql databases} {
+    depends_lib-append  port:postgresql90
+    configure.args-delete   --without-libpq
+    configure.ldflags-append -L${prefix}/lib/postgresql90
+    configure.env-append    PG_CONFIG=${prefix}/lib/postgresql90/bin/pg_config
+}
+
+variant no_graph conflicts graph description {Obsolete} { }
+
+variant graph conflicts no_graph description {Enable graphing features} {
+    depends_lib-append      port:plotutils
+    configure.args-delete   --without-libplot
+}
+
+variant no_gui conflicts gui description {Obsolete} { }
+
+variant gui conflicts no_gui description {Build PSPPIRE, the graphical interface} {
+    depends_lib-append      port:pkgconfig \
+                            port:gtk2 \
+                            port:gtksourceview2 \
+                            port:libglade2
+    configure.args-delete   --without-gui
+}
+
+variant quartz conflicts x11 {}
+variant x11 conflicts quartz {}
+if {![variant_isset x11] && ![variant_isset quartz]} {
+    if {${os.major} < 11} {
+        default_variants -quartz
+    } else {
+        default_variants +quartz
+    }
+}
+#default_variants +postgres
+
+post-destroot {
+    if {[variant_isset doc]} {
+        xinstall -d -m 0755 ${destroot}${prefix}/share/doc/${name}
+        foreach fl [glob -nocomplain -directory ${worksrcpath}/doc *.pdf *.html] {
+            copy ${fl} ${destroot}${prefix}/share/doc/${name}
+        }
+    }
+}
+
+post-activate {
+    system "${prefix}/bin/gtk-update-icon-cache --ignore-theme-index ${prefix}/share/icons/hicolor"
+
+}
+
+post-deactivate {
+    system "${prefix}/bin/gtk-update-icon-cache --ignore-theme-index ${prefix}/share/icons/hicolor"
+}
+
+if {![variant_isset gui]} {
+    app.create      no
+}
+app.name            PSPP
+app.executable      psppire
+app.icon            ${filespath}/logo.png
+
+livecheck.url               http://pspp.benpfaff.org/~blp/pspp-master/latest/
+livecheck.regex             <td>dist_version<\\/td><td>(.*)<\\/td>
+livecheck.version           ${version}-${buildhash}

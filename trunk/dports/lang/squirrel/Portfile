@@ -1,0 +1,51 @@
+# $Id$
+
+PortSystem 1.0
+
+name			squirrel
+version			2.2.3
+categories		lang
+platforms		darwin
+license			BSD
+maintainers		nomaintainer
+description		high level imperative/OO programming language
+long_description	Squirrel is a high level imperative/OO programming \
+				language, designed to be a powerful scripting tool that fits \
+				in the size, memory bandwidth, and real-time requirements of \
+				applications like games.
+
+homepage		http://www.squirrel-lang.org/
+master_sites	sourceforge
+distname		squirrel_${version}_stable
+checksums		md5     25295ed1459111a80f612357cfe83b54 \
+				sha1    aa5a427edf1e1a7415414462d7a7773913eb8d60 \
+				rmd160  597e219851957cfcd71d8e6aefeee73d8e01c569
+
+pre-patch {
+	reinplace "s|\r||g" \
+		${worksrcpath}/sq/Makefile \
+		${worksrcpath}/squirrel/Makefile \
+		${worksrcpath}/sqstdlib/Makefile
+}
+
+patchfiles		patch-compiler.diff
+
+worksrcdir		SQUIRREL2
+
+use_configure	no
+
+build.target	sq32
+build.env-append	CC=${configure.cc} \
+					CXX=${configure.cxx}
+
+destroot	{
+	xinstall -m 755 ${worksrcpath}/bin/sq ${destroot}${prefix}/bin
+	xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+	file copy ${worksrcpath}/samples \
+		${destroot}${prefix}/share/doc/${name}/examples
+	xinstall -m 644 -W ${worksrcpath}/lib libsqstdlib.a libsquirrel.a \
+		${destroot}${prefix}/lib
+	xinstall -m 644 -W ${worksrcpath}/include sqstdaux.h sqstdblob.h sqstdio.h \
+		sqstdmath.h sqstdstring.h sqstdsystem.h squirrel.h \
+		${destroot}${prefix}/include
+}

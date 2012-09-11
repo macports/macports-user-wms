@@ -1,0 +1,40 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+categories          perl net
+platforms           darwin
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Net-Twitter 3.18001 ../../authors/id/M/MM/MMIMS/
+revision        1
+maintainers         nomaintainer
+description         A Perl interface to the Twitter API
+long_description    ${description}.
+
+checksums           md5     88665d245f72b48ee87817edb5906d00 \
+                    sha1    629c098aacf46135c89a755b799f46fa20a899bd \
+                    rmd160  e811a71ffa762b52ed9023d96133e0bac24100df
+
+if {${perl5.major} != ""} {
+depends_lib-append \
+  port:p${perl5.major}-crypt-ssleay \
+  port:p${perl5.major}-data-visitor \
+  port:p${perl5.major}-datetime \
+  port:p${perl5.major}-datetime-format-strptime \
+  port:p${perl5.major}-devel-stacktrace \
+  port:p${perl5.major}-digest-hmac \
+  port:p${perl5.major}-digest-sha1 \
+  port:p${perl5.major}-encode \
+  port:p${perl5.major}-html-parser \
+  port:p${perl5.major}-http-message \
+  port:p${perl5.major}-json-any \
+  port:p${perl5.major}-moose \
+  port:p${perl5.major}-moosex-multiinitarg \
+  port:p${perl5.major}-namespace-autoclean \
+  port:p${perl5.major}-net-oauth \
+  port:p${perl5.major}-uri \
+  port:p${perl5.major}-try-tiny
+
+supported_archs noarch
+}

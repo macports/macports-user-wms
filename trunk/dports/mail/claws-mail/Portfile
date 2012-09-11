@@ -1,0 +1,45 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+
+name            claws-mail
+version         3.8.1
+revision        1
+categories      mail news
+platforms       darwin
+license         GPL-3+
+maintainers     nomaintainer
+
+description     A lightweight and very featureful GTK+ based e-mail and news client
+
+long_description Currently, many features are supported in Claws Mail \
+                including POP3, IMAP, NNTP, multiple accounts, \
+                threading, filtering, MIME attachments, APOP, SMTP \
+                AUTH, SSL, IPv6, GnuPG, internalization, plugins, \
+                a filtering/processing mechanism, extra folder \
+                properties and much more.
+
+homepage        http://www.claws-mail.org/
+master_sites    sourceforge:project/sylpheed-claws/Claws%20Mail/${version}
+
+checksums       rmd160  e50ddd80589e7edb9f1c172a83e7f41dd8dec372 \
+                sha256  b421fd913694f9d04635212b0c47c9808a3f20a4f9a5dd15b6f4cd5022c6ee6f
+
+use_bzip2       yes
+
+depends_build   port:pkgconfig
+depends_lib     port:gtk2 \
+                port:libetpan \
+                port:gpgme \
+                port:compface \
+                port:gtkspell2 \
+                port:aspell \
+                port:gnutls
+
+configure.args  --disable-jpilot \
+                --disable-trayicon-plugin \
+                --enable-ipv6 \
+                --enable-crash-dialog
+
+livecheck.regex /${name}-(\[0-9.\]+)${extract.suffix}

@@ -1,0 +1,32 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xfsinfo
+version             1.0.3
+categories          x11 graphics
+maintainers         jeremyhu openmaintainer
+description         X11 font server information utility
+long_description \
+   xfsinfo is a utility for displaying information about an X font server.  \
+   It is used to examine the capabilities of a server, the predefined values \
+   for various parameters used in communicating between clients and the \
+   server, and the font catalogues and alternate servers that are available.
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           md5     aae6fa48b5c2ce9186a5ff4ccc14a1d4 \
+                    sha1    21c5f544f34d9164797575da85727558f5e09d33 \
+                    rmd160  acd53754e3008d2496ac53ec31599217ebe0a99f
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libFS port:xorg-libX11
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

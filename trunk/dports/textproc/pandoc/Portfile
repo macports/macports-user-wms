@@ -1,0 +1,31 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           haskell 1.0
+
+haskell.setup       pandoc 1.8.0.1
+name                pandoc
+categories          textproc
+maintainers         nomaintainer
+license             GPL-3
+description         General markup converter
+long_description    \
+    Pandoc is a command-line tool for converting from one markup format \
+    to another. It can read markdown and (subsets of) reStructuredText, \
+    HTML, and LaTeX, and it can write markdown, reStructuredText, HTML, \
+    LaTeX, ConTeXt, DocBook, RTF, groff man pages, and S5 HTML slide shows.
+
+homepage            http://johnmacfarlane.net/${name}/
+platforms           darwin
+checksums           md5     e96187b08a585f827ca21aa6e7e375d3 \
+                    sha1    ec0d29688bd9cd9500b2d7170c497d8782328449 \
+                    rmd160  e26a1ecc9fc4d7a905a07060eba2ad9e62501e2f
+
+depends_build-append \
+    port:hs-haddock port:hs-zip-archive port:hs-utf8-string port:hs-HTTP \
+    port:hs-texmath port:hs-xml port:hs-pandoc-types port:hs-dlist \
+    port:hs-citeproc port:hs-tagsoup
+
+depends_lib         port:gmp
+
+test.run	        yes

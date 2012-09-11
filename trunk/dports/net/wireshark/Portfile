@@ -1,0 +1,177 @@
+# $Id$
+
+PortSystem 1.0
+name		wireshark
+version		1.8.2
+revision	1
+categories	net
+license		{GPL-2 GPL-3}
+maintainers	darkart.com:opendarwin.org
+description	Graphical network analyzer and capture tool
+homepage	http://wireshark.org/
+platforms	darwin
+
+long_description A network analyzer that lets you capture and \
+		 interactively browse Ethernet frames. \
+		 Packet data can be read from a file, or live from a local \
+		 network interface.
+
+master_sites	http://www.wireshark.org/download/src/			\
+		http://www.wireshark.org/download/src/all-versions/
+
+checksums           md5     5e3ea7eed50dace479e12f49d24506f4 \
+                    sha1    4737d9745dbf002444ea42615243abf3bb80b943 \
+                    rmd160  5fece857d5187b146a690fda111a0611e108c2a9
+
+use_bzip2	yes
+
+conflicts	wireshark-devel
+
+depends_build 		\
+		port:pkgconfig
+depends_lib 		\
+		port:adns \
+		port:libgcrypt \
+		port:libgeoip \
+		path:lib/pkgconfig/glib-2.0.pc:glib2 \
+		port:libsmi \
+		port:lua \
+		port:gnutls \
+		port:gtk2 \
+		port:openssl \
+		port:portaudio \
+		port:libpcap \
+		port:zlib
+
+configure.args	\
+		--with-libsmi=${prefix} \
+		--disable-usr-local \
+		--with-adns=${prefix} \
+		--without-c-ares \
+		--with-geoip=${prefix} \
+		--with-gnutls=yes \
+		--with-libgcrypt-prefix=${prefix} \
+		--with-lua=${prefix} \
+		--enable-ipv6 \
+		--with-pcap=${prefix} \
+		--with-ssl=${prefix} \
+		--with-zlib=${prefix} \
+		--mandir=\\\${prefix}/share/man \
+		--infodir=\\\${prefix}/share/info \
+		--with-portaudio=${prefix} \
+		--disable-warnings-as-errors
+
+configure.ldflags-append "-Wl,-search_paths_first"
+
+if {[variant_isset no_python]} {
+} elseif {[variant_isset python25]} {
+} elseif {[variant_isset python26]} {
+} elseif {[variant_isset python27]} {
+} else {
+	default_variants +no_python
+}
+
+
+pre-destroot {
+	xinstall -d ${destroot}${prefix}/include/wireshark/epan/crypt/
+	xinstall -d ${destroot}${prefix}/include/wireshark/epan/dfilter/
+	xinstall -d ${destroot}${prefix}/include/wireshark/epan/dissectors/
+	xinstall -d ${destroot}${prefix}/include/wireshark/epan/ftypes/
+	xinstall -d ${destroot}${prefix}/include/wireshark/wiretap/
+	xinstall -m 644 -W ${worksrcpath}/ color.h config.h register.h ${destroot}${prefix}/include/wireshark/
+	eval xinstall -m 644 [glob ${worksrcpath}/epan/*.h] ${destroot}${prefix}/include/wireshark/epan/
+	eval xinstall -m 644 [glob ${worksrcpath}/epan/crypt/*.h] ${destroot}${prefix}/include/wireshark/epan/crypt/
+	eval xinstall -m 644 [glob ${worksrcpath}/epan/dfilter/*.h] ${destroot}${prefix}/include/wireshark/epan/dfilter/
+	eval xinstall -m 644 [glob ${worksrcpath}/epan/dissectors/*.h] ${destroot}${prefix}/include/wireshark/epan/dissectors/
+	eval xinstall -m 644 [glob ${worksrcpath}/epan/ftypes/*.h] ${destroot}${prefix}/include/wireshark/epan/ftypes/
+	eval xinstall -m 644 [glob ${worksrcpath}/wiretap/*.h] ${destroot}${prefix}/include/wireshark/wiretap/
+}
+
+if {${configure.compiler} == "clang"} {
+	configure.compiler llvm-gcc-4.2
+	# see #32386
+	configure.cflags -fno-var-tracking
+}
+
+variant no_adns description {don't use adns library for async. dns resolution instead of the default c-ares library} {
+	configure.args-append	--without-adns \
+							--with-c-ares=${prefix}
+	configure.args-delete	--with-adns=${prefix} \
+							--without-c-ares
+	depends_lib-delete	port:adns
+}
+
+variant no_gnutls {
+	configure.args-append	--without-gnutls
+	configure.args-delete	--with-gnutls=yes
+	depends_lib-delete	port:gnutls
+}
+
+variant no_libgcrypt {
+	configure.args-append	--with-gcrypt=no
+	configure.args-delete	--with-libgcrypt-prefix=${prefix}
+	depends_lib-delete	port:libgcrypt
+}
+
+variant no_ipv6 {
+	configure.args-append	--disable-ipv6
+	configure.args-delete	--enable-ipv6
+}
+
+variant no_lua {
+	configure.args-append	--without-lua
+	configure.args-delete	--with-lua=${prefix}
+	depends_lib-delete	port:lua
+}
+
+variant no_libsmi {
+	configure.args-append	--without-libsmi
+	configure.args-delete	--with-libsmi=${prefix}
+	depends_lib-delete	port:libsmi
+}
+
+variant no_geoip {
+	configure.args-append	--without-geoip
+	configure.args-delete	--with-geoip=${prefix}
+	depends_lib-delete	port:libgeoip
+}
+
+variant python25 description {use python25 for the experimental python interface} conflicts no_python python26 python27 {
+	configure.args-append	--with-python=${prefix}
+	depends_lib-append	port:python25
+}
+
+variant python26 description {use python26 for the experimental python interface} conflicts no_python python25 python27 {
+	configure.args-append	--with-python=${prefix}
+	depends_lib-append	port:python26
+}
+
+variant python27 description {use python27 for the experimental python interface} conflicts no_python python25 python26 {
+	configure.args-append	--with-python=${prefix}/lib/wireshark/python/${version}
+	depends_lib-append	port:python27
+}
+
+variant no_python description {do not build python interface} conflicts python25 python26 python27 {
+	configure.args-append	--without-python
+}
+
+variant no_rtp description {remove rtp support} {
+	configure.args-append   --without-portaudio
+	configure.args-delete   --with-portaudio=${prefix}
+	depends_lib-delete      port:portaudio
+}
+
+variant no_ssl {
+	configure.args-append --without-ssl
+	depends_lib-delete	port:openssl
+}
+
+variant no_x11	{
+	depends_lib-delete	port:gtk2
+	configure.args-delete	--disable-gtk2
+	configure.args-append	--disable-wireshark
+}
+
+
+#
+##EOF

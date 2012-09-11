@@ -1,0 +1,21 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           mytop 1.2 ../by-authors/id/J/JZ/JZAWODNY/
+revision              3
+maintainers           nomaintainer
+description           display MySQL server performance info like `top'
+long_description      ${description}
+
+platforms             darwin
+
+checksums             md5 8f1e9843c9d596f8dba632525bd1a100
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-term-readkey \
+                      port:p${perl5.major}-dbi \
+                      port:p${perl5.major}-dbd-mysql
+}

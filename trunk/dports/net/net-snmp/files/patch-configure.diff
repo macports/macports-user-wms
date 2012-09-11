@@ -1,0 +1,11 @@
+--- configure.orig	2011-09-27 23:54:21.000000000 -0500
++++ configure	2011-11-22 02:15:28.000000000 -0600
+@@ -23197,7 +23197,7 @@
+         { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Perl cc" >&5
+ $as_echo_n "checking for Perl cc... " >&6; }
+ 
+-        PERLCC=`$myperl -V:cc | $myperl -n -e 'print if (s/^\s*cc=.([-=\w\s\/]+).;\s*/$1/);'`
++        PERLCC=`$myperl -V:cc | $myperl -n -e 'print if (s/^\s*cc=.([-=\w\s\/\.]+).;\s*/$1/);'`
+ 
+         if test "x$PERLCC" != "x" ; then
+             { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PERLCC" >&5

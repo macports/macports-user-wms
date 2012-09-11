@@ -1,0 +1,27 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                      1.0
+PortGroup                       pure 1.0
+
+pure.setup                      doc 0.6
+revision                        1
+categories                      textproc
+platforms                       darwin
+maintainers                     ryandesign
+license                         GPL-3
+
+description                     a utility for literate programming and \
+                                documenting source code in Pure
+
+long_description                ${name} is a simple utility for literate \
+                                programming and documenting source code \
+                                written in the Pure programming language.
+
+# 0.6 was stealth-updated 2011-10-20
+dist_subdir                     ${name}/${version}_1
+
+checksums                       rmd160  a9fdb421481b6e5db990cd5ca80b071c52dd051c \
+                                sha256  93086d65f4c38fb2344c9cf5b781167da3d1c423a58a525ade12bb41f5c47203
+
+depends_build-append            path:bin/flex:flex

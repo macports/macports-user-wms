@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		XML-RSS 1.48
+revision        3
+license			{Artistic-1 GPL}
+maintainers		nomaintainer
+categories-append	textproc
+supported_archs		noarch
+
+description		module to manage RDF Site Summary (RSS) files
+long_description	This module was created to help those who need to manage \
+				RDF Site Summary (RSS) files. It makes quick work of creating, \
+				updating, and saving RSS files.
+homepage		http://search.cpan.org/~msergeant/${distname}/
+platforms		darwin
+
+checksums               sha1    8b26c8b555fddb6c303020d0cdefc9b0fef796b9 \
+                        rmd160  8a19dce7a5b1161799ce6b968d334e386e52113f
+
+if {${perl5.major} != ""} {
+depends_lib-append	port:p${perl5.major}-xml-parser \
+			port:p${perl5.major}-html-parser \
+			port:p${perl5.major}-test-manifest \
+			port:p${perl5.major}-datetime-format-w3cdtf \
+			port:p${perl5.major}-datetime-format-mail
+}

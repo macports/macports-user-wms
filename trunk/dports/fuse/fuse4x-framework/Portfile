@@ -1,0 +1,53 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           xcode 1.0
+
+name                fuse4x-framework
+version             0.9.1
+set tag             [string map {. _ } $version]
+categories          fuse devel
+platforms           macosx
+maintainers         dports
+description         Objective-C framework for Fuse4X
+
+long_description    Fuse4X implements a mechanism that makes it          \
+                    possible to implement a fully functional file        \
+                    system in a user-space program on Mac OS X. It       \
+                    aims to be API-compliant with the FUSE               \
+                    (File-system in USErspace) mechanism that            \
+                    originated on Linux.  Therefore, many existing       \
+                    FUSE file systems become readily usable on Mac OS    \
+                    X. This port provides a framework for writing        \
+                    file systems in Objective-C.
+
+homepage            http://fuse4x.org/
+license             BSD
+master_sites        https://github.com/fuse4x/framework/tarball/fuse4x_${tag}
+
+checksums           sha256  2929f268a5d0b2ff6223ee6fafea66d3a39c13f382ab104ea2411eed9a56b01d \
+                    rmd160  a0708bb6dacedf3c34c8eec2f9c4c839b35fe7c7
+
+extract.mkdir       yes
+extract.post_args   "| tar --strip-components=1 -xf -"
+
+depends_lib         port:fuse4x
+
+post-patch {
+    reinplace "s|-lfuse4x|-lfuse|" ${worksrcpath}/framework.xcodeproj/project.pbxproj
+}
+
+xcode.configuration Release
+xcode.build.settings    LIBRARY_SEARCH_PATHS='${prefix}/lib' \
+                        HEADER_SEARCH_PATHS='${prefix}/include'
+
+destroot {
+    xinstall -d ${destroot}/${frameworks_dir}
+    file copy ${worksrcpath}/build/${xcode.configuration}/Fuse4X.framework \
+              ${destroot}/${frameworks_dir}
+}
+
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     {Fuse4X-([0-9.]+).dmg}

@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem 1.0
+
+name                ldns-tools
+version             1.6.10
+categories          net devel
+platforms           darwin
+maintainers         durchmesser.ch:marius.rieder
+license             BSD
+description         Tools for working with dns and dnssec.
+long_description    Tools as examples to the ldns library. \
+                    Useful for debugging/querying dns/dnssec servers.
+
+homepage            http://www.nlnetlabs.nl/projects/ldns/
+master_sites        http://www.nlnetlabs.nl/downloads/ldns/
+distname            ldns-${version}
+dist_subdir         ldns
+
+checksums           sha1   7798a32c6f50a4fb7d56ddf772163dc1cb79c1a4 \
+                    rmd160 0401368c96c5b1ae9a781ee4c9441652a5e86af5
+
+depends_build       bin:glibtool:libtool
+depends_lib         port:ldns port:openssl port:libpcap
+
+worksrcdir          ldns-${version}/examples
+configure.args      --mandir=${prefix}/share/man --with-ldns=${prefix} --with-ssl=${prefix}
+build.type          gnu

@@ -1,0 +1,69 @@
+# $Id$
+
+PortSystem 1.0
+
+name                    derby
+version                 10.6.2.1
+revision                1
+
+categories              java
+maintainers             blair
+platforms               darwin
+
+description             Relational database implemented entirely in Java
+long_description        Apache Derby, an Apache DB subproject, is an open \
+                        source relational database implemented entirely in \
+                        Java and available under the Apache License, Version \
+                        2.0.  Some key advantages include:  1) Derby has a \
+                        small footprint -- about 2 megabytes for the base \
+                        engine and embedded JDBC driver.  2) Derby is based \
+                        on the Java, JDBC, and SQL standards.  3) Derby \
+                        provides an embedded JDBC driver that lets you \
+                        embed Derby in any Java-based solution.  4) Derby \
+                        also supports the more familiar client/server mode \
+                        with the Derby Network Client JDBC driver and Derby \
+                        Network Server.  5) Derby is easy to install, deploy, \
+                        and use.
+homepage                http://db.apache.org/derby/
+
+master_sites            apache:db/derby/db-${name}-${version}
+distname                db-${name}-${version}-bin
+checksums               md5 c19eff62e47148f319e7d1becb79842a \
+                        sha1 1a2b1bbc1fc7878b80aea68bd630b93a27258ac4 \
+                        rmd160 771680886e45543606e793684b60b195f9c11866
+
+depends_lib             bin:java:kaffe
+depends_run             port:rlwrap
+
+use_configure           no
+
+build.cmd               true
+
+destroot {
+        set sharedir ${destroot}${prefix}/share
+        set man1dir ${sharedir}/man/man1
+        set derbydir ${sharedir}/derby
+        set docderbydir ${sharedir}/doc/derby
+
+        # Ensure needed directories
+        xinstall -d -m 755 ${sharedir}/java ${docderbydir}
+
+        file copy ${worksrcpath} ${derbydir}
+
+        foreach f { dblook ij sysinfo } {
+                xinstall -m 755 ${filespath}/${f} ${destroot}${prefix}/bin/${f}
+                reinplace "s|@PREFIX@|${prefix}|" ${destroot}${prefix}/bin/${f}
+        }
+
+        foreach f { KEYS LICENSE NOTICE RELEASE-NOTES.html docs index.html javadoc } {
+                ln -s ../../derby/${f} ${docderbydir}/${f}
+        }
+
+        foreach f [ glob -tails -directory ${derbydir}/lib *.\[jw\]ar ] {
+                ln -s ../derby/lib/${f} ${sharedir}/java/${f}
+        }
+}
+
+livecheck.type          regex
+livecheck.url           "http://db.apache.org/derby/releases/?C=N;O=D"
+livecheck.regex         release-(\[0-9.\]+)\.html

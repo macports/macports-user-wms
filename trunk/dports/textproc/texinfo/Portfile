@@ -1,0 +1,70 @@
+# $Id$
+
+PortSystem 1.0
+
+name            texinfo
+version         4.13
+revision        2
+categories      textproc
+license         GPL-3+
+installs_libs   no
+platforms       darwin
+maintainers     nomaintainer
+description     Texinfo is the official documentation format of the GNU project
+long_description        Texinfo is the official documentation format of the \
+                GNU project. It uses a single source file to produce output \
+                in a number of formats, both online and printed (dvi, info, \
+                html, xml, etc.). This means that instead of writing \
+                different documents for online information and another for \
+                a printed manual, you need write only one document. Some \
+                features need texlive (unnecessary if only the info command \
+                is used).
+homepage        http://www.gnu.org/software/texinfo/
+master_sites    gnu
+use_xz          yes
+extract.suffix  .tar.lzma
+
+checksums       md5 20b37e49464bd72df4c6cfba33340f87 \
+                sha1 676ec9aa25a97c05dff66fba5225f9e101160063 \
+                rmd160 31d68ab41fead86d473ecc1de183fd1629e01560
+
+depends_lib     port:gettext \
+                port:libiconv \
+                port:ncurses
+
+destroot.target-append  install-tex
+destroot.destdir-append TEXMF=${prefix}/share/texmf
+
+pre-destroot {
+    xinstall -d "${destroot}${prefix}/share/doc/${name}"
+    xinstall -m 644 -v -W "${worksrcpath}" AUTHORS INTRODUCTION NEWS TODO \
+      doc/refcard/txirefcard.pdf "${destroot}${prefix}/share/doc/${name}"
+}
+
+post-destroot {
+    file delete -force ${destroot}${prefix}/lib/charset.alias
+}
+
+# mktexlsr is provided by texlive-bin (and needed only if texlive-bin
+# is installed). texlive-bin may be installed/uninstalled independently
+# of texinfo (but not at the same time, unless a locking mechanism is
+# provided). The use of a variant would not be flexible enough.
+
+post-activate {
+    if { [file exists ${prefix}/bin/mktexlsr] } {
+        ui_msg "Running ${prefix}/bin/mktexlsr"
+        system "${prefix}/bin/mktexlsr"
+    }
+}
+
+post-deactivate {
+    if { [file exists ${prefix}/bin/mktexlsr] } {
+        ui_msg "Running ${prefix}/bin/mktexlsr"
+        system "${prefix}/bin/mktexlsr"
+    }
+}
+
+# We need to support names like 'texinfo-4.8a.tar.bz2'.
+livecheck.type      regex
+livecheck.url       http://ftp.gnu.org/gnu/texinfo/?C=M\;O=D
+livecheck.regex     ${name}-(\[0-9.a-s\]+)\\.tar

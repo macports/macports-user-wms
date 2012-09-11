@@ -1,0 +1,187 @@
+# $Id$
+
+PortSystem              1.0
+name                    cctools
+# XCode 4.4
+version                 829
+revision                1
+categories              devel
+platforms               darwin
+maintainers             mfeiri jeremyhu openmaintainer
+license                 {APSL-2 GPL-2+}
+description             Compiler Tools for Mac OS X and Darwin
+long_description        A set of essential tools to support development \
+                        on Mac OS X and Darwin. Conceptually similar \
+                        similar to binutils on other platforms.
+
+homepage                http://opensource.apple.com/source/${name}/
+master_sites            http://opensource.apple.com/tarballs/${name}/
+
+checksums               rmd160  55a01500935bf8a6e541ac2109317746c4e7b90d \
+                        sha256  f140b3a2ab7c85b0316afcd816cc8171f81585eea125bca64d781d4e192d65dc
+
+depends_lib             port:cctools-headers
+depends_build           port:ld64
+
+patchfiles              cctools-829-lto.patch
+
+variant universal {}
+
+if {${os.arch} == "powerpc" || ${os.major} < 9} {
+    # XCode 4.1
+    version             806
+    revision            1
+    distname            cctools-${version}
+    checksums           rmd160  91c0a3f192f1eed60b64ef5a0a06918d0ce0b0c9 \
+                        sha256  6116c06920112c634f6df2fa8b2f171ee3b90ff2176137da5856336695a6a676
+    supported_archs     ppc i386 x86_64
+
+    patchfiles-delete   cctools-829-lto.patch
+    patchfiles-append   cctools-806-lto.patch PR-9087924.patch PR-9830754.patch cctools-822-no-lto.patch PR-11136237.patch
+} else {
+    supported_archs     i386 x86_64
+}
+
+if {![variant_isset llvm29] && ![variant_isset llvm30] && ![variant_isset llvm31] && ![variant_isset llvm32] && ${os.major} >= 9} {
+    default_variants +llvm31
+}
+
+set llvm_version {}
+variant llvm29 conflicts llvm30 llvm31 llvm32 description {Use llvm-2.9 for libLTO and llvm-mc} {
+    set llvm_version        2.9
+    depends_run-append      port:llvm-${llvm_version}
+}
+
+variant llvm30 conflicts llvm29 llvm31 llvm32 description {Use llvm-3.0 for libLTO and llvm-mc} {
+    set llvm_version        3.0
+    depends_run-append      port:llvm-${llvm_version}
+}
+
+variant llvm31 conflicts llvm29 llvm30 llvm32 description {Use llvm-3.1 for libLTO and llvm-mc} {
+    set llvm_version        3.1
+    depends_run-append      port:llvm-${llvm_version}
+}
+
+variant llvm32 conflicts llvm29 llvm30 llvm31 description {Use llvm-3.2 for libLTO and llvm-mc} {
+    set llvm_version        3.2
+    depends_run-append      port:llvm-${llvm_version}
+}
+
+use_configure           no
+destroot.args           DSTROOT=${destroot}${prefix} RC_ProjectSourceVersion=${version}
+
+post-patch {
+    # We don't want to build cctools ld.  We want to use ld64
+    reinplace "/^SUBDIRS_32/s/ld//" ${worksrcpath}/Makefile
+    reinplace "/^COMMON_SUBDIRS/s/ ld / /" ${worksrcpath}/Makefile
+
+    # Use our chosen version of llvm
+    if {[variant_isset llvm29] || [variant_isset llvm30] || [variant_isset llvm31] || [variant_isset llvm32]} {
+        reinplace "s:\"llvm-mc\":\"llvm-mc-mp-${llvm_version}\":" ${worksrcpath}/as/driver.c
+        reinplace "s:@@LLVM_LIBDIR@@:${prefix}/libexec/llvm-${llvm_version}/lib:" ${worksrcpath}/libstuff/lto.c
+    }
+
+    foreach file [glob ${worksrcpath}/{*/,}Makefile] {
+        reinplace "s:/usr/local:@PREFIX@:g" ${file}
+        reinplace "s:/usr:@PREFIX@:g" ${file}
+        reinplace "s:@PREFIX@:${prefix}:g" ${file}
+        reinplace "s:${prefix}/efi:${prefix}:g" ${file}
+        reinplace "s:/Developer${prefix}:${prefix}:g" ${file}
+        reinplace "s:${prefix}/man:${prefix}/share/man:g" ${file}
+
+        # Don't strip installed binaries
+        reinplace "s:\\(install .*\\)-s :\\1:g" ${file}
+
+        if {${os.major} < 10} {
+            reinplace "s:${prefix}/bin/mig:/usr/bin/mig:g" ${file}
+        }
+    }
+}
+
+use_configure   no
+use_parallel_build  yes
+
+build.target    all
+
+pre-build {
+    build.args-append \
+        RC_ProjectSourceVersion=${version} \
+        USE_DEPENDENCY_FILE=NO \
+        BUILD_DYLIBS=NO \
+        CC="${configure.cc}" \
+        CXX="${configure.cxx}" \
+        RC_ARCHS="[get_canonical_archs]" \
+        SDK="-I${prefix}/include"
+
+    if {[variant_isset llvm29] || [variant_isset llvm30] || [variant_isset llvm31] || [variant_isset llvm32]} {
+        build.args-append \
+            LTO=-DLTO_SUPPORT \
+            RC_CFLAGS="[get_canonical_archflags] -I`llvm-config-mp-${llvm_version} --includedir`" \
+            LLVM_MC="llvm-mc-mp-${llvm_version}"
+    } else {
+        build.args-append \
+            LTO= \
+            RC_CFLAGS="[get_canonical_archflags]"
+    }
+
+    if {[file exists ${prefix}/lib/libprunetrie.a]} {
+        build.args-append \
+            TRIE=-DTRIE_SUPPORT
+    } else {
+        build.args-append \
+            TRIE=
+    }
+}
+
+pre-destroot {
+    destroot.args-append \
+        RC_ProjectSourceVersion=${version} \
+        USE_DEPENDENCY_FILE=NO \
+        BUILD_DYLIBS=NO \
+        CC="${configure.cc}" \
+        CXX="${configure.cxx}" \
+        RC_ARCHS="[get_canonical_archs]" \
+        SDK="-I${prefix}/include"
+
+    if {[variant_isset llvm29] || [variant_isset llvm30] || [variant_isset llvm31] || [variant_isset llvm32]} {
+        destroot.args-append \
+            LTO=-DLTO_SUPPORT \
+            RC_CFLAGS="[get_canonical_archflags] `llvm-config-mp-${llvm_version} --cflags`" \
+            LLVM_MC="llvm-mc-mp-${llvm_version}"
+    } else {
+        destroot.args-append \
+            LTO= \
+            RC_CFLAGS="[get_canonical_archflags]"
+    }
+
+    if {[file exists ${prefix}/lib/libprunetrie.a]} {
+        destroot.args-append \
+            TRIE=-DTRIE_SUPPORT
+    } else {
+        destroot.args-append \
+            TRIE=
+    }
+}
+
+platform macosx {
+    build.args-append RC_OS="macos"
+    destroot.args-append RC_OS="macos"
+}
+
+destroot.target install_tools
+destroot.args-append DSTROOT=${destroot}
+post-destroot {
+    file delete -force ${destroot}${prefix}/OpenSourceLicenses
+    file delete -force ${destroot}${prefix}/OpenSourceVersions
+    file delete -force ${destroot}${prefix}/RelNotes
+
+    if {${os.major} < 10} {
+        file delete -force ${destroot}/Developer
+    }
+
+    # Provided by port:cctools-headers
+    file delete -force ${destroot}${prefix}/include
+}
+
+livecheck.type          regex
+livecheck.regex         "${name}-(\[\\d.\]+)"

@@ -1,0 +1,58 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                  1.0
+
+name                        gdk-pixbuf2
+set my_name                 gdk-pixbuf
+epoch                       2
+version                     2.26.3
+license                     LGPL
+set branch                  [join [lrange [split ${version} .] 0 1] .]
+categories                  graphics
+maintainers                 devans openmaintainer
+homepage                    http://www.gtk.org/
+platforms                   darwin
+distname                    ${my_name}-${version}
+use_xz                      yes
+
+description                 The gdk-pixbuf-2.0 library
+
+long_description            ${description}, previously bundled with gtk2, is \
+                            packaged separately as of gtk2 2.22.
+
+master_sites                gnome:sources/${my_name}/${branch}/ \
+                            ftp://ftp.gtk.org/pub/${my_name}/${branch}/
+
+checksums                   rmd160  ea809a6c05f0fcedbc51dd1345b885005b63edbb \
+                            sha256  a22373a72621c6f73e8c216410aeb46e3bb05b477e600b6ac481a47ecd4c09cc
+
+depends_build               port:pkgconfig
+
+depends_lib                 path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                            port:libpng \
+                            port:jasper \
+                            port:tiff \
+                            port:gobject-introspection
+
+configure.args              --with-libjasper \
+                            --enable-introspection=yes
+
+# The rules enabled by gobject-introspection require GNU make 3.81+, #35202
+platform darwin 8 {
+    depends_build-append    port:gmake
+    build.cmd               ${prefix}/bin/gmake
+}
+# gobject-introspection uses $CC from env
+build.args-append           CC="${configure.cc} ${configure.cc_archflags}"
+
+test.run                    yes
+test.target                 check
+
+post-activate {
+        system "${prefix}/bin/gdk-pixbuf-query-loaders --update-cache"
+}
+
+livecheck.type              regex
+livecheck.url               http://ftp.gnome.org/pub/gnome/sources/${my_name}/${branch}/
+livecheck.regex             {LATEST-IS-(\d+(?:\.\d+)*)}

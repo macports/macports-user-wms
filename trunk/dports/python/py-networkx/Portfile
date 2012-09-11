@@ -1,0 +1,33 @@
+# $Id$
+
+PortSystem              1.0
+PortGroup               python 1.0
+
+name                    py-networkx
+version                 1.6
+python.versions         26 27 31 32
+python.default_version  27
+categories-append       science
+maintainers             singingwolfboy openmaintainer
+description             NetworkX in a Python package for graph manpulation.
+long_description        NetworkX is a Python package for the creation, \
+                        manipulation, and study of the structure, dynamics, \
+                        and functions of complex networks.
+
+platforms               darwin
+
+homepage                http://networkx.lanl.gov/
+master_sites            http://pypi.python.org/packages/source/n/networkx/ \
+                        https://networkx.lanl.gov/download/networkx/
+distname                networkx-${version}
+
+checksums               rmd160  95066c89565645bade07e520021d0249ce0955d8 \
+                        sha256  a2ee8399758e08bf7bc7910071474cdd92e364bbc22be1aa29bdfe0f26f7ba78
+
+if {$subport != $name} {
+    depends_lib-append  port:py${python.version}-distribute
+}
+
+livecheck.type          regex
+livecheck.url           ${master_sites}
+livecheck.regex         "networkx-(\\d+(?:\\.\\d+)*)${extract.suffix}"

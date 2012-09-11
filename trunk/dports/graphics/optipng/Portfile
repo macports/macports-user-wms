@@ -1,0 +1,51 @@
+# $Id$
+
+PortSystem 1.0
+
+name            optipng
+version         0.7.2
+categories      graphics
+license         zlib
+maintainers     nomaintainer
+description     PNG file optimizer
+long_description \
+        OptiPNG is a PNG optimizer that recompresses the image files to a \
+        smaller size, without losing any information.  The idea has been \
+        inspired from pngcrush (http://pmt.sourceforge.net/pngcrush), and \
+        is explained in detail in the PNG-Tech article 'A guide to PNG \
+        optimization'.  The implementation is carried forward in OptiPNG, \
+        which offers a faster execution per trial, and a wider search space.
+
+platforms       darwin
+
+homepage        http://optipng.sourceforge.net/
+master_sites    sourceforge:project/${name}/OptiPNG/${name}-${version}
+
+checksums       rmd160  7b578c8339cae5d5f5d687965aa33022c6dc5910 \
+                sha256  5bfd5cfd4880e325011e5b09ff915fe64ce791c5aa8103068831dd8e52d521a1
+
+# Doesn't depend on libpng or zlib since it uses its own, modified versions
+
+# Make sure gmake 3.81+ is used, as scripts/gcc.mak needs POSIX
+# backslash-newline sequence compatibility.
+depends_build   port:gmake
+
+configure.args-append  --mandir=${prefix}/share/man
+
+# Workaround for problem with MacPorts 1.8.0, which adds the
+# --disable-dependency-tracking configure option with the
+# universal variant, even though this option is not standard:
+#   http://www.gnu.org/prep/standards/standards.html#Configuration
+configure.universal_args-delete --disable-dependency-tracking
+
+variant universal {}
+
+build.args-append   CC="${configure.cc} ${configure.cflags} [get_canonical_archflags]" \
+                    LDFLAGS=${configure.ldflags}
+
+build.cmd       ${prefix}/bin/gmake
+
+# The default SourceForge livecheck rule doesn't work with OptiPNG.
+livecheck.type  regex
+livecheck.url   ${homepage}
+livecheck.regex "<b>OptiPNG&nbsp;(\\d+\\.\\d+\\.\\d+)</b></font> \\(stable\\)"

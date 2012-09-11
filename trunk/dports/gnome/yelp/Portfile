@@ -1,0 +1,73 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name            yelp
+version         2.30.2
+revision        3
+license         GPL-2
+set branch      [join [lrange [split ${version} .] 0 1] .]
+description     Help browser for GNOME.
+long_description Yelp is the default help browser for the \
+                GNOME desktop. Yelp provides a simple graphical \
+                interface for viewing DocBook, HTML, man, and info \
+                formatted documentation.
+maintainers     devans openmaintainer
+categories      gnome
+platforms       darwin
+supported_archs i386 ppc
+homepage        http://www.gnome.org/
+master_sites    gnome:sources/${name}/${branch}/
+
+checksums       md5     d745dafd0c134e726511894621d9b050 \
+                sha1    b36d36449ff19844a429b4e2bd5eaad0a7537281 \
+                rmd160  a92fde9f64489c5dee6a249964245b087aab5981
+
+depends_build   port:pkgconfig \
+                port:intltool \
+                port:gnome-doc-utils
+
+depends_lib     port:gconf \
+                port:startup-notification \
+                port:xz \
+                path:lib/pkgconfig/libxul.pc:xulrunner
+#
+#       currently only builds correctly on 32 bit platforms
+#       due to problems with xulrunner and/or its dependencies
+#       (nss for instance).
+#
+#       see https://bugzilla.mozilla.org/show_bug.cgi?id=529878
+#
+#       update: builds 32 bit on x86_64 platform using
+#       xulrunner +internal_dependencies (r73873 and later)
+#
+
+use_bzip2       yes
+
+configure.cppflags-append  -I${prefix}/include/nspr
+
+configure.args  --x-includes=${prefix}/include \
+                --x-libraries=${prefix}/lib \
+                --disable-schemas-install \
+                --enable-debug \
+                --with-search=basic \
+                --with-gecko=libxul-embedding
+
+variant debug description {Enables debugging} {
+        configure.cflags-append -O0 -g
+        configure.cxxflags-append -O0 -g
+        configure.args-append --enable-debug
+}
+
+post-activate {
+        system "${prefix}/bin/scrollkeeper-update; true"
+        system "${prefix}/bin/update-desktop-database -q ${prefix}/share/applications; true"
+        system "${prefix}/bin/update-mime-database ${prefix}/share/mime; true"
+        system "export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` && \
+            gconftool-2 --makefile-install-rule ${prefix}/etc/gconf/schemas/*.schemas"
+}
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

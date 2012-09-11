@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        mapping 1.0.7
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Simple Mapping functions.
+long_description    ${description}
+
+checksums           md5     f4b2e181d98111cc0c761b7f5086ed01 \
+                    sha1    9b8db2f408986f824d4bff9ea5067acfd8593311 \
+                    rmd160  c28caacd181f05a0f372a59e6404810902206009

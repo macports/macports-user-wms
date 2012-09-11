@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem              1.0
+PortGroup               perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup             String-CRC32 1.4
+revision                3
+license                 public-domain
+maintainers             nomaintainer
+description             Perl interface for cyclic redundency check generation
+long_description        ${description}
+
+checksums               md5 9b241bc4a482a3aa59fbb1429bc30546
+platforms               darwin

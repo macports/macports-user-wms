@@ -1,0 +1,32 @@
+# $Id$
+
+PortSystem          1.0
+
+name                twm
+version             1.0.7
+categories          x11 x11-wm
+maintainers         jeremyhu openmaintainer
+description         Tab Window Manager for X11
+long_description \
+   Twm is a window manager for the X Window System.  It provides titlebars, \
+   shaped windows, several forms of icon management, user-defined macro \
+   functions, click-to-type and pointer-driven keyboard focus, and \
+   user-specified key and pointer button bindings.
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           md5     c1c124ff16255d6525a53a0d5cec8bf9 \
+                    sha1    ff535ef8e676f9ca876a6166858798c7fe70d446 \
+                    rmd160  a928bc59cac6bd23f0ae78102c2a721c98b41d02
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libXmu
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

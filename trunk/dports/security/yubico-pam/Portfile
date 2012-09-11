@@ -1,0 +1,57 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id $
+
+PortSystem      1.0
+PortGroup       github 1.0
+
+github.setup    Yubico yubico-pam 2.12
+checksums       rmd160  4754527e6af94c7f5d222d43f460ce4a9622153b \
+                sha256  82ba292d798749d29483dc60e8065fa70f27c4fbc592d5d1544c8292d7bc5ecd
+
+# I'm explicitly not marking this openmaintainer
+maintainers     cal
+
+categories      security
+description     PAM module to authenticate against a YubiKey validation server or \
+                via challenge-response against a local YubiKey
+long_description \
+                The Yubico PAM module provides an easy way to integrate the YubiKey \
+                into your existing user authentication infrastructure. The module can \
+                be configured to validate YubiKeys against Yubico's YubiCloud \
+                infrastructure, a custom YubiKey validation server or it can be used \
+                for offline authentication with newer YubiKeys supporting a \
+                challenge-response protocol.
+
+platforms       darwin
+license         BSD
+
+patchfiles      Makefile.am.patch \
+                patch-configure.ac-automake-1.12-compatibility.patch
+
+variant debug description {Build with debugging support} {
+    patchfiles-delete \
+                Makefile.am.patch
+}
+
+default_variants +debug
+
+depends_build   port:pkgconfig
+
+depends_lib     port:ykpers \
+                port:yubico-c-client
+
+use_autoreconf  yes
+
+configure.args  --with-pam-dir=/usr/lib/pam \
+                --without-ldap
+
+destroot.violate_mtree \
+                yes
+
+post-destroot {
+    # remove header which is unneeded, because there's no software linking
+    # against yubico-pam and which clashes with a system header
+    file delete ${destroot}${prefix}/include/util.h
+    file delete ${destroot}/usr/lib/pam/pam_yubico.la
+}
+

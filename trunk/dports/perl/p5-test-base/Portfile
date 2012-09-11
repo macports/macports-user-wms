@@ -1,0 +1,23 @@
+# $Id$
+
+PortSystem	1.0
+PortGroup	perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup	Test-Base 0.60
+revision    2
+maintainers	geeklair.net:dluke openmaintainer
+description	A Data Driven Testing Framework
+license		{GPL Artistic}
+
+long_description ${description}
+
+platforms	darwin
+
+if {${perl5.major} != ""} {
+depends_lib-append      port:p${perl5.major}-spiffy
+
+checksums           md5     7d839807da66d69db32fc4b22994f9e4 \
+                    sha1    e2727e9958960e53de6887697b3e12f64e891b17 \
+                    rmd160  c02d8423f34a7c08fb708a17c55eaf90d715d30e
+}

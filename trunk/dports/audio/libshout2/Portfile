@@ -1,0 +1,36 @@
+# $Id$
+
+PortSystem       1.0
+
+name             libshout2
+set my_name      [strsed ${name} {g/[0-9]//}]
+version             2.3.0
+categories       audio net
+license          LGPL
+platforms        darwin
+maintainers      nomaintainer
+description      Data and connectivity lib for the icecast server
+
+long_description \
+    A port of the libshout library. Libshout allows applications to \
+    easily communicate and broadcast to an Icecast streaming media \
+    server. It handles the socket connections, metadata communication, \
+    and data streaming for the calling application, and lets developers \
+    focus on feature sets instead of implementation details.
+
+homepage         http://www.icecast.org/
+master_sites     http://downloads.xiph.org/releases/libshout/
+distname         ${my_name}-${version}
+
+depends_build       port:pkgconfig
+
+depends_lib      port:libvorbis path:lib/libspeex.dylib:speex port:libtheora
+
+checksums           rmd160  80754f3324e760ebb3d9cc1ffd45cad884022a12 \
+                    sha256  a4ed39f3eeaa0bbf1ead0a96d6b072e989acef32a2d00f1798649878c48ca176
+
+destroot.args    docdir=${prefix}/share/doc/${name}
+
+livecheck.type   regex
+livecheck.url    ${homepage}download.php
+livecheck.regex	 ${my_name}-(\\d+(?:\\.\\d+)*)

@@ -1,0 +1,39 @@
+# $Id$
+
+PortSystem 1.0
+name             nawk
+version          20110810
+revision         1
+categories       lang
+license          BSD
+maintainers      toby
+description      the one true awk
+long_description Kernighan's canonical implementation of awk.
+homepage         http://www.cs.princeton.edu/~bwk/btl.mirror/
+platforms        darwin
+
+master_sites     ${homepage}
+distname         awk
+checksums        md5 a7062ecade93dc4cb39190e48db9a51d \
+                 sha1 333d93c746aa16e33c5c4aaf505009914cea4770 \
+                 rmd160 0c8536e9d2212b05f77b9939a6d386dd819aaa66
+dist_subdir      ${name}/${version}
+
+extract.mkdir    yes
+
+patchfiles       patch-makefile patch-run.c
+
+configure {
+	reinplace "s|__CFLAGS__|${configure.cflags} [get_canonical_archflags]|" ${worksrcpath}/makefile
+	reinplace s|__CC__|${configure.cc}| ${worksrcpath}/makefile
+}
+
+build.target
+
+destroot {
+	xinstall ${worksrcpath}/a.out ${destroot}${prefix}/bin/nawk
+	xinstall ${worksrcpath}/awk.1 ${destroot}${prefix}/share/man/man1/nawk.1
+}
+
+livecheck.type  md5
+livecheck.md5   d570dfc1f684c4e4dfadcb33469011ad

@@ -1,0 +1,95 @@
+# $Id$
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+
+name            docbook-xsl
+version         1.76.1
+revision        1
+categories      textproc
+license         MIT Permissive
+description     The docbook xsl stylesheets
+long_description \
+    The DocBook XSL stylesheets are the official stylesheets for transforming\
+    DocBook XML documents into other document formats via XSLT.
+platforms       darwin
+maintainers     nomaintainer
+master_sites    sourceforge:docbook
+homepage        http://docbook.sourceforge.net/
+depends_run     port:xmlcatmgr
+
+use_bzip2       yes
+
+distfiles-append \
+                [suffix ${name}-doc-${version}]
+
+checksums       [suffix $distname] \
+                sha1    dc9fa422c53e0a4f0e32b5c8ec896b39080bc14d \
+                rmd160  83acc9ba6dc4df04cef98988cf007d8168301431 \
+                [suffix $name-doc-$version] \
+                sha1    d6b22c817c8aa31b9bd7a4f4703a5aee2ee3ecbb \
+                rmd160  5e083ff9c69481f378145cfb0661f10fdc93b3b2
+
+supported_archs noarch
+use_configure   no
+build           {}
+set srcxslpaths "catalog.xml common eclipse epub extensions fo highlighting \
+                html htmlhelp images javahelp lib manpages params profiling \
+                roundtrip slides template tools xhtml xhtml-1_1 VERSION"
+set srcdocpaths "BUGS README RELEASE-NOTES.html RELEASE-NOTES.xml \
+                TODO VERSION NEWS COPYING doc"
+set instxsldir  "share/xsl/${name}"
+set instdocdir  "share/doc/${name}"
+
+destroot {
+    foreach pathname "${instxsldir} ${instdocdir}" {
+        xinstall -m 755 -d ${destroot}${prefix}/${pathname}
+    }
+    foreach pathname ${srcxslpaths} {
+        copy ${worksrcpath}/${pathname} ${destroot}${prefix}/${instxsldir}
+    }
+    foreach pathname ${srcdocpaths} {
+        copy ${worksrcpath}/${pathname} ${destroot}${prefix}/${instdocdir}
+    }
+}
+post-activate {
+    # xmlcatmgr as installed by MacPorts defaults to using
+    # ${prefix}/etc/xml/docbook (for XML) and ${prefix}/etc/xml/docbook (for
+    # SGML) if no catalog is specified, but we'll specify the path just in case
+    # users have another installation of xmlcatmgr and happen to have it before
+    # ${prefix}/bin in their PATH.
+    set catalog.xml ${prefix}/etc/xml/catalog
+
+    # Make the directory if it doesn't exist
+    if {![file exists ${prefix}/etc/xml]} {
+        xinstall -m 755 -d ${prefix}/etc/xml
+    }
+
+    # Create the catalog file if it doesn't exist
+    if {![file exists ${catalog.xml}]} {
+        system "xmlcatmgr create -c ${catalog.xml}"
+    }
+
+    # Add the nextCatalog entry to the catalog if it doesn't exist
+    if {[catch {exec xmlcatmgr lookup ${prefix}/${instxsldir}/catalog.xml}]} {
+        system "xmlcatmgr add nextCatalog ${prefix}/${instxsldir}/catalog.xml"
+    }
+}
+
+if {${registry.format} == "receipt_flat"} {
+    notes \
+"######################################################################
+# As the flat registry format does not support post-deactivate hooks,
+# you will need to ensure that you manually remove the catalog
+# entry for this port when you uninstall it.  To do so, run
+# \"xmlcatmgr remove nextCatalog ${prefix}/${instxsldir}/catalog.xml\".
+######################################################################"
+}
+
+# This will remove the catalog entry for this port.
+post-deactivate {
+    system "xmlcatmgr remove nextCatalog ${prefix}/${instxsldir}/catalog.xml"
+}
+
+livecheck.url       http://docbook.sourceforge.net/release/xsl/
+livecheck.regex "=\"(\\d+(?:\\.\\d+)*)"

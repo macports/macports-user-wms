@@ -1,0 +1,18 @@
+# $Id$
+
+PortSystem			1.0
+PortGroup			perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup			Email-MIME-ContentType 1.015
+revision            3
+license				{Artistic-1 GPL}
+maintainers			nomaintainer
+description			Parse a MIME Content-Type Header
+long_description	${description} 	
+platforms			darwin
+
+checksums           sha1    6073cc4726c5f84fa0c2b7d4c2b6f27ecd7f1390 \
+                    rmd160  9b917f5bd6a60ddc052350a9d96f7e5e90d63912
+
+supported_archs noarch

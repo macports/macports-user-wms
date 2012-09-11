@@ -1,0 +1,19 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Params-Util 1.03
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Simple, compact and correct param-checking functions
+long_description    Provides a basic set of importable functions that \
+                    makes checking parameters a hell of a lot easier
+
+platforms           darwin
+
+checksums           md5 9e5ae2987472f15fddf8ab806f4de867 \
+                    sha1 0fec20fcacbb30392a00936823657054ea2c46a0 \
+                    rmd160 8da5a7bcf4cc56ad8cab0a1174973c032cc24590

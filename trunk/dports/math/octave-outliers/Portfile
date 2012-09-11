@@ -1,0 +1,16 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        outliers 0.13.9
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Grubbs, Dixon and Cochran tests for outlier detection and \
+                    p-value approximating routines.
+long_description    ${description}
+
+checksums           md5     d2829f19afccb01489caf2c1feee0d9f \
+                    sha1    3589598382fbddbb0771a54b90272be63bdd2e44 \
+                    rmd160  dcbac14d3a09b71828ee72d3de3598bfbfa52851

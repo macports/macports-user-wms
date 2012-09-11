@@ -1,0 +1,20 @@
+# $Id$
+PortSystem		1.0
+PortGroup		ruby 1.0
+
+revision        1
+ruby.setup		{cvs ruby-cvs} 0.2 copy_install:lib {README}
+maintainers		otierney.net:dports
+description		High level interface to a CVS repository
+long_description	Ruby/CVS provides high level interface to a CVS repository. 
+homepage            http://cvs.m17n.org/~akr/ruby-cvs/
+master_sites        fink
+categories-append   devel
+depends_lib-append  port:cvs
+worksrcdir          ${ruby.filename}
+checksums		    md5 4e40b597ba43ef8ecc8b0fdce22119bd
+post-destroot       {
+                        reinplace "s;/usr/local/bin/ruby;${ruby.bin};" ${worksrcpath}/viztree
+                        xinstall -m 0755 ${worksrcpath}/viztree ${destroot}${prefix}/bin
+                    }
+platforms		    darwin 

@@ -1,0 +1,22 @@
+# $Id$
+
+PortSystem		1.0
+PortGroup		perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		Locale-Maketext-Simple 0.21
+revision        2
+
+maintainers		geeklair.net:dluke openmaintainer
+description		Simple interface to Locale::Maketext::Lexicon.
+license			MIT
+
+long_description	${description}
+
+checksums	md5	0a7c5c3b18cf31d764e1631eb9a3d367 \
+		sha1	951ad01d0969d0a895c719edfaeb0c2c097fda68 \
+		rmd160	88489b95255eb33ed7151ea178c512e8596a201e
+
+platforms		darwin
+
+supported_archs noarch

@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           Class-Accessor-Grouped 0.10002
+revision              3
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+description           Lets you build groups of accessors
+long_description      This class lets you build groups of accessors that \
+                      will call different getters and setters.
+
+platforms             darwin
+
+checksums             md5 e5c1aac09ca27eb7ea95841a04cecaaf \
+                      sha1 f7acdf9a3807fadcc5830da172b32712f9eacf93 \
+                      rmd160 b43af80ab6641be3a6c7def63e5ee82cb1b912aa
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-class-inspector \
+                      port:p${perl5.major}-mro-compat \
+                      port:p${perl5.major}-test-exception \
+                      port:p${perl5.major}-test-simple
+}

@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+PortGroup github 1.0
+PortGroup python 1.0
+
+github.setup        nolta biggles 1.6.7 v
+name                py-biggles
+categories-append   graphics math science
+platforms           darwin
+maintainers         deric
+description         Creates 2D scientific plots
+long_description    Biggles is a Python module for the creation of \
+                    publication-quality 2D scientific plots.
+homepage            http://biggles.sourceforge.net/
+license             GPL-2
+
+checksums           md5     a6c7c07ecbfc142024c9c17cb20b7249 \
+                    sha1    d29e56a7d11efcd249c54a82a9f86d82936e6428 \
+                    rmd160  08172f51bfad355f2067f8a9ab86e75a0b73e201
+                    
+python.versions 24 25 26 27
+python.default_version 24
+
+if {$subport != $name} {
+    
+    depends_lib-append      port:plotutils port:py${python.version}-numpy port:xorg-libXaw
+    
+    build.target       build_ext
+    build.args         -I${prefix}/include
+}
+
+livecheck.type regex
+livecheck.url https://github.com/nolta/biggles/tags
+livecheck.regex v(\[0-9\]+\.\[0-9\]+\.\[0-9\]+)

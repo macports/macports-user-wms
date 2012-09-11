@@ -1,0 +1,33 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xdaliclock
+version             2.35
+categories          x11
+platforms           darwin
+maintainers         nomaintainer
+
+description         morphing animated clock
+
+long_description    ${name} is a graphical clock which morphs each digit \
+                    into the next.
+
+homepage            http://www.jwz.org/xdaliclock/
+master_sites        ${homepage}
+
+checksums           md5     cb2800f561c29f6606357c37571dc264 \
+                    sha1    904926556f7ab7499ec09e7816ea17437a19b4be \
+                    rmd160  bf63ee2a0dde5b88070cc23c1daeec80ae06f6e9
+
+depends_lib         port:xorg-libXt \
+                    port:xorg-libXext
+
+configure.dir       ${worksrcpath}/X11
+
+build.dir           ${configure.dir}
+
+destroot.destdir    install_prefix=${destroot}
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[0-9.\]+)\\.tar

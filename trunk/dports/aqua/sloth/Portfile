@@ -1,0 +1,50 @@
+# $Id$
+
+PortSystem		1.0
+PortGroup		xcode 1.0
+
+name			sloth
+version			1.3.1
+categories		aqua sysutils
+maintainers		nomaintainer
+description		Program that displays a list of open files by applications
+
+long_description	Sloth is a program that displays a list of all open \
+					files in use by all the applications your user \
+					account is running on the system -- this list \
+					includes IP and Unix sockets, character devices and \
+					directories. This list is presented along with the \
+					names of applications using the file and their \
+					process IDs.
+
+homepage		http://www.sveinbjorn.org/sloth
+master_sites	http://www.sveinbjorn.org/files/software/sloth
+distname		${name}-${version}.src
+use_zip			yes
+
+checksums		md5 e17c20da5ac0a661fff8b2060b3fb995 \
+				sha1 88bbc2dbe13ad084c9aabc2d188be4c8cba1597f \
+				rmd160 cae9b1570f34df3b95711c30e64726a6d8307240
+
+worksrcdir		Sloth
+
+# Dummy configure to enable universal variant
+use_configure	yes
+configure		{}
+
+if {! [variant_isset universal]} {
+	set arch ${os.arch}
+	if {! [string compare ${arch} powerpc]} {
+		set arch ppc
+	}
+
+	xcode.build.settings-append		ARCHS=${arch}
+	xcode.destroot.settings-append	ARCHS=${arch}
+}
+
+xcode.configuration Release
+
+livecheck.type	regex
+livecheck.url	${homepage}
+livecheck.regex	"Sloth (\\d+(?:\\.\\d+)*)"
+

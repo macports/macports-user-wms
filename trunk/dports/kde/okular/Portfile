@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                okular
+version             4.8.3
+revision        1
+categories          kde kde4
+license             GPL-2+ LGPL-2+
+maintainers         nicos openmaintainer
+description         Universal document viewer for KDE4.
+long_description    Okular is a universal document viewer based on KPDF for KDE 4. \
+                    This means Okular works on multiple platforms, including but not \
+                    limited to Linux, Windows, Mac OS X, *BSD, etc.
+platforms           darwin
+homepage            http://okular.kde.org/
+master_sites        kde:stable/${version}/src/
+use_xz              yes
+distname            okular-${version}
+checksums           rmd160  b839e9e61aff6229241fd8c4c6e2726563e69f78 \
+                    sha256  3dcc5f5b8a02eea14a28b4681d10f6f06240c0579135bb0252ae0e3caaaa8e79
+
+depends_lib-append  port:kdelibs4 \
+                    port:oxygen-icons \
+                    port:poppler port:libspectre \
+                    port:djvulibre port:chmlib \
+                    port:ebook-tools port:tiff \
+                    port:qca port:qimageblitz \
+                    port:freetype port:zlib
+
+pre-configure {
+    if {![file exists ${prefix}/lib/libpoppler-qt4.dylib]} {
+        return -code error "Poppler must be installed with +qt4\
+                            and +quartz variants"
+    }
+}
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/latest/src/
+livecheck.regex     okular-(\\d+\\.\\d+\\.\\d+)${extract.suffix}

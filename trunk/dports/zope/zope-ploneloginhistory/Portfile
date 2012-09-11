@@ -1,0 +1,19 @@
+# $Id$
+PortSystem		1.0
+PortGroup		zope 1.0
+
+zope.setup		PloneLoginHistory 0.2.0
+revision		1
+maintainers		nomaintainer
+description		login history product for Plone
+long_description	PloneLoginHistory is a Plone2.0 Product that lets \
+					you manage a login history for your Plone portal. \
+					Log data is stored using a storage plugin. Currently \
+					only FileSystem storage plugin is implemented.
+homepage		http://www.easyleading.org/Products/${zope.product}
+master_sites	http://www.easyleading.org/Downloads/
+checksums		md5 52bd599d7cd77d408c13fbf6c35e9da8
+platforms		darwin freebsd
+
+depends_lib-append		port:zope-cmfplone
+

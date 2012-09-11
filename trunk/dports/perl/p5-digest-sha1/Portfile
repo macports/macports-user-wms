@@ -1,0 +1,22 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Digest-SHA1 2.13
+revision            3
+license             {Artistic GPL}
+maintainers         nomaintainer
+description         Perl interface to the SHA-1 Algorithm
+long_description    The Digest::SHA1 module allows you to use the NIST \
+                    SHA-1 message digest algorithm from within Perl \
+                    programs.  The algorithm takes as input a message of \
+                    arbitrary length and produces as output a 160-bit \
+                    \"fingerprint\" or \"message digest\" of the input.
+
+checksums           md5 bd22388f268434f2b24f64e28bf1aa35 \
+                    sha1 77379a2775c744dd7a9890f5638da6362ae58013 \
+                    rmd160 a1070dd6c3b626982b4c39d6de05c36001116ac7
+
+platforms           darwin

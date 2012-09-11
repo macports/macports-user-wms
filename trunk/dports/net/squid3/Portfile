@@ -1,0 +1,142 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name            squid3
+version         3.2.1
+set branch      [join [lrange [split ${version} .] 0 1] .]
+categories      net
+platforms       darwin
+license         GPL-2+
+maintainers     jmr openmaintainer
+description     advanced proxy caching server for http, https, ftp, gopher
+long_description    Squid is a high-performance proxy caching server for \
+                web clients, supporting FTP, gopher, and HTTP data \
+                objects. Unlike traditional caching software, Squid \
+                handles all requests in a single, non-blocking, \
+                I/O-driven process. Squid keeps meta data and \
+                especially hot objects cached in RAM, caches DNS \
+                lookups, supports non-blocking DNS lookups, and \
+                implements negative caching of failed requests.
+
+homepage        http://www.squid-cache.org/
+master_sites    http://mirror.aarnet.edu.au/pub/squid/squid/ \
+                http://www.mirrorservice.org/sites/ftp.squid-cache.org/pub/squid/ \
+                http://ftp.ring.gr.jp/archives/net/www/squid/ \
+                ftp://ftp.is.co.za/pub/squid/ \
+                ftp://ftp1.cl.squid-cache.org/pub/squid/ \
+                http://www.squid-cache.org/Versions/v3/${branch}/ \
+                ftp://ftp.squid-cache.org/pub/squid/
+
+distname        squid-${version}
+checksums       md5 929f7a3988fe63ec188d2ad920d92d82 \
+                sha1 896b50960c2ae327966b8c3715f3e73be9e4b24a \
+                rmd160 3e1a30e06c51b4be349559e7274d2f241e4254f7
+
+use_bzip2       yes
+patchfiles      patch-cf.data.pre.diff \
+                patch-compat_types.h.diff \
+                patch-basic_pam_auth.cc.diff \
+                patch-configure.diff
+
+depends_lib     port:zlib
+
+conflicts       squid squid3-devel
+
+# http://bugs.squid-cache.org/show_bug.cgi?id=3473#c8
+compiler.blacklist  clang
+
+set pidfile     ${prefix}/var/run/squid/squid.pid
+
+configure.args  --mandir=${prefix}/share/man \
+                --sysconfdir=${prefix}/etc/squid \
+                --datadir=${prefix}/share/squid \
+                --localstatedir=${prefix}/var/squid \
+                --libexecdir=${prefix}/libexec/squid \
+                --with-pidfile=${pidfile} \
+                --disable-strict-error-checking \
+                --disable-loadable-modules \
+                --enable-delay-pools \
+                --enable-zph-qos \
+                --enable-removal-policies \
+                --enable-storeio=ufs,aufs,diskd \
+                --enable-disk-io=AIO,Blocking,DiskDaemon,DiskThreads \
+                --enable-icap-client \
+                --enable-log-daemon-helpers \
+                --with-default-user=squid \
+                --enable-auth \
+                --enable-auth-basic \
+                --enable-auth-digest \
+                --enable-auth-negotiate \
+                --enable-auth-ntlm
+post-configure {
+    if {[variant_isset universal]} {
+        system "cd ${worksrcpath} && ed - ${worksrcpath}/include/autoconf.h < ${filespath}/include_autoconf.h.ed && touch include/stamp-h1"
+    }
+}
+
+use_parallel_build  yes
+
+startupitem.create      yes
+startupitem.name        Squid
+startupitem.netchange   yes
+startupitem.pidfile     auto ${pidfile}
+startupitem.start \
+    "cd ${prefix}/var/squid" \
+    "if \[ ! -d \"${prefix}/var/squid/cache/00\" \]; then" \
+    "    ${prefix}/sbin/squid -s -z" \
+    "fi" \
+    "${prefix}/sbin/squid -s"
+startupitem.stop \
+    "cd ${prefix}/var/squid" \
+    "${prefix}/sbin/squid -k shutdown" \
+    "while ${prefix}/sbin/squid -k check; do" \
+    "    sleep 1" \
+    "done"
+
+add_users       squid group=squid home=${prefix}/var/squid
+
+post-destroot   {
+    xinstall -o squid -g squid -m 755 -d \
+        ${destroot}${prefix}/var/run/squid ${destroot}${prefix}/var/squid \
+        ${destroot}${prefix}/var/squid/cache ${destroot}${prefix}/var/squid/logs
+    file delete -force ${destroot}${prefix}/etc/squid/squid.conf \
+                       ${destroot}${prefix}/etc/squid/mime.conf \
+                       ${destroot}${prefix}/etc/squid/cachemgr.conf \
+                       ${destroot}${prefix}/etc/squid/msntauth.conf \
+                       ${destroot}${prefix}/etc/squid/errorpage.css
+}
+destroot.keepdirs   ${destroot}${prefix}/var/run/squid \
+                ${destroot}${prefix}/var/squid/cache \
+                ${destroot}${prefix}/var/squid/logs
+
+post-activate {
+    # Make sure initial conf files are present and setup correctly
+    foreach f { squid.conf mime.conf cachemgr.conf msntauth.conf errorpage.css } {
+        if {![file exists ${prefix}/etc/squid/${f}]} {
+            file copy ${prefix}/etc/squid/${f}.default \
+                ${prefix}/etc/squid/${f}
+        }
+    }
+}
+
+variant openssl description "Enable SSL/TLS support using OpenSSL" {
+    depends_lib-append      port:openssl
+    configure.args-append   --with-openssl=${prefix} \
+                            --enable-ssl
+}
+
+default_variants    +openssl
+
+variant kqueue description "Enable kqueue() support (experimental)" {
+    configure.args-append   --enable-kqueue
+}
+
+variant ipfw_transparent description "Enable transparent proxy support using IPFW" {
+    configure.args-append   --enable-ipfw-transparent
+}
+
+livecheck.type  regex
+livecheck.url   http://www.squid-cache.org/Versions/v3/${branch}/
+livecheck.regex "<a href=\"RELEASENOTES\\.html\">squid-(3\[0-9.\]+)</a>"

@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        statistics 1.0.9
+platforms           darwin
+license             GPL-2+ GPL-3+ public-domain
+maintainers         nomaintainer
+description         Additional statistics functions for Octave.
+long_description    ${description}
+
+checksums           md5     e0b7f32ce2854e3de7d032cc9e9e6dbc \
+                    sha1    45763558c7b57d41c4b36f0c715770c9d3d5e6bc \
+                    rmd160  3f5895975e4fe45c2bd32567400547dc73754163

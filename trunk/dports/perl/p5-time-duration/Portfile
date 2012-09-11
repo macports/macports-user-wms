@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup             Time-Duration 1.06
+revision                3
+platforms               darwin
+maintainers             l2g
+license                 Artistic GPL
+supported_archs         noarch
+
+description             Rounded or exact English expression of durations
+
+long_description        This module provides functions for expressing \
+                        durations in rounded or exact terms, e.g. \"1 \
+                        second,\" \"2 minutes and 5 seconds,\" or \"1 hour, \
+                        3 minutes, and 40 seconds.\"
+
+checksums               sha1    c99c4d40c0164ede0ef93ea1c493c86d5a596e2f \
+                        rmd160  5200f9586be1cf155a8c747d5da7e4f9846ad5b0
+
+if {${perl5.major} != ""} {
+# These are only required for complete testing
+#depends_build-append    port:p${perl5.major}-test-pod \
+#                        port:p${perl5.major}-test-pod-coverage
+}

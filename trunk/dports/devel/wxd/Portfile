@@ -1,0 +1,42 @@
+# $Id$
+PortSystem      1.0
+name            wxd
+version         0.16
+maintainers     usami-k
+license         wxwidgets
+platforms       darwin
+categories      devel
+description     wxWidgets bindings for the D programming language
+long_description \
+                wxD is wxWidgets bindings for the D programming language.
+homepage        http://wxd.sourceforge.net/
+master_sites    sourceforge:wxd
+extract.suffix  .tgz
+livecheck.regex wxd-(\[a-z0-9.\]+)${extract.suffix}
+checksums       md5     cf2b9f853ede6fd72b02e2afe2c30632 \
+                sha1    f97fbd58d75166a830e785f5fb750f5db16a4d06 \
+                rmd160  c3fed599e77629967cf9269c9a5df9dadd2c9f17
+worksrcdir      ${name}
+depends_lib     bin:gdc:gdc \
+                port:wxWidgets
+
+use_configure   no
+supported_archs i386 ppc
+
+destroot.destdir DESTDIR=${destroot} PREFIX=${prefix}
+post-destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+    foreach f {COPYING.LIB LICENCE.txt README.txt} {
+        xinstall -m 644 ${worksrcpath}/${f} ${destroot}${prefix}/share/doc/${name}
+    }
+    copy ${worksrcpath}/Configs ${destroot}${prefix}/share/doc/${name}
+    copy ${worksrcpath}/Samples ${destroot}${prefix}/share/doc/${name}
+}
+
+variant doxygen description {Include documentations by doxygen} {
+    depends_build   port:doxygen
+    build.target-append docs
+    post-destroot {
+        copy ${worksrcpath}/html ${destroot}${prefix}/share/doc/${name}
+    }
+}

@@ -1,0 +1,69 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem       1.0
+
+name		     latexdiff
+version		     0.5
+revision         1
+categories	     tex
+maintainers	     aschenke
+license             GPL-2
+platforms	     darwin
+supported_archs	 noarch
+description	     determine and mark up significant differences between latex files
+long_description latexdiff is a Perl script, which compares two latex files \
+                 and marks up significant differences between them (i.e. a \
+                 diff for latex files). Various options are available for \
+                 visual markup using standard latex packages such as \
+                 color.sty. Changes not directly affecting visible text, for \
+                 example in formatting commands, are still marked in the latex \
+                 source.
+homepage         http://www.ctan.org/tex-archive/support/latexdiff/
+master_sites     ftp://tug.ctan.org/pub/tex-archive/support/
+checksums	     md5 70fdec50c25c5807e7ec071b88d4af49 \
+				 sha1 804eddcfb117204ba2ada69193a4432c486fb69e \
+				 rmd160 6a88afb1ca605dc9fd42721356c9d2322e55d54a
+dist_subdir      ${name}/${version}
+distname         ${name}
+use_zip          yes
+
+depends_run      path:bin/perl:perl5
+
+configure {
+	reinplace "s|/usr/bin/perl -w|${prefix}/bin/perl -w|g" \
+		${worksrcpath}/latexdiff-so ${worksrcpath}/latexdiff-vc \
+		${worksrcpath}/latexrevise
+}
+
+build            { }
+
+destroot.destdir INSTALLPATH=${destroot}${prefix} \
+                 INSTALLMANPATH=${destroot}${prefix}/share/man
+
+post-destroot {
+	xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+	xinstall -m 644 ${worksrcpath}/latexdiff-man.pdf ${destroot}${prefix}/share/doc/${name}
+	xinstall -m 644 ${worksrcpath}/CHANGES ${destroot}${prefix}/share/doc/${name}
+	xinstall -m 644 ${worksrcpath}/LICENSE ${destroot}${prefix}/share/doc/${name}
+	xinstall -m 644 ${worksrcpath}/README ${destroot}${prefix}/share/doc/${name}
+	
+	xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}/example
+	xinstall -m 644 ${worksrcpath}/example/example-draft.tex ${destroot}${prefix}/share/doc/${name}/example
+	xinstall -m 644 ${worksrcpath}/example/example-rev.tex ${destroot}${prefix}/share/doc/${name}/example
+}
+
+pre-activate {
+    # texlive-bin-extra used to contain latexdiff, but doesn't
+    # anymore. If the old version is installed, deactivate it to avoid
+    # a conflict.
+    if {[file exists $prefix/bin/latexdiff]
+        && ![catch {set vers [lindex [registry_active texlive-bin-extra] 0]}]
+        && [vercmp [lindex $vers 1] 19536] < 0} {
+        set deactivate_proc registry_deactivate_composite
+        if {[info commands registry_deactivate_composite] == {}} {
+            set deactivate_proc registry_deactivate
+        }
+        $deactivate_proc texlive-bin-extra "" [list ports_nodepcheck 1]
+    }
+}

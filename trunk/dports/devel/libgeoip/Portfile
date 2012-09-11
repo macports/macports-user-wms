@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                libgeoip
+version             1.4.8
+categories          devel net
+license             LGPL-2.1+
+platforms           darwin
+maintainers         pixilla openmaintainer
+description         Gets country code by IP address
+long_description    ${description}
+
+homepage            http://www.maxmind.com/app/c
+master_sites        http://www.maxmind.com/download/geoip/api/c/ \
+                    http://www.maxmind.com/download/geoip/api/c/old/
+distname            GeoIP-${version}
+
+checksums           rmd160  51388ff9c738c9e4d60fff790b7d7599a7133bf5 \
+                    sha256  cf0f6b2bac1153e34d6ef55ee3851479b347d2b5c191fda8ff6a51fab5291ff4
+
+use_autoreconf      yes
+
+# For stricter sed, some files are not UTF-8
+build.env           LC_CTYPE=C
+destroot.env        LC_CTYPE=C
+
+test.run            yes
+test.target         check
+
+post-destroot {
+    delete ${destroot}${prefix}/etc/GeoIP.conf
+    xinstall -d -m 755 ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS \
+        COPYING \
+        ChangeLog \
+        NEWS \
+        README \
+        TODO \
+        ${destroot}${prefix}/share/doc/${name}
+}
+
+livecheck.type      regex
+livecheck.url       http://geolite.maxmind.com/download/geoip/api/c/
+livecheck.regex     {GeoIP-(\d+(?:\.\d+)*)}

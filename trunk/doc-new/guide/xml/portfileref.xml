@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="reference">
+  <title>Portfile Reference</title>
+
+  <para>This chapter serves as a reference for the major elements of a
+  Portfile: port phases, dependencies, StartupItems, variables, keywords, and
+  Tcl extensions.</para>
+
+  <xi:include href="portfile-keywords.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+  <xi:include href="portfile-variables.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+  <xi:include href="portfile-phase.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+  <xi:include href="portfile-dependencies.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+  <xi:include href="portfile-variants.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+  <xi:include href="portfile-tcl.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+  <xi:include href="portfile-startupitem.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+  <xi:include href="portfile-livecheck.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+  <section id="reference.portgroup">
+    <title>PortGroups</title>
+
+    <xi:include href="portgroups.xml"
+                xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+    <xi:include href="portgroup-gnustep.xml"
+                xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+    <xi:include href="portgroup-haskell.xml"
+                xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+    <xi:include href="portgroup-perl.xml"
+                xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+    <xi:include href="portgroup-python.xml"
+                xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+    <xi:include href="portgroup-ruby.xml"
+                xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+    <xi:include href="portgroup-xcode.xml"
+                xmlns:xi="http://www.w3.org/2001/XInclude" />
+  </section>
+</chapter>

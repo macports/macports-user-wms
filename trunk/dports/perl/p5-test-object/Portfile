@@ -1,0 +1,24 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           Test-Object 0.07
+revision              3
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+description           Thoroughly testing objects via registered handlers
+long_description      ${description}
+
+platforms             darwin
+
+checksums             md5 ab71791756faaabc3b4fad5bcc1df50f \
+                      sha1 7bd76d09c81aef0ef32e6f4edf042ba88e514f52 \
+                      rmd160 012db64b0895ce838a081c2c8cb6e7635a9814e4
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-test-simple
+
+supported_archs noarch
+}

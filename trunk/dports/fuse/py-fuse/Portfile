@@ -1,0 +1,42 @@
+# -*- mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+# $Id$
+
+PortSystem 1.0
+PortGroup python 1.0
+
+name                py-fuse
+version             0.2.1
+revision        1
+categories          fuse python
+license             LGPL
+maintainers         dports sfiera openmaintainer
+description         Python interface for FUSE
+long_description    $description
+homepage            http://apps.sourceforge.net/mediawiki/fuse/index.php?title=FusePython
+platforms           darwin
+master_sites        sourceforge:project/fuse/fuse-python/${version}
+
+checksums           rmd160  91b0b0f727842b7128232fc46db7063047e61ef9 \
+                    sha256  11ead462f8d0f8302ee07b33fe93dc42c653861a16c8802a31903a7355b8351b
+
+distname            fuse-python-${version}
+
+python.versions 24 25 26 27
+python.default_version 27
+
+livecheck.distname      fuse-python
+
+if {$subport != $name} {
+    depends_build-append    path:bin/pkg-config:pkgconfig
+    depends_lib-append      path:lib/pkgconfig/fuse.pc:fuse4x
+
+    platform darwin {
+        patchfiles      patch-_fusemodule.c
+    }
+    
+    post-destroot {
+        foreach item [glob -directory ${worksrcpath} example/*] {
+            file copy ${item} ${destroot}${prefix}/share/doc/${subport}/examples/
+        }
+    }
+}

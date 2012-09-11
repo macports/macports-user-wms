@@ -1,0 +1,32 @@
+# $Id$
+
+PortSystem        1.0
+PortGroup         python 1.0
+
+name              py-httplib2
+version           2-0.7.5
+categories        python devel net
+license           MIT
+platforms         darwin
+maintainers       akitada ram openmaintainer
+
+description       A comprehensive HTTP client library in Python
+long_description  A comprehensive HTTP client library that supports \
+                  many features left out of other HTTP libraries.
+
+homepage          http://code.google.com/p/httplib2/
+master_sites      http://httplib2.googlecode.com/files/
+distname          httplib${version}
+
+python.versions   24 25 26 27 31 32
+
+checksums         rmd160 dc388d2d12b49dad7bcab758dced5065c12e8436 \
+                  sha256 5290d1a11fd04cb47edcb1001cefba8adfc53616d3164a4a409f41f25ea5cc37
+
+if {${name} == ${subport}} {
+  livecheck.type    regex
+  livecheck.url     ${homepage}downloads/list
+  livecheck.regex   {httplib(\d-\d+(?:\.\d+)*).tar.gz}
+} else {
+  livecheck.type    none
+}

@@ -1,0 +1,59 @@
+# $Id$
+
+PortSystem	1.0
+
+name		gpg-agent
+version		2.0.19
+categories	security mail
+maintainers	nomaintainer
+license		GPL-3+
+installs_libs	no
+
+description	GPG key agent
+long_description	gpg-agent is a key management agent similar \
+			in function to ssh-agent.
+homepage	http://www.gnupg.org
+platforms	darwin freebsd sunos
+distname        gnupg-${version}
+dist_subdir     gnupg2
+master_sites    gnupg:gnupg
+
+use_bzip2	yes
+
+checksums           rmd160  026b5c5fa2b21c3586f325f48ff1420c987b88a7 \
+                    sha256  efa23a8a925adb51c7d3b708c25b6d000300f5ce37de9bdec6453be7b419c622
+
+configure.args	--enable-agent-only \
+		--with-pinentry-pgm=${prefix}/bin/pinentry
+
+# glib fails to find the right stdint.h  It picks clang's internal one rather
+# than the system header
+configure.env   gl_cv_absolute_stdint_h=/usr/include/stdint.h
+
+depends_lib	port:libiconv 		\
+		port:gettext 		\
+		port:zlib 		\
+		port:bzip2 		\
+		port:bison		\
+		port:libassuan		\
+		port:libksba		\
+		port:libgcrypt		\
+		port:libgpg-error	\
+		port:pth		\
+		port:pinentry
+
+patchfiles	patch-po_Makevars.diff
+
+post-destroot {
+	# Prevent conflict with gnupg2 port.
+	delete ${destroot}${prefix}/share/doc/gnupg/README
+}
+
+variant no_pinentry description {Do not use pinentry to handle user input} {
+	depends_lib-delete	port:pinentry
+	configure.args-delete	--with-pinentry-pgm=${prefix}/bin/pinentry
+}
+
+livecheck.type  regex
+livecheck.url   ftp://ftp.gnupg.org/gcrypt/gnupg/
+livecheck.regex gnupg-(\\d+\\.\\d+\\.\\d+)

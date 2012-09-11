@@ -1,0 +1,10 @@
+--- src/system.h.orig	2010-02-05 02:10:15.000000000 -0600
++++ src/system.h	2010-03-25 18:43:04.000000000 -0500
+@@ -224,6 +224,7 @@
+     && (s)->st_gid == (t)->st_gid \
+     && (s)->st_size == (t)->st_size \
+     && (s)->st_mtime == (t)->st_mtime \
++    && (s)->st_mtimespec.tv_nsec == (t)->st_mtimespec.tv_nsec \
+     && (s)->st_ctime == (t)->st_ctime)
+ #endif
+ 

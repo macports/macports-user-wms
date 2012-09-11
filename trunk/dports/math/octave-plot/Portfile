@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        plot 1.0.7
+platforms           darwin
+license             GPL-2+ GPL-3+
+maintainers         nomaintainer
+description         Additional ploting tools for Octave.
+long_description    ${description}
+
+checksums           md5     b740cf4b7818b17f84ffcebf80fe3dd1 \
+                    sha1    a0fa23a77791e7df90ba587c0ddbec62d16adfe1 \
+                    rmd160  421fa29e2448e150dec179f5ffc60f2ea1753dba

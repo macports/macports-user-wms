@@ -1,0 +1,80 @@
+# $Id$
+
+PortSystem  1.0
+
+name		clearsilver
+version     	0.10.5
+revision	1
+categories	www python perl
+platforms	darwin
+maintainers	nomaintainer
+description 	Language-neutral template system.
+long_description	Clearsilver is a fast, powerful, and language-neutral \
+			HTML template system. In both  static content sites \
+			and dynamic  HTML applications, it provides a \
+			separation between  presentation code and application \
+			logic which makes  working with your project easier.
+
+homepage	http://www.clearsilver.net
+master_sites	${homepage}/downloads
+
+checksums       md5 b8c0c7fbe0ef5e06e0c935f134304d44 \
+                sha1 138865dc91e27328fe29fcaaac1bc6558f19dd75 \
+                rmd160 bd5c616f326b544df8a74eec71a98a474b408249
+
+patchfiles	patch-rules.mk.in.diff
+
+depends_lib	port:python25 path:bin/perl:perl5 port:zlib port:gettext
+
+configure.args	--disable-apache --disable-java --disable-ruby \
+		--disable-csharp \
+		--with-python=${prefix}/bin/python2.5 \
+		--with-perl=${prefix}/bin/perl \
+		--enable-gettext \
+		--mandir=${prefix}/share/man
+
+pre-configure	{
+	set PYTHON_PATH ${prefix}/lib/python2.5
+
+	reinplace "s|PYTHON_SITE=`.*|PYTHON_SITE=${PYTHON_PATH}/site-packages|g" \
+		${worksrcpath}/configure
+
+	reinplace "s|/usr/local/bin/python|${prefix}/bin/python2.5|g" \
+		${worksrcpath}/scripts/document.py
+	reinplace "s|/usr/bin/python|${prefix}/bin/python2.5|g" \
+		${worksrcpath}/scripts/cs_lint.py
+	reinplace "s|/neo/opt/bin/python|${prefix}/bin/python2.5|g" \
+		${worksrcpath}/scripts/ChangeLog.py
+	reinplace "s|/usr/bin/python|${prefix}/bin/python2.5|g" \
+		${worksrcpath}/scripts/commitlog.py
+
+	reinplace "s|\$(PERL) Makefile.PL|\$(PERL) Makefile.PL installdirs=vendor|g" \
+		${worksrcpath}/Makefile
+}
+
+post-configure {
+	reinplace "s|#include <features.h>||g" \
+                ${worksrcpath}/cgi/cgiwrap.c
+}
+
+# Workaround for #17998
+post-destroot {
+    move ${destroot}${frameworks_dir}/Python.framework/Versions/2.5/lib/python2.5 \
+        ${destroot}${prefix}/lib/python2.5
+}
+
+## stolen from perl5 group code
+post-destroot {
+                foreach packlist [exec find ${destroot} -name .packlist] {
+                        ui_info "Fixing packlist ${packlist}"
+                        reinplace "s|${destroot}||" ${packlist}
+                }
+		foreach badfile [exec find ${destroot} -name perllocal.pod] {
+			ui_info "Removing ${badfile}"
+			file delete ${badfile}
+		}
+        }
+
+livecheck.type  regex
+livecheck.url   ${homepage}/downloads
+livecheck.regex {clearsilver-([0-9.]+)\.tar\.gz}

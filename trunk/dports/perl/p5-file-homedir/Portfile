@@ -1,0 +1,24 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         File-HomeDir 0.95 ../by-authors/id/A/AD/ADAMK/
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Find your home and other directories, on any platform.
+long_description    ${description}
+
+platforms           darwin
+
+checksums           md5 01253f627474f46e4a83fc5741fc6776 \
+                    sha1 1eec1a6098cd698140a42cc480e6eeb040388381 \
+                    rmd160 7fd707faf2d7c4e17602f6f516bc97c6d72ec77d
+
+supported_archs     noarch
+
+if {${perl5.major} != ""} {
+    depends_lib-append  port:p${perl5.major}-file-which
+}

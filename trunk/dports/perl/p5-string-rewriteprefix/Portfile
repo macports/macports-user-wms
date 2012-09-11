@@ -1,0 +1,29 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           String-RewritePrefix 0.006
+revision              3
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+description           rewrite strings based on a set of known prefixes
+long_description      This rewrites all the given strings using the rules \
+                      in %prefix. Its keys are known prefixes for which \
+                      its values will be substituted. This is performed \
+                      in longest-first order, and only one prefix will \
+                      be rewritten.
+
+platforms             darwin
+
+checksums             md5 95ab415fe725d2de9dbf35bbeba08962 \
+                      sha1 ec2146f3c336d66d7fd8231d213669599395cf5d \
+                      rmd160 f79d52ae8293bbd6978e4a2ac0199d9abf9d3079
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-sub-exporter \
+                      port:p${perl5.major}-test-simple
+
+supported_archs       noarch
+}

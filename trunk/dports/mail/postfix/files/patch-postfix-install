@@ -1,0 +1,30 @@
+--- postfix-install	Thu Feb  3 08:39:36 2005
++++ postfix-install.new	Thu Jul  7 11:48:35 2005
+@@ -614,24 +614,17 @@
+     [hl]) eval source=$owner;;
+     esac
+ 
+-    # If installing from source code, apply special permissions or ownership.
+-    # If building a package, don't apply special permissions or ownership.
++	# We want ownership changed even if we install in a different root.
++	# (macports)
+ 
+-    case $install_root in
+-    "") case $owner in
++	case $owner in
+ 	[$]*) eval owner=$owner;;
+ 	root) owner=;;
+ 	esac
+ 	case $group in
+ 	[$]*) eval group=$group;;
+ 	   -) group=;;
+-	esac;;
+-     *) case $mode in
+-	[1-7]755) mode=755;;
+ 	esac
+-	owner=
+-	group=;;
+-    esac
+ 
+ 
+     case $type in

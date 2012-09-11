@@ -1,0 +1,35 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup ocaml 1.0
+
+name                ocaml-sqlite3
+version             2.0.2
+categories          devel ml databases
+platforms           darwin
+maintainers         landonf openmaintainer
+license             BSD
+description         OCaml bindings for SQLite 3
+long_description    ${description}
+
+homepage            https://bitbucket.org/mmottl/sqlite3-ocaml
+master_sites        https://bitbucket.org/mmottl/sqlite3-ocaml/downloads/
+
+distname            sqlite3-ocaml-${version}
+
+checksums           rmd160  85bca16418a7864b4cb78a4dc729b66e12bad1f8 \
+                    sha256  8cc2236b139d0f8bce069686eab04af6eeac25d4caa8fb197d52f8281061c8f9
+
+depends_build       port:pkgconfig
+depends_lib         port:ocaml \
+                    port:ocaml-findlib \
+                    port:sqlite3
+
+use_oasis           yes
+use_oasis_doc       yes
+configure.args-append "--override docdir ${destroot}${prefix}/share/doc/${name}"
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     sqlite3-ocaml-(\[0-9.\]+)${extract.suffix}
+

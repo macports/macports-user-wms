@@ -1,0 +1,33 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Algorithm-Dependency 1.110
+revision            3
+license             Artistic GPL
+maintainers         l2g
+description         Base class for implementing various dependency trees
+long_description    Algorithm::Dependency is a framework for creating simple \
+                    read-only dependency hierarchies, where you have a set \
+                    of items that rely on other items in the set, and \
+                    require actions on them as well.  Despite the most \
+                    visible of these being software installation systems \
+                    like the CPAN installer, or debian apt-get, they are \
+                    usefull in other situations. This module intentionally \
+                    uses implementation-neutral words, to avoid confusion.
+
+platforms           darwin
+
+checksums           md5     dc1dab2ac44c315caa092397423b1429 \
+                    sha1    341eb6e5319790068c86a4862826e2a4ba749b1d \
+                    rmd160  56995f5f6e7c4116fa11b1c9e1e0198ee85393f6
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                        port:p${perl5.major}-test-classapi
+    depends_lib-append  port:p${perl5.major}-params-util
+}
+
+supported_archs     noarch

@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem       1.0
+name             lincity
+version          1.13.0
+revision         3
+categories       games
+maintainers      nomaintainer
+description      city simulation game
+long_description \
+    Lincity is a city simulation game. You are required to build and \
+    maintain a city. You must feed, house, provide jobs and goods for \
+    your residents. You can build a sustainable economy with the help \
+    of renewable energy and recycling, or you can go for broke and \
+    build rockets to escape from a pollution ridden and resource \
+    starved planet, it's up to you.
+homepage         http://lincity.sourceforge.net/
+platforms        darwin
+master_sites     sourceforge
+checksums        md5 007159a2e6cce680c629a73f97fe96f2
+
+depends_lib \
+	port:xorg-libsm \
+	port:xorg-libXext \
+	port:libpng \
+	port:gettext
+
+patchfiles       patch-readpng.c
+
+configure.args   --mandir=${prefix}/share/man

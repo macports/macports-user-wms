@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name         imake
+version      1.0.5
+revision     1
+categories   x11 devel
+license      X11
+installs_libs no
+platforms    darwin
+maintainers  mcalhoun openmaintainer
+
+description       Discontinued imake build system.
+long_description  ${description}
+
+homepage http://xorg.freedesktop.org/
+master_sites xorg:individual/util/
+
+use_bzip2 yes
+
+checksums           md5    797ec5dcad4df56eaafa0c701d6aa5ce \
+                    sha1   1fd3dca267d125ad86583d7f9663b6ff532cddd1 \
+                    sha256 99ce77ce73892d262522ee621032cef2fad2d30a36088b1305a156af4ee21cc1
+
+depends_run    port:xorg-cf-files path:bin/perl:perl5
+depends_build  port:pkgconfig port:xorg-xproto
+
+patchfiles     patch-imakemdep.h.diff
+
+configure.env  HAS_PERL=yes
+
+post-configure {
+    # Ensure that the MacPorts perl is used
+    reinplace \
+        "s|#!/usr/bin/perl|#!${prefix}/bin/perl|" \
+        ${worksrcpath}/mkhtmlindex.pl
+}
+
+livecheck.type   regex
+livecheck.url    "http://xorg.freedesktop.org/releases/individual/util/?C=M;O=D"
+livecheck.regex  ${name}-(\\d+(?:\\.\\d+)*)

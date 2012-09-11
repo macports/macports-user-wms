@@ -1,0 +1,16 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        windows 1.0.8
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Provides COM interface and additional functionality on \
+                    Windows
+long_description    ${description}
+
+checksums           md5     b0701380de37f98ac9daaa9418015d6e \
+                    sha1    413bde63ba9110bc34fd8f065af09ad9bc9d5227 \
+                    rmd160  6b6d6fde40a2fd37ae90e6dc27b2421dd000ff3c

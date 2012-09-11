@@ -1,0 +1,137 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                munin
+version             1.4.5
+categories          net
+maintainers         alpha
+platforms           darwin
+description         Extensible system monitoring tool
+
+long_description    Munin the monitoring tool surveys all your computers \
+                    and remembers what it saw. It presents all the \
+                    information in graphs through a web interface. Its \
+                    emphasis is on plug and play capabilities. Using Munin \
+                    you can easily monitor the performance of your \
+                    computers, networks, SANs, applications, weather \
+                    measurements and whatever comes to mind. \
+                    \
+                    Note: By default only Munin node is installed. To \
+                    install the Munin server that gathers data from \
+                    existing nodes and generates graphs please enable the \
+                    server variant.
+
+homepage            http://munin-monitoring.org/
+master_sites        sourceforge
+checksums           md5     4ae84b9a27b686c3819d8d7b51d8cb4c \
+                    sha1    bd1e8ad1fe1cfade1de9c28f3ad69bf35ca495ca \
+                    rmd160  883aa4baacfa5be1ec6a83737d5d241c40ad6912
+depends_lib         port:perl5.12 port:p5.12-net-server \
+                    path:bin/config_data:p5.12-module-build \
+                    port:p5.12-net-snmp port:p5.12-net-ssleay
+
+use_configure       no
+use_parallel_build  no
+patchfiles          patch-Makefile-javaplugin \
+                    patch-Makefile.config \
+                    patch-munin-node.conf.in
+post-patch {
+    reinplace "s|/usr/bin/perl|${prefix}/bin/perl5.12|" \
+        ${worksrcpath}/master/_bin/munin-update.in \
+        ${worksrcpath}/node/extras/munin-node-sched \
+        ${worksrcpath}/node/extras/munin-node-simple.in \
+        ${worksrcpath}/node/bin/munindoc \
+        ${worksrcpath}/contrib/munin-every-services-all-boxes-build-html.in \
+        ${worksrcpath}/node/sbin/munin-node \
+        ${worksrcpath}/node/sbin/munin-node-configure \
+        ${worksrcpath}/node/sbin/munin-run
+}
+
+build.target        build
+build.args          PREFIX=${prefix} \
+                    CONFDIR=${prefix}/etc/munin \
+                    DBDIR=${prefix}/var/munin \
+                    LOGDIR=${prefix}/var/log/munin \
+                    STATEDIR=${prefix}/var/run/munin \
+                    MANDIR=${prefix}/share/man \
+                    DOCDIR=${prefix}/share/doc/munin \
+                    LIBDIR=${prefix}/lib/munin \
+                    HTMLDIR=${prefix}/www/munin \
+                    CGIDIR=${prefix}/www/cgi-bin \
+                    PERL=${prefix}/bin/perl5.12
+destroot.args       PREFIX=${destroot}${prefix} \
+                    CONFDIR=${destroot}${prefix}/etc/munin \
+                    DBDIR=${destroot}${prefix}/var/munin \
+                    LOGDIR=${destroot}${prefix}/var/log/munin \
+                    STATEDIR=${destroot}${prefix}/var/run \
+                    MANDIR=${destroot}${prefix}/share/man \
+                    DOCDIR=${destroot}${prefix}/share/doc/munin \
+                    LIBDIR=${destroot}${prefix}/lib/munin \
+                    HTMLDIR=${destroot}${prefix}/www/munin \
+                    CGIDIR=${destroot}${prefix}/www/cgi-bin \
+                    PERL=${prefix}/bin/perl5.12
+destroot.keepdirs   ${destroot}${prefix}/var/log/munin \
+                    ${destroot}${prefix}/var/run/munin \
+                    ${destroot}${prefix}/etc/munin/plugins \
+                    ${destroot}${prefix}/var/munin \
+                    ${destroot}${prefix}/www/munin
+destroot.target     install-common-prime install-node-prime \
+                    install-plugins-prime install-plugins-java install-man
+
+startupitem.create  yes
+startupitem.name    munin-node
+startupitem.start   "${prefix}/sbin/munin-node"
+startupitem.stop    "kill `cat ${prefix}/var/run/munin/munin-node.pid`"
+
+variant server description {Install Munin server} {
+    depends_lib-append	port:rrdtool \
+			port:p5.12-html-template \
+			port:p5.12-time-hires \
+			port:p5.12-digest-md5 \
+			port:p5.12-text-balanced \
+                        port:p5.12-log-log4perl
+    destroot.target-append install-master-prime
+}
+
+pre-destroot {
+    # Create munin user and group
+    addgroup munin
+    adduser munin gid=[existsgroup munin]
+}
+post-destroot {
+    # Rename config files so port upgrades don't overwrite installed versions of these
+    file rename ${destroot}${prefix}/etc/munin/munin-node.conf ${destroot}${prefix}/etc/munin/munin-node.conf.sample
+
+    # State directory should be owned by munin
+    xinstall -d -o munin ${destroot}${prefix}/var/run/munin
+
+    if { [variant_isset server] } {
+        file rename ${destroot}${prefix}/etc/munin/munin.conf ${destroot}${prefix}/etc/munin/munin.conf.sample
+        # Create and symlink launchd item for munin-cron
+        xinstall -d ${destroot}${prefix}/etc/LaunchDaemons/org.macports.munin-cron
+        file copy ${portpath}/files/org.macports.munin-cron.plist.in \
+        ${destroot}${prefix}/etc/LaunchDaemons/org.macports.munin-cron/org.macports.munin-cron.plist
+        reinplace s|@PREFIX@|${prefix}|g ${destroot}${prefix}/etc/LaunchDaemons/org.macports.munin-cron/org.macports.munin-cron.plist
+
+        xinstall -d ${destroot}/Library/LaunchDaemons
+        ln -s ${prefix}/etc/LaunchDaemons/org.macports.munin-cron/org.macports.munin-cron.plist \
+        ${destroot}/Library/LaunchDaemons/org.macports.munin-cron.plist
+
+        ui_msg "###########################################################"
+        ui_msg "# A startup item has been generated that will cause the"
+        ui_msg "# Munin server to fetch data from all nodes every 5 mins."
+        ui_msg "# It is disabled by default, please execute the following"
+        ui_msg "# command to enable:"
+        ui_msg "#"
+        ui_msg "# sudo launchctl load -w /Library/LaunchDaemons/org.macports.munin-cron.plist"
+        ui_msg "###########################################################"
+    }
+}
+
+notes "
+To detect supported Munin plugins please use the following command:
+
+sudo munin-node-configure --suggest --shell | sh
+"

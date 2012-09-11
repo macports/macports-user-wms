@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+PortGroup       kde4 1.1
+
+name            kde-l10n-ja
+version         4.8.3
+categories      kde kde4
+maintainers     nomaintainer
+license         {LGPL-2.1 LGPL-3+ GPL-2+ MIT BSD}
+description     KDE japanese language files.
+long_description \
+                ${description}
+platforms       darwin
+homepage        http://www.kde.org/
+
+master_sites    kde:stable/${version}/src/kde-l10n/
+use_xz          yes
+
+supported_archs noarch
+depends_lib     port:kdelibs4
+
+checksums           rmd160  ae5360a7fa70b436dec19cb0947cd17d193eba93 \
+                    sha256  2ea9a72ba73453bedb022dbe0eb3949da6160342b18bd9a50d5119c6c433d47d
+
+post-destroot {
+    xinstall -d -m 755 ${destroot}${prefix}/share/doc/kde-installed-packages
+    system "touch ${destroot}${prefix}/share/doc/kde-installed-packages/kde-l10n-japanese"
+}
+
+livecheck.type  none

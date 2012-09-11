@@ -1,0 +1,22 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Sub-Install 0.925
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         install subroutines into packages easily
+long_description    This module makes it easy to install subroutines into \
+                    packages without the unslightly mess of no strict or \
+                    typeglobs lying about where just anyone can see them.
+
+platforms           darwin
+
+checksums           md5 694aaec771c42280746a9a6279683263 \
+                    sha1 628624a2ca52e22f18cbcd2851ab5c9b31c92da1 \
+                    rmd160 1a29c281d1c7cf83f47b85e708f449d4e24547dd
+
+supported_archs noarch

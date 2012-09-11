@@ -1,0 +1,51 @@
+# $Id$
+
+PortSystem  1.0
+
+name        dirmngr
+version     1.1.0
+categories  security mail
+license     GPL-2+
+maintainers nomaintainer
+description X.509 certificate directory manager for GnuPG
+long_description    \
+    Dirmngr is a server for managing and downloading certificate \
+    revocation lists (CRLs) for X.509 certificates and for downloading \
+    the certificates themselves. Dirmngr also handles OCSP requests as \
+    an alternative to CRLs. Dirmngr is either invoked internaly by \
+    gpgsm (from gnupg 1.9) or when running as a system daemon through \
+    the dirmngr-client tool.
+homepage    http://www.gnupg.org
+platforms   darwin
+master_sites    gnupg
+
+use_bzip2   yes
+
+checksums   sha1    a7a7d1432db9edad2783ea1bce761a8106464165 \
+            rmd160  2f67ad8668cf4aa4a2ec2c1fa857d9225ec01a65
+
+depends_lib port:libiconv       \
+            port:gettext        \
+            port:libassuan      \
+            port:libksba        \
+            port:libgcrypt      \
+            port:libgpg-error   \
+            port:pth            \
+            port:openldap
+
+test.run    yes
+test.dir    ${worksrcpath}/tests
+test.target     check
+
+platform darwin {
+#   Get around the fact that Darwin linker complains about multiply defined
+#   symbols since DirMngr doesn't currently test for presence strcasecmp
+    configure.cflags-append -DHAVE_STRCASECMP=1
+#   Do something to fix the fact that, for some reason, -llber is required
+    configure.env-append    LDAPLIBS="-lldap -llber"
+}
+
+livecheck.type  regex
+livecheck.url   ftp://ftp.gnupg.org/gcrypt/${name}/
+livecheck.regex ${name}-(\\d+\\.\\d+\\.\\d+)
+

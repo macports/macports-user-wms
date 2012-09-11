@@ -1,0 +1,50 @@
+# $Id$
+
+PortSystem 1.0
+
+name            ngircd
+version         16
+revision        1
+categories      irc
+maintainers     nomaintainer
+description     next generation IRC daemon
+long_description \
+    ngIRCd is a free open source daemon for \
+    Internet Relay Chat (IRC). It's written \
+    from scratch and is not based upon the \
+    original IRCd like many others.
+homepage        http://ngircd.barton.de/
+platforms       darwin
+master_sites    ftp://ftp.berlios.de/pub/ngircd/ \
+                ftp://ngircd.barton.de/pub/ngircd/
+
+checksums       md5     8c9e0382cd982b0ca77c05528ebe28eb \
+                sha1    b6903448edacf01e67d6246bff5ff9b5206e6422 \
+                rmd160  e118b23a8e53fada64e632b148129cd9ce6dc69a
+
+depends_lib     port:libident
+
+# libident is not universal
+universal_variant no
+
+patchfiles      patch-doc-Makefile.in.diff
+
+configure.args  --mandir=${prefix}/share/man \
+                --enable-ipv6 \
+                --with-tcp-wrappers \
+                --with-zeroconf \
+                --with-ident
+
+variant gnutls conflicts openssl description {Build with GnuTLS} {
+    configure.args-append   --with-gnutls
+    depends_lib-append      port:gnutls
+}
+
+variant openssl conflicts gnutls description {Build with OpenSSL} {
+    configure.args-append   --with-openssl
+    depends_lib-append      port:openssl
+}
+
+if {![variant_isset gnutls]} {
+    default_variants        +openssl
+}

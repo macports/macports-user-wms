@@ -1,0 +1,60 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                edbrowse
+version             3.4.7
+revision            1
+categories          www
+license             GPL
+maintainers         snc email.uc.edu:obrienj
+description         A combination editor, browser, and mail client that is \
+                    100% text based.
+long_description    Edbrowse is a combination editor, browser, and mail client \
+                    that is 100% text based.  The interface is similar to \
+                    /bin/ed, though there are many more features, such as \
+                    editing multiple files simultaneously, and rendering html.\
+                    This program was originally written for blind users, but \
+                    many sighted users have taken advantage of the unique \
+                    scripting capabilities of this program, which can be found \
+                    nowhere else.  A batch job, or cron job, can access web \
+                    pages on the internet, submit forms, and send email, with \
+                    no human intervention whatsoever.  edbrowse can also tap \
+                    into databases through odbc.
+
+homepage            http://the-brannons.com/edbrowse/
+
+platforms           darwin freebsd
+depends_lib         port:pcre \
+                    port:spidermonkey \
+                    port:curl \
+                    port:readline \
+                    port:openssl
+
+master_sites        ${homepage}
+use_zip             yes
+dist_subdir			${name}-1
+
+checksums           rmd160  baa0bf1c3cb4320aaee3c2c556bc910ca5502a71 \
+                    sha256  488d8a02b4480f1474686dfa99058b7f2f36c1d4eb1942ee79471aa8327328fe
+
+worksrcdir          ${distname}/src
+
+patchfiles          patch-makefile.osx.diff
+post-patch {
+    reinplace       "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/makefile.osx
+    reinplace       "s|@@DESTROOT@@|${destroot}${prefix}|g" ${worksrcpath}/makefile.osx
+}
+
+use_configure       no
+
+variant universal {}
+
+build.env-append    CC="${configure.cc} [get_canonical_archflags cc]"
+build.args          -f makefile.osx
+
+destroot.args       -f makefile.osx
+
+livecheck.regex     {(3.[0-9].[0-9])}
+livecheck.type      regex

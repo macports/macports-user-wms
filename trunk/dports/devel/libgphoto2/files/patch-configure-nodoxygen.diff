@@ -1,0 +1,11 @@
+--- configure.orig	2012-08-15 08:54:01.000000000 -0700
++++ configure	2012-08-15 08:54:01.000000000 -0700
+@@ -20172,7 +20172,7 @@
+   ;;
+ esac
+ fi
+-DOXYGEN=$ac_cv_path_DOXYGEN
++DOXYGEN="false"
+ if test -n "$DOXYGEN"; then
+   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $DOXYGEN" >&5
+ $as_echo "$DOXYGEN" >&6; }

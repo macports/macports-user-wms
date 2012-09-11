@@ -1,0 +1,91 @@
+# $Id$
+
+PortSystem 1.0
+
+name			vsftpd
+version			2.3.4
+categories		net
+platforms		darwin
+maintainers		pmq openmaintainer
+
+description		Secure FTP server for UNIX systems
+long_description	vsftpd is an FTP server, or daemon. The 'vs' stands for \
+			Very Secure. Obviously this is not a guarantee, but a \
+			reflection that it is written with security in mind, and \
+			carefully designed to be resilient to attack.
+
+homepage		https://security.appspot.com/vsftpd.html
+master_sites		https://security.appspot.com/downloads/
+
+checksums           md5     2ea5d19978710527bb7444d93b67767a \
+                    sha1    b774cc6b4c50e20f4fe9ca7f6aa74169ce7fe5ea \
+                    rmd160  4097b495b5b03833e18b1639931939c3176e498b
+                    
+patchfiles		patch-sysdeputil.c.diff \
+			patch-vsf_findlibs.sh.diff \
+			patch-vsftpd.conf.diff \
+			patch-Makefile.diff
+
+configure {
+	reinplace "s|/etc/|${prefix}/etc/|g" \
+		${worksrcpath}/Makefile \
+		${worksrcpath}/defs.h \
+		${worksrcpath}/tunables.c \
+		${worksrcpath}/vsftpd.8 \
+		${worksrcpath}/vsftpd.conf
+	reinplace "s|/var/|${prefix}/var/|g" \
+		${worksrcpath}/tunables.c \
+		${worksrcpath}/vsftpd.conf.5 \
+		${worksrcpath}/vsftpd.conf
+	reinplace "s|/usr/share/empty|${prefix}/var/empty|g" \
+		${worksrcpath}/tunables.c
+	reinplace "s|/usr/share/ssl/|${prefix}/share/ssl/|g" \
+		${worksrcpath}/tunables.c
+	reinplace "s|/etc/vsftpd|${prefix}/etc/vsftpd|g" \
+		${worksrcpath}/vsftpd.conf.5
+
+	reinplace "s|/usr/local/man|${destroot}${prefix}/share/man|g" \
+		${worksrcpath}/Makefile
+	reinplace "s|/usr/local|${destroot}${prefix}|g" \
+		${worksrcpath}/Makefile
+}
+
+build.target
+
+startupitem.create yes
+startupitem.name ${name}
+startupitem.executable ${prefix}/sbin/${name} ${prefix}/etc/${name}.conf
+
+post-destroot {
+    xinstall ${worksrcpath}/vsftpd.conf ${destroot}${prefix}/etc/vsftpd.conf.sample
+    set docdir ${destroot}${prefix}/share/doc/${name}-${version}
+    xinstall -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} AUDIT BENCHMARKS BUGS COPYING FAQ LICENSE \
+        README README.security README.ssl SIZE SPEED TODO TUNING \
+        ${docdir}
+    file copy ${worksrcpath}/EXAMPLE ${docdir}
+    file copy ${worksrcpath}/SECURITY ${docdir}
+}
+
+destroot.keepdirs	"${destroot}${prefix}/var/empty/" \
+			"${destroot}${prefix}/var/log/"
+
+variant ssl description "Enable SSL support" {
+    depends_lib-append	port:openssl
+
+    post-configure {
+        reinplace "s|#undef VSF_BUILD_SSL|#define VSF_BUILD_SSL|" \
+	    ${worksrcpath}/builddefs.h
+    }
+
+    build.env-append	LDFLAGS=${configure.ldflags}
+}
+
+platform darwin 9 {
+	patchfiles-append oldpam.diff
+}
+
+
+livecheck.type regex
+livecheck.url ${homepage}
+livecheck.regex "vsftpd-(\\d+(?:\\.\\d+)*)"

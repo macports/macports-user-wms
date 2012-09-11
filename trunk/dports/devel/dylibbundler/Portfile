@@ -1,0 +1,60 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                dylibbundler
+version             0.4.1
+revision            1
+categories          devel
+platforms           darwin
+maintainers         strasweb.fr:rudloff openmaintainer
+license             GPL-2+
+
+description         terminal utility for Mac OS X that eases bundling dynamic \
+                    libraries (.dylib) inside app bundles
+
+long_description    ${name} is a small command-line programs that aims to \
+                    make bundling .dylibs as easy as possible. It \
+                    automatically determines which dylibs are needed by your \
+                    program, copies these libraries inside the app bundle, \
+                    and fixes both them and the executable to be ready for \
+                    distribution, all this with a single command. It will \
+                    also work if your program uses plug-ins that have \
+                    dependencies too.
+
+homepage            http://macdylibbundler.sourceforge.net/
+master_sites        sourceforge:project/macdylibbundler/macdylibbundler/${version}
+
+checksums           rmd160  452156046d94286f468db43345e4929d70f24dc9 \
+                    sha256  b2c07f3b3b99f44dd3d4dc5b24b5326f765e815198bf7039ac56d9734ec831a5
+
+# 0.4.1 was stealth-updated 2012-04-25 to fix the version number and whitespace
+dist_subdir         ${name}/${version}_1
+
+distname            ${name}${version}
+use_zip             yes
+worksrcdir          ${name}
+
+pre-fetch {
+    if {${os.platform} != "darwin"} {
+        ui_error "${name} is designed for use on Darwin or OS X only."
+        return -code error "incompatible platform"
+    }
+}
+
+patchfiles          patch-makefile.diff
+
+use_configure       no
+
+variant universal {}
+
+build.args          CXX="${configure.cxx} [get_canonical_archflags]"
+
+destroot.args       PREFIX=${prefix}
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} dylibbundler.png index.html maclib.jpg ${docdir}
+}

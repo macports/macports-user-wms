@@ -1,0 +1,64 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           cmake 1.0
+PortGroup           qt4 1.0
+
+name                lmms
+version             0.4.13
+categories          multimedia
+maintainers         nomaintainer
+license             GPL-2+
+
+description         Linux Multimedia Studio
+long_description    LMMS is a free cross-platform alternative to commercial programs like FL Studio®, \
+                    which allow you to produce music with your computer. This includes the creation of \
+                    melodies and beats, the synthesis and mixing of sounds, and arranging of samples. \
+                    You can have fun with your MIDI-keyboard and much more, all in a user-friendly and \
+                    modern interface.
+
+homepage            http://lmms.sourceforge.net
+platforms           darwin
+master_sites        sourceforge:project/lmms/lmms/${version}
+#parallel build seems broken :(
+use_parallel_build  no
+use_bzip2           yes
+
+checksums           rmd160  e2ddb1d68c45f72f933c76b2161d9f9aab638a0a \
+                    sha256  fca4d62f09dc31230870776dce048da51c5ffd4949934cf4bbcdfad65d952082
+
+depends_lib-append  port:libsndfile \
+                    path:lib/pkgconfig/sdl.pc:libsdl \
+                    port:fftw-3-single \
+                    port:fluidsynth \
+                    port:jack \
+                    path:lib/libfltk.dylib:fltk
+
+patchfiles          patch-qt-include.diff \
+                    patch-zynaddsubfx-CMakeLists.txt.diff
+
+# Undefined symbols: "_waveguide_nl_process", referenced from: _runGong in gong_1424.o, _runAddingGong in gong_1424.o
+# https://sourceforge.net/tracker/?func=detail&aid=3563052&group_id=105168&atid=640434
+compiler.blacklist  clang
+
+# Use bundled libsamplerate due to link problems with the external library
+configure.args-append -DWANT_SYSTEM_SR=OFF
+# Disable VST because it is not supported on OS X
+configure.args-append -DWANT_VST=OFF
+
+configure.args-append -DWANT_ALSA=OFF \
+                      -DWANT_PULSEAUDIO=OFF \
+                      -DWANT_FFTW3F=ON \
+                      -DWANT_SDL=ON \
+                      -DWANT_OGGVORBIS=ON \
+                      -DWANT_STK=OFF \
+                      -DWANT_JACK=ON
+
+platform darwin 8 {
+    configure.ldflags-append -lpng -lz
+}
+
+livecheck.type      regex
+livecheck.url       http://sourceforge.net/projects/${name}/files/
+livecheck.regex     ${name}-(\[0-9.\]+)\\.tar

@@ -1,0 +1,34 @@
+# $Id$
+
+PortSystem	1.0
+PortGroup	perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup	Crypt-RSA 1.98
+revision	4
+license		{Artistic-1 GPL}
+maintainers	nomaintainer
+description	perl implementation of RSA
+long_description	Crypt::RSA is a pure-perl, cleanroom implementation \
+			of the RSA public-key cryptosystem. It uses \
+			Math::Pari(3), a perl interface to the blazingly fast \
+			PARI library, for big integer arithmetic and number \
+			theoretic computations.
+platforms	darwin
+checksums	md5 c0bfb2df955be680ef5642bffec15b74
+
+if {${perl5.major} != ""} {
+depends_lib-append	port:p${perl5.major}-class-loader \
+		port:p${perl5.major}-convert-ascii-armour \
+		port:p${perl5.major}-crypt-primes \
+		port:p${perl5.major}-crypt-random \
+		port:p${perl5.major}-digest-md2 \
+		port:p${perl5.major}-sort-versions \
+		port:p${perl5.major}-tie-encryptedhash \
+		port:p${perl5.major}-crypt-blowfish \
+		port:p${perl5.major}-crypt-cbc \
+		port:p${perl5.major}-data-buffer \
+		port:p${perl5.major}-math-pari
+
+supported_archs noarch
+}

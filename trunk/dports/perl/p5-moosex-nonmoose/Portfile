@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           MooseX-NonMoose 0.18 ../by-authors/id/D/DO/DOY/
+revision              3
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+description           easy subclassing of non-Moose classes
+long_description      ${description}
+
+platforms             darwin
+
+checksums             md5 ae49a26d05ab00cc9fefd5c06149b00e \
+                      sha1 0fa4aa055954094e2f507ac9566b4636b9f6f8c3 \
+                      rmd160 0b2438fcd0a9579db728aaa8642b66dae0045473
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-test-fatal \
+                      port:p${perl5.major}-list-moreutils \
+                      port:p${perl5.major}-moose
+
+supported_archs       noarch
+}

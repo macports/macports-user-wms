@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xconsole
+version             1.0.4
+categories          x11
+maintainers         jeremyhu openmaintainer
+description         Monitor system console messages with X11
+long_description \
+   The xconsole program displays messages which are usually sent to \
+   /dev/console.
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           md5     8665c037032e5f6a3acd4b341749aa17 \
+                    sha1    195299d4948ba4c62e961ddd0bd4572283244715 \
+                    rmd160  831da269cb68aad84610ec70084f38c11ddadda3
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libXaw
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

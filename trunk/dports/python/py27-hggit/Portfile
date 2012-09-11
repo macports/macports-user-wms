@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               python 1.0
+
+name                    py27-hggit
+version                 0.3.3
+revision                0
+epoch                   20110928
+categories              python devel
+platforms               darwin
+maintainers             easieste openmaintainer
+license                 GPL-2
+supported_archs         noarch
+
+homepage                http://hg-git.github.com/
+description             Push to and pull from a Git server repository from Mercurial.
+long_description        This is the Hg-Git plugin for Mercurial, adding the ability \
+                        to push to and pull from a Git server repository from Mercurial.\
+                        This means you can collaborate on Git based projects from Mercurial, \
+                        or use a Git server as a collaboration point for a team with \
+                        developers using both Git and Mercurial.
+
+homepage                http://hg-git.github.com/
+master_sites            http://pypi.python.org/packages/source/h/hg-git
+distname                hg-git-${version}
+
+
+checksums           rmd160  5ba97111225745997d4113ad066b2aa5b57084d5 \
+                    sha256  51fb0cbe0364e3515f498b428466adddf5423b77e4882b6663320cb4fbd8d20f
+
+depends_lib             port:mercurial \
+                        port:py27-dulwich
+
+python.default_version 27
+
+notes "
+To use this extension, add the following to your ~/.hgrc:
+
+\[extensions\]   
+hggit=${python.prefix}/lib/python2.7/site-packages/hggit
+"

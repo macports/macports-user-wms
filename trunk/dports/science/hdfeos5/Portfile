@@ -1,0 +1,50 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                hdfeos5
+version             1.13
+revision            2
+categories          science
+platforms           darwin
+maintainers         takeshi
+description         HDF-EOS library built on HDF5
+long_description \
+    library designed built on HDF5 to support the same Grid/Point/Swath \
+    functionality in HDF-EOS 2 and to the extent possible it will be    \
+    built with the same calling sequences as the original HDF-EOS 2 library.
+homepage            http://hdfeos.org/
+master_sites        ftp://edhs1.gsfc.nasa.gov/edhs/${name}/latest_release/ \
+                    ftp://edhs1.gsfc.nasa.gov/edhs/${name}/previous_releases/
+
+distname            HDF-EOS5.${version}
+
+checksums           md5     9dd44039f3b3e6d232717f0b3554d103 \
+                    sha1    a3fbf5ce8ace164a3912cedba02d3b0b09e75151 \
+                    rmd160  461b0b97f8562dc48985bb541955a2f65827000f
+
+depends_lib         port:hdf5-18
+worksrcdir          ${name}
+extract.suffix      .tar.Z
+fetch.use_epsv      no
+
+configure.cc        ${prefix}/bin/h5cc
+configure.cflags-append -DH5_USE_16_API
+configure.args      --prefix=${prefix}/lib/${name} \
+                    --enable-shared \
+                    --with-hdf5=${prefix} \
+                    --with-zlib=${prefix} \
+                    --disable-dependency-tracking
+
+variant szip description {enables szip support} {
+    depends_lib-append          port:szip
+    configure.args-append       --with-szlib=${prefix} \
+}
+
+post-destroot {
+    set incdir ${destroot}${prefix}/lib/${name}/include
+    xinstall -d -m 755 ${incdir}
+    xinstall -m 644 ${worksrcpath}/include/HE5_GctpFunc.h ${incdir}
+    xinstall -m 644 ${worksrcpath}/include/HE5_HdfEosDef.h ${incdir}
+}

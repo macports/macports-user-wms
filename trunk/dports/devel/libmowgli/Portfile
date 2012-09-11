@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem 1.0
+
+name            libmowgli
+version         0.7.1
+categories      devel
+maintainers     toby
+description     class library for C
+long_description \
+	libmowgli is a class library containing performance \
+	and usability oriented extensions to C.
+homepage        http://www.atheme.org/projects/
+platforms       darwin
+master_sites    http://distfiles.atheme.org/
+use_bzip2       yes
+extract.suffix  .tbz2
+checksums       md5 412b4fd72ddbdc07d736a691fc8031ca \
+                sha1 ad51d5f5352954553fc55ce26b98185edce31509 \
+                rmd160 b2b1db92e2e7ecc35aa091e4da58fe38b56cc7f5
+
+# Why do we set a bogus CPP value, anyway?
+configure.cpp
+
+livecheck.url   http://distfiles.atheme.org/
+livecheck.regex ${name}-(\[0-9\]+\\.\[0-9\]+\\.\[0-9\]+)\\.tbz2

@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    xournal
+version                 0.4.7
+revision        1
+categories              x11
+platforms               darwin
+maintainers             ryandesign
+license                 GPL-2
+homepage                http://xournal.sourceforge.net/
+master_sites            sourceforge:project/${name}/${name}/${version}
+
+description             notetaking, sketching and journal app for use with a \
+                        stylus
+
+long_description        ${name} is an application for notetaking, sketching, \
+                        and keeping a journal using a stylus. It's similar to \
+                        other applications such as Jarnal, Gournal, and NoteLab.
+
+checksums               rmd160  7735e37ba07c57fb89231a2a27cf6357490af699 \
+                        sha256  d1ceb9c3a0b0172f7c2389bfe188a13cdc9f9f4c3ddc30095d635edf1367ac89
+
+depends_build           port:pkgconfig
+
+depends_lib             port:libgnomecanvas \
+                        port:poppler \
+                        port:zlib
+
+configure.ldflags-append -lz
+
+pre-configure {
+    if {![file exists ${prefix}/include/gtk-2.0/gdk/gdkx.h]} {
+        ui_error "${name} requires gtk2 installed with X11 support; please reinstall gtk2 and all its dependencies with the +x11 variant."
+        return -code error "incompatible gtk2 installation"
+    }
+}
+
+post-destroot {
+    xinstall -d ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} AUTHORS COPYING ChangeLog README ${destroot}${prefix}/share/doc/${name}
+}
+
+notes {
+If you are unable to draw in Xournal, try disabling "Use XInput" in the Options menu.
+}

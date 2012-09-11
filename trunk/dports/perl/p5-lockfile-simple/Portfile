@@ -1,0 +1,17 @@
+# $Id$
+
+PortSystem              1.0
+PortGroup               perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup             LockFile-Simple 0.2.5
+revision                3
+license                 Artistic-1
+maintainers             nomaintainer
+description             Simple file locking scheme
+long_description        ${description}
+
+checksums               md5 acf9fd6f965789a42fa5314a4be0189d
+platforms               darwin
+
+supported_archs noarch

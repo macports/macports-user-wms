@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem 1.0
+
+name			daemon
+version			0.6.4
+categories		sysutils
+platforms		darwin
+license         GPL-2+
+maintainers		nomaintainer
+description		Daemon turns other process into daemons
+long_description	Daemon turns other process into daemons. There are many \
+					tasks that need to be performed to correctly set up a \
+					daemon process. This can be tedious. Daemon performs these \
+					tasks for other processes. This is useful for writing \
+					daemons in languages other than C, C++ or Perl (e.g. \
+					/bin/sh, Java).
+
+homepage		http://libslack.org/daemon/
+master_sites	${homepage}download/
+checksums		md5 6cd0a28630a29ac279bc501f39baec66 \
+                sha1 fa6298f05f868d54660a7ed70c05fb7a0963a24b \
+                rmd160 63fea6386f3dae6a5da6451a1d126a2525ee1e0e
+
+configure.cmd	./config
+
+test.run		yes
+test.target		check
+
+destroot.destdir	PREFIX=${destroot}${prefix}

@@ -1,0 +1,22 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup			XML-SAX-Writer 0.50
+revision            3
+license				{Artistic-1 GPL}
+maintainers			nomaintainer
+categories-append	textproc
+description		SAX2 XML Writer
+long_description	${description}
+
+checksums			md5 bf26550e84903ef36af0feb07d721d4e
+platforms			darwin
+
+if {${perl5.major} != ""} {
+depends_lib-append	port:p${perl5.major}-text-iconv port:p${perl5.major}-xml-filter-buffertext
+
+supported_archs noarch
+}

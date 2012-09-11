@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-bibtex-extra
+version             26726
+revision            0
+
+categories          tex
+maintainers         dports
+license             Copyleft Permissive
+description         TeX Live: Extra BibTeX styles
+long_description    Additional BibTeX styles and bibliography databases, including BibLaTeX.
+
+checksums           texlive-bibtex-extra-26726-run.tar.xz \
+                    rmd160  95b5a39f2ed95ae810d877b37a951aaeb2341063 \
+                    sha256  6ea00da2a71c30f48a8157875275d90a1d179c2154f90edb450ddfd12288f7bd \
+                    texlive-bibtex-extra-26726-doc.tar.xz \
+                    rmd160  08bd77c8aea4aea19ec0feb9ea9bd9380f1595de \
+                    sha256  368fbfe8b65ea55ed00332b49133c5c63c5d5a1bdbcd23aafcb49d2c8221018b \
+                    texlive-bibtex-extra-26726-src.tar.xz \
+                    rmd160  6c60e9b916eb807896658db8df71c85a59fecf98 \
+                    sha256  8fd59d2179215290ae0e98c45baaa5cd2d743fcea6257eccea738576d1f0e51f
+
+depends_lib         port:texlive-latex
+
+texlive.binaries    bibexport listbib urlbst
+
+
+texlive.texmfport

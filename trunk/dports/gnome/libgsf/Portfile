@@ -1,0 +1,84 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    libgsf
+version                 1.14.24
+license                 LGPL-2.1
+set branch              [join [lrange [split $version .] 0 1] .]
+maintainers             nomaintainer
+categories              gnome
+platforms               darwin
+
+description \
+    An I/O abstraction library for dealing with file formats
+
+long_description \
+    libgsf aims to provide an efficient extensible \
+    i/o abstraction for dealing with different \
+    structured file formats.
+
+homepage                http://www.gnome.org/
+master_sites            gnome:sources/$name/$branch/
+
+use_xz                  yes
+
+checksums               rmd160  21e7868e47ffc22e61adaacef31bb8fccaeaf956 \
+                        sha256  975fc00a1332167e2baf649f8e2637884f798db1c8bb04abece2d5141663abff
+
+depends_build           port:pkgconfig \
+                        port:gconf \
+                        port:intltool
+
+depends_lib             port:libbonobo \
+                        port:bzip2 \
+                        port:gettext \
+                        path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                        port:libffi \
+                        port:libpng \
+                        port:libxml2 \
+                        port:zlib \
+                        port:gnome-vfs
+
+configure.env           INTLTOOL_PERL=${prefix}/bin/perl5.12
+configure.args          --without-python
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 -W ${worksrcpath} AUTHORS COPYING COPYING.LIB NEWS README \
+        ${destroot}${docdir}
+}
+
+post-activate {
+    if {![variant_isset no_gnome]} {
+        system "\
+            export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` && \
+            gconftool-2 --makefile-install-rule \
+            ${prefix}/etc/gconf/schemas/*.schemas"
+    }
+}
+
+variant no_gnome description "Disable GNOME support" {
+    post-patch {
+        reinplace {/^manpage_DATA/s/gsf-office-thumbnailer\.1//} \
+            ${worksrcpath}/doc/Makefile.in
+    }
+
+    depends_build-delete \
+        port:gconf
+
+    depends_lib-delete \
+        port:gnome-vfs \
+        port:libbonobo
+
+    configure.args-append \
+        --without-bonobo \
+        --without-gnome-vfs \
+        GCONFTOOL=no
+}
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

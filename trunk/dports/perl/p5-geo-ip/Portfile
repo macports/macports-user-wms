@@ -1,0 +1,25 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-b asic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Geo-IP 1.35
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Look up location and network information by IP Address
+long_description    Geo::IP links to the C GeoIP API library to access \
+                    file-based databases to lookup geographic information \
+                    such as country, region and city based on IP addresses.
+
+homepage            http://www.maxmind.com/app/perl
+
+platforms           darwin
+
+checksums md5       82844ea789fbf65c9cf34c370473148c \
+          sha1      ada3bd5933560495d1ed6d1c1d14f9b0cd06a9c7
+if {${perl5.major} != ""} {
+depends_lib-append  port:libgeoip
+}

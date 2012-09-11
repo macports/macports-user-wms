@@ -1,0 +1,36 @@
+# $Id$
+
+PortSystem      1.0
+PortGroup       python 1.0
+
+name            py-watchdog
+set real_name   watchdog
+version         0.5.4
+maintainers     singingwolfboy openmaintainer
+platforms       darwin
+description     Python API and shell utilities to monitor file system events.
+license         MIT
+
+long_description \
+    ${description}
+
+homepage            http://packages.python.org/watchdog/
+master_sites        http://pypi.python.org/packages/source/w/${real_name}
+distname            ${real_name}-${version}
+
+checksums           md5     137cb7516b56a4e623934eccc26e1143 \
+                    sha1    79314cfa13d0218ca2c5137156e6ad67fd378a64 \
+                    rmd160  cdb91e08afb4b66d6457fc8aa6531ae88606e09b
+
+# watchdog supports Python 2.5+, but at the moment,
+# Macports only packages dependencies for Python 2.7
+python.versions 27
+python.default_version 27
+
+if {$subport != $name} {
+    depends_lib \
+        port:py${python.version}-yaml \
+        port:py${python.version}-argh \
+        port:py${python.version}-pathtools \
+        port:py${python.version}-brownie
+}

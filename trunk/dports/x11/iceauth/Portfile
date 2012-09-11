@@ -1,0 +1,33 @@
+# $Id$
+
+PortSystem          1.0
+
+name                iceauth
+version             1.0.5
+categories          x11
+maintainers         jeremyhu openmaintainer
+description         ICE authority file utility
+long_description \
+   The iceauth program is used to edit and display the authorization \
+   information used in connecting with ICE.  This program is usually used \
+   to extract authorization records from one machine and merge them in on \
+   another (as is the case when using remote logins or granting access to \
+   other users).
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           md5     08e3f6b523da8b0af179f22f339508b2 \
+                    sha1    d996c6ecaa93dcaccee4a11991eeacd40bddc13e \
+                    rmd160  a7bc808577f09e2cad3dbe96a5e65a9ad9332a9a
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libice
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

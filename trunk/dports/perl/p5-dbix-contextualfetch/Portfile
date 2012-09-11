@@ -1,0 +1,25 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           DBIx-ContextualFetch 1.03
+revision              3
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+description           Add contextual fetches to DBI
+long_description      It always struck me odd that DBI didn't take much \
+                      advantage of Perl's context sensitivity. \
+                      DBIx::ContextualFetch redefines some of the various \
+                      fetch methods to fix this oversight. It also adds a \
+                      few new methods for convenience (though not necessarily \
+                      efficiency).
+
+platforms             darwin
+
+checksums             md5 20a78432ae26b266216b7b30ff7941c3
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-dbi
+}

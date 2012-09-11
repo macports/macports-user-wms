@@ -1,0 +1,27 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           Module-Load-Conditional 0.50 ../by-authors/id/B/BI/BINGOS/
+revision        1
+license               {Artistic GPL}
+maintainers           nomaintainer
+description           Looking up module information / loading at runtime
+long_description      ${description}
+
+platforms             darwin
+
+checksums             rmd160  c0bdfa918562125df599a57539fa3877a6df8a34 \
+                      sha256  847cb773499e8f5ca509c86b742f7e144d23b09098b3bb3d2a60d78998444981
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-locale-maketext-simple \
+                      port:p${perl5.major}-module-corelist \
+                      port:p${perl5.major}-module-load \
+                      port:p${perl5.major}-params-check \
+                      port:p${perl5.major}-version
+
+supported_archs       noarch
+}

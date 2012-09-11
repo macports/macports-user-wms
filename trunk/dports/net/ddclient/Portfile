@@ -1,0 +1,61 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name                ddclient
+version             3.8.1
+revision            1
+platforms           darwin
+categories          net
+license             GPL
+maintainers         snc openmaintainer
+description         Update dynamic DNS entries
+long_description    ddclient is a Perl client used to update dynamic \
+                    DNS entries for accounts on many dynamic DNS services.
+homepage            http://ddclient.sourceforge.net/
+
+master_sites        sourceforge
+
+checksums           rmd160  7b702d28c47e48ed19eedd6b2e50930f394e9631 \
+                    sha256  f22ac7b0ec78e310d7b88a1cf636e5c00360b2ed9c087f231b3522ef3e6295f2
+
+depends_lib         port:p5.12-io-socket-ssl
+depends_run         port:perl5.12
+
+configure   {
+        reinplace "s|\[\r\]$||" ${worksrcpath}/${name}
+        reinplace "s|^#!.*/perl.*$|#!${prefix}/bin/perl5.12|" ${worksrcpath}/${name}
+        reinplace "s|/etc/|${prefix}/etc/|" ${worksrcpath}/${name}
+}
+
+build   {}
+
+destroot.keepdirs   ${destroot}${prefix}/var/cache/${name}
+destroot    {
+        file mkdir ${destroot}${prefix}/etc/${name}
+        xinstall -m 755 -d ${destroot}${prefix}/var/cache/${name}
+        xinstall -m 555 ${worksrcpath}/sample-etc_ddclient.conf \
+            ${destroot}${prefix}/etc/${name}/ddclient.conf.sample
+
+        reinplace "s|/var/run|${prefix}/var/run|" \
+            ${destroot}${prefix}/etc/${name}/ddclient.conf.sample
+
+        xinstall -m 555 ${worksrcpath}/${name} ${destroot}${prefix}/sbin
+        xinstall -d ${destroot}${prefix}/share/doc/${name}
+
+        eval file copy [glob ${worksrcpath}/sample-*] \
+            ${destroot}${prefix}/share/doc/${name}
+        eval file copy [glob ${worksrcpath}/COPY*] \
+            ${destroot}${prefix}/share/doc/${name}
+        eval file copy [glob ${worksrcpath}/README*] \
+            ${destroot}${prefix}/share/doc/${name}
+
+        destroot.keepdirs ${destroot}${prefix}/var/run
+}
+
+startupitem.create  yes
+startupitem.start   ${prefix}/sbin/${name}
+startupitem.stop    "/bin/kill \$(cat ${prefix}/var/run/${name}.pid)"
+
+livecheck.regex     "${name}-(\\d+\\.\\d+\\.\\d+)"

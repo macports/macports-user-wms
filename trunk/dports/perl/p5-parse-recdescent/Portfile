@@ -1,0 +1,45 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           Parse-RecDescent 1.965001
+revision              3
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+description           Generate Recursive-Descent Parsers
+long_description      RecDescent incrementally generates top-down \
+                      recursive-descent text parsers from simple yacc-like \
+                      grammar specifications. It provides: \
+                      * Regular expressions or literal strings as \
+                      terminals (tokens), \
+                      * Multiple (non-contiguous) productions for any rule, \
+                      * Repeated, optional and alternate subrules within \
+                      productions, \
+                      * Late-bound (run-time dispatched) subrules \
+                      * Full access to Perl within actions specified as \
+                      part of the grammar, \
+                      * Simple automated error reporting during parser \
+                      generation and parsing, \
+                      * The ability to commit to, uncommit to, or reject \
+                      particular productions during a parse, \
+                      * Incremental extension of the parsing grammar (even \
+                      during a parse), \
+                      * Precompilation of parser objects, \
+                      * User-definable reduce-reduce conflict resolution \
+                      via "scoring" of matching productions. \
+                      See the file "RecDescent.pod" for excruciating \
+                      detail on all of this.
+
+checksums             md5 e91351ad179a3843fbe8e521b135acaf \
+                      sha1 bec47f6a011b1c2dd1175b15c106fbdd51cbcd55 \
+                      rmd160 64bacbb5811836c0535bb1fa0dcb52c8b66907c7
+
+platforms             darwin
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-version
+
+supported_archs noarch
+}

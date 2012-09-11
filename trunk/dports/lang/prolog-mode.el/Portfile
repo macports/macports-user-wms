@@ -1,0 +1,59 @@
+# $Id$
+
+PortSystem	1.0
+name		prolog-mode.el
+version		1.22
+revision	1
+categories	lang editors
+maintainers	phw openmaintainer
+platforms	darwin
+
+description	An emacs major mode for editing prolog programs.
+long_description	\
+		So the Prolog mode that comes with Emacs sucks.		\
+		Well, here is a better alternative, with all the	\
+		features you would expect, including syntax		\
+		highlighting, auto indent, and full interaction with	\
+		an inferior Prolog process.				\
+									\
+		This mode supports in principle any Prolog system,	\
+		though it is primarily maintained with SWI Prolog	\			in mind. It also has some special tweaks for SICStus	\
+		Prolog, and explicitly supports Prolog's close		\
+		relatives Eclipse and Mercury.
+
+distname	prolog.el
+extract.suffix
+
+homepage	http://turing.ubishops.ca/home/bruda/emacs-prolog/
+master_sites	${homepage}
+checksums           md5     1250e5a79fb2adaa06eba48842003568 \
+                    sha1    fb827fa0d95b371ba98f2950ef5b2002892c9833 \
+                    rmd160  67be48e0524b2b9f2ee263ab8106dcaec4d3f0bc
+
+
+depends_lib	path:bin/emacs:emacs
+depends_run	bin:swipl:swi-prolog
+
+extract		{ file mkdir ${workpath}/${name}
+		  file copy ${distpath}/${distfiles} ${workpath}/${name}
+		}
+
+use_configure	no
+build		{}
+destroot	{ file mkdir ${destroot}${prefix}/share/emacs/site-lisp
+		  file copy  ${workpath}/${name}/${distname}	\
+			     ${destroot}${prefix}/share/emacs/site-lisp
+		}
+
+post-activate	{ ui_msg "To use this, put the following into your ~/.emacs:"
+    		  ui_msg "(autoload 'run-prolog \"prolog\" \"Start a Prolog sub-process.\" t)"
+    		  ui_msg "(autoload 'prolog-mode \"prolog\" \"Major mode for editing Prolog programs.\" t)"
+		  ui_msg "(autoload 'mercury-mode \"prolog\" \"Major mode for editing Mercury programs.\" t)"
+		  ui_msg "(setq prolog-system 'swi)"
+		  ui_msg "(setq auto-mode-alist (append '((\"\\.pl$\" . prolog-mode)"
+		  ui_msg "                                (\"\\.m$\" . mercury-mode))"
+		  ui_msg "                               auto-mode-alist))"
+}
+
+livecheck.url	"http://bruda.ca/emacs-prolog/prolog.el"
+livecheck.regex "Version ((\\d+(\\.)*)+)"

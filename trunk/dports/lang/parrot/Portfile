@@ -1,0 +1,66 @@
+# $Id$
+
+PortSystem              1.0
+
+name                    parrot
+version                 3.3.0
+revision        1
+categories              lang devel
+license                 Artistic-2
+maintainers             bfulgham coleda.com:will l2g
+description             Open source virtual machine (for Perl6 et al.)
+long_description    \
+        Parrot is a virtual machine designed to efficiently compile and \
+        execute bytecode for dynamic languages. Parrot currently hosts a \
+        variety of language implementations in various stages of completion, \
+        including Tcl, Javascript, Ruby, Lua, Scheme, PHP, Python, Perl 6, \
+        and a .NET bytecode translator.
+
+platforms               darwin
+homepage                http://www.parrot.org/
+master_sites            ftp://ftp.parrot.org/pub/parrot/releases/stable/${version}/ \
+                        http://ftp.parrot.org/releases/supported/${version}/
+
+patchfiles              patch-t-dynpmc-os.t.diff
+
+checksums               sha1    9f6220f174a4ac5b5288c5a1f543b5f08eb5a4db \
+                        rmd160  fdb9aae9b29ff0498aa8cf1c88d844d02cfe996e
+
+depends_build           bin:perl:perl5
+depends_lib             port:gmp port:icu
+
+configure.cmd           perl Configure.pl
+configure.pre_args      --prefix=${prefix} \
+                        --mandir=${prefix}/share/man \
+                        --optimize
+
+destroot.target         install
+destroot.args           DESTDIR=${destroot}
+
+build.type              gnu
+build.target
+
+test.run                yes
+test.target             test
+
+post-destroot {
+    set bindir ${destroot}${prefix}/bin
+    set docdir ${destroot}${prefix}/share/doc/${name}
+
+    set executables {
+        ops2c parrot-nqp parrot_config parrot_nci_thunk_gen
+        pbc_dump pbc_to_exe parrot parrot-prove parrot_debugger
+        pbc_disassemble pbc_merge
+    }
+
+    foreach exe $executables {
+        # fixup the library path
+        set old_path "${workpath}/parrot-${version}/blib/lib/libparrot.dylib"
+        set new_path "${prefix}/lib/libparrot.${version}.dylib"
+
+        system "cd ${bindir} && \
+            install_name_tool -change \"$old_path\" \"$new_path\" ${exe}"
+    }
+    xinstall -m 755 -d ${docdir}
+}
+

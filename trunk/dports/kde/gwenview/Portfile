@@ -1,0 +1,40 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                gwenview
+version             4.8.3
+revision            2
+categories          kde kde4
+license             GPL-2+
+maintainers         nicos openmaintainer
+description         Gwenview is an image viewer for KDE.
+long_description    Gwenview can load and save all image formats supported by KDE.
+platforms           darwin
+homepage            http://www.kde.org/applications/graphics/gwenview/
+master_sites        kde:stable/${version}/src/
+use_xz              yes
+distname            gwenview-${version}
+checksums           rmd160  fca887826076c44d99abdb554273fca37b2d2b3b \
+                    sha256  65c04256b47fc9a648aae57f210672633ca2cfa1db93eb147fab0fda25d98423
+
+depends_lib-append  port:kdelibs4 \
+                    port:kde4-baseapps \
+                    port:exiv2 \
+                    port:libkipi \
+                    port:jpeg
+
+if {![variant_isset docs]} {
+    patchfiles      patch-CMakeLists.txt.diff
+}
+
+configure.args-append   -DGWENVIEW_SEMANTICINFO_BACKEND=None
+
+variant kipi description "adds support for KDE Image Plugin Interface" { 
+ depends_lib-append port:kipi-plugins
+}
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/latest/src/
+livecheck.regex     gwenview-(\\d+\\.\\d+\\.\\d+)${extract.suffix}

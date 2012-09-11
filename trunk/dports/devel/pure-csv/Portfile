@@ -1,0 +1,25 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                      1.0
+PortGroup                       pure 1.0
+
+pure.setup                      csv 1.5
+revision                        3
+categories                      devel
+platforms                       darwin
+maintainers                     ryandesign
+license                         BSD
+
+description                     an interface to read and write comma \
+                                separated value files in Pure
+
+long_description                ${name} provides ${description}. The reading \
+                                and writing functions are loosely based on \
+                                Python's CSV module
+
+# 1.5 was stealth-updated 2011-10-20
+dist_subdir                     ${name}/${version}_1
+
+checksums                       rmd160  135b4f778bcfbef8a8253d69e100d71d1bbd6260 \
+                                sha256  996a499dc2f0a4e537b420b3c754f4d8a7af74a43f4afb46e67701f866edaa7c

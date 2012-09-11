@@ -1,0 +1,101 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                omniORB
+version             4.1.6
+revision            2
+categories          devel
+platforms           darwin
+# executables are GPL, libs are LGPL
+license             {LGPL GPL-2+}
+
+maintainers         stromnov openmaintainer
+
+description         high performance CORBA ORB for C++
+long_description    omniORB is a robust high performance CORBA ORB for C++ and \
+                    Python. omniORB is largely CORBA 2.6 compliant.
+
+homepage            http://omniorb.sourceforge.net/
+master_sites        sourceforge:omniorb
+
+checksums           rmd160  a0ba42721a1932d29abeb37dff0dc3ea7a9ddce6 \
+                    sha256  749c5e615130c804e40f4028104c1f98469613ff32a7f81562d06e669ba0b2c1
+
+use_bzip2           yes
+
+patchfiles          src_tool_omniidl_cxx_cccp_config-darwin.h.diff \
+                    include_omniORB4_CORBA_sysdep.h.diff
+
+# The universal variant has been broken for several years (at least version 4.1.4)
+universal_variant   no
+
+notes \
+"To install omniORBpy use the port pyXX_omniORBpy
+corresponding to the matching python variant selected here."
+
+configure.args      CC="${configure.cc}" \
+                    CXX="${configure.cxx}" \
+                    CCFLAGS="[get_canonical_archflags cc]" \
+                    EXTRA_GCC_CXXFLAGS="[get_canonical_archflags cxx]" \
+                    --with-omniORB-config="${prefix}/etc/omniORB.cfg" \
+                    --with-omniNames-logdir="${prefix}/var"
+
+if {$build_arch == "x86_64" && ${os.platform} == "darwin"} {
+    configure.args-append --build=${build_arch}-apple-${os.platform}${os.version}
+}
+
+pre-patch {
+    reinplace "s|-bind_at_load||g" \
+        ${worksrcpath}/mk/beforeauto.mk.in
+    ui_debug "archflags cc are [get_canonical_archflags cc]"
+    ui_debug "archflags cxx are [get_canonical_archflags cxx]"
+}
+
+post-patch {
+    reinplace "s|\\(\$(CXXLINKOPTIONS)\\)|\\1 [get_canonical_archflags cxx]|g" \
+        ${worksrcpath}/mk/beforeauto.mk.in
+
+    reinplace "s|get_python_lib(0,\[^)\]*)|get_python_lib()|g" \
+        ${worksrcpath}/configure
+    reinplace "s|get_python_lib(1,\[^)\]*)|get_python_lib()|g" \
+        ${worksrcpath}/configure
+}
+
+variant ssl description {Enable SSL support} {
+    configure.args-append   --with-openssl
+    depends_lib-append      port:openssl
+}
+
+if {![variant_isset python24] && ![variant_isset python25] && ![variant_isset python26] && ![variant_isset python27]} {
+    default_variants        +python27
+}
+
+variant python24 description {Enable python support with python 2.4} {
+    notes-append "For this omniORB variant install py24-omniORBpy"
+    depends_lib-append      port:python24
+    configure.python        ${prefix}/bin/python2.4
+}
+
+variant python25 description {Enable python support with python 2.5} {
+    notes-append "For this omniORB variant install py25-omniORBpy"
+    depends_lib-append      port:python25
+    configure.python        ${prefix}/bin/python2.5
+}
+
+variant python26 description {Enable python support with python 2.6} {
+    notes-append "For this omniORB variant install py26-omniORBpy"
+    depends_lib-append      port:python26
+    configure.python        ${prefix}/bin/python2.6
+}
+
+variant python27 description {Enable python support with python 2.7} {
+    notes-append "For this omniORB variant install py27-omniORBpy"
+    depends_lib-append      port:python27
+    configure.python        ${prefix}/bin/python2.7
+}
+
+livecheck.type      regex
+livecheck.url       http://omniorb.sourceforge.net/
+livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)"

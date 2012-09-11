@@ -1,0 +1,31 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup python24 1.0
+
+name			py-fchksum
+version			1.7.1
+revision		1
+categories		python
+platforms		darwin
+maintainers		nomaintainer
+description		Python module to find the checksum of files
+long_description	fchksum is a Python module to find the checksum of \
+				files. Currently it supports md5, crc32, cksum, \
+				bsd-style sum, and sysv-style sum.
+
+homepage		http://users.dakotacom.net/~donut/programs/fchksum.html
+master_sites	http://users.dakotacom.net/~donut/programs/fchksum/
+distname		python-fchksum-${version}
+checksums		md5 5a7fdec9b6a04ef6d17962df2a74284b
+
+depends_lib-append	lib:libz:zlib
+
+test.run		no
+test.cmd		${build.cmd}
+test.target		test
+
+post-destroot	{
+	xinstall -m 644 -W ${worksrcpath} COPYING Changelog README \
+		${destroot}${prefix}/share/doc/${name}
+}

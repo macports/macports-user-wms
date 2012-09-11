@@ -1,0 +1,54 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                stunnel
+version             4.47
+set major           [lindex [split ${version} .] 0]
+categories          security net
+platforms           darwin
+maintainers         nomaintainer
+license             GPL-2+
+
+description         SSL tunneling program
+
+long_description    Stunnel is a program that allows you to encrypt arbitrary \
+                    TCP connections inside SSL (Secure Sockets Layer) available \
+                    on both Unix and Windows. Stunnel can allow you to secure \
+                    non-SSL aware daemons and protocols (like POP, IMAP, LDAP, \
+                    etc) by having Stunnel provide the encryption, requiring no \
+                    changes to the daemon's code.
+
+homepage            http://www.stunnel.org/
+master_sites        http://mirrors.zerg.biz/stunnel/ \
+                    http://mirrors.zerg.biz/stunnel/archive/${major}.x/ \
+                    ftp://ftp.stunnel.org/stunnel/
+
+checksums           sha1    b236f6a2223474daa5ce18589e6f4b371780b315 \
+                    rmd160  f6725d8ffe99d7da9012d021024111d8ad97a4de
+
+depends_lib         port:openssl
+
+patchfiles          patch-configure \
+                    patch-tools-stunnel.cnf
+
+configure.args      --disable-libwrap
+
+destroot.keepdirs   ${destroot}${prefix}/var/lib/stunnel
+post-destroot {
+    xinstall -d -m 770 -o nobody ${destroot}${prefix}/var/lib/stunnel/
+}
+
+# libwrap has been reported to introduce some problems with stunnel 4.18.
+# See: https://trac.macports.org/ticket/11028
+variant libwrap description {Include libwrap support} {
+    configure.args-delete   --disable-libwrap
+}
+
+default_variants    +libwrap
+
+# Tell the user about the stupid fake certificate that we provide.
+notes "
+A fake certificate has been installed as ${prefix}/etc/stunnel/stunnel.pem
+"

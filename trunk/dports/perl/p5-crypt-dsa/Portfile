@@ -1,0 +1,23 @@
+# $Id$
+
+PortSystem	1.0
+PortGroup	perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup	Crypt-DSA 0.14
+revision    3
+license		{Artistic-1 GPL}
+maintainers	nomaintainer
+description	perl implementation of DSA
+long_description	This is Crypt::DSA. It provides DSA signature \
+			and key generation.
+platforms	darwin
+checksums	md5 5ff5ab4be5501f5547bbe46cdc3de442
+
+if {${perl5.major} != ""} {
+depends_build-append	port:p${perl5.major}-digest-sha1
+
+depends_lib-append	port:p${perl5.major}-convert-pem port:p${perl5.major}-data-buffer
+
+supported_archs noarch
+}

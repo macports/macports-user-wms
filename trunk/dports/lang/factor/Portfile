@@ -1,0 +1,71 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                factor
+version             0.95
+categories          lang devel
+platforms           darwin
+license             BSD
+maintainers         ciserlohn
+
+description         A practical stack language
+
+long_description    The Factor programming language combines powerful language \
+                    features with a full-featured library. The implementation \
+                    is fully compiled for performance, while still supporting \
+                    interactive development. Factor applications are portable \
+                    between all common platforms. Factor can deploy stand- \
+                    alone applications on all platforms.
+
+homepage            http://www.factorcode.org/
+
+master_sites        http://downloads.factorcode.org/releases/${version}/
+distname            ${name}-src-${version}
+worksrcdir          ${name}
+
+checksums           rmd160  48c15698eb14e0978c2634206bb36afe32dc8ea9 \
+                    sha256  ff0306eeabf77daf82b6633ddb88d7ade7530f5ec2864aaf64f5903f555606ed
+
+use_zip             yes
+
+patchfiles          patch-GNUmakefile \
+                    patch-Factor.app-Contents-Info.plist
+
+universal_variant   no
+supported_archs	    i386 x86_64
+
+use_configure       no
+
+if {${build_arch} == "x86_64"} {
+    build.target    macosx-x86-64
+    set boot_image  boot.unix-x86.64.image 
+
+} elseif {${build_arch} == "i386"} {
+    build.target    macosx-x86-32
+    set boot_image  boot.unix-x86.32.image 
+}
+
+build.args-append   CC=${configure.cc} \
+                    CXX=${configure.cxx} \
+                    SITE_CFLAGS="${configure.cflags} ${configure.cc_archflags}"
+
+post-build {
+    system "cd ${worksrcpath} && ./factor -i=./${boot_image}"
+}
+
+destroot {
+    set factor_dir ${destroot}${applications_dir}/Factor-${version}
+    xinstall -d ${factor_dir}
+    foreach f {Factor.app factor.image basis core \
+               extra misc readme.html license.txt} {
+        copy ${worksrcpath}/$f ${factor_dir}
+    }
+    copy ${worksrcpath}/libfactor.dylib ${destroot}${prefix}/lib
+}
+
+
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     ${name}-src-(\\d+\\.\\d+)${extract.suffix}

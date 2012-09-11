@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4 1.1
+
+name                kdesvn
+version             1.5.5
+categories          kde kde4
+maintainers         nomaintainer
+platforms           darwin
+
+description         KDE4 subversion frontend
+long_description    KDESvn is a frontend to subversion repositories using \
+                    the KDE4 framework
+
+homepage            http://kdesvn.alwins-world.de/
+master_sites        ${homepage}downloads/
+
+use_bzip2           yes
+
+checksums           md5     8f11d31cc55fba408b7971541ee261d0 \
+                    sha1    eb9bd624e387b07c215cb4247ec0133399d64604 \
+                    rmd160  916d0c6509e68c27dd60c1fc64ef2f8ad4934c72
+
+depends_lib-append  port:kdelibs4 \
+                    port:kde4-runtime \
+                    port:subversion
+
+patch.dir           ${workpath}/${distname}/src
+patchfiles          patch-app-install-and-icon-fix.diff \
+                    patch-ignore-apr0-and-apr-util0.diff \
+                    patch-no-kdesdk-conflict.diff \
+                    patch-fix-apr_apu-ldflags.diff
+
+post-patch {
+    # disable building of NL documentation
+    reinplace "s,GENBOOK,#GENBOOK,g" \
+        ${worksrcpath}/doc/nl/CMakeLists.txt
+}
+
+livecheck.type      regex
+livecheck.url       ${homepage}wiki/DownLoads
+livecheck.regex     ${name}-(\[0-9.\]+)${extract.suffix}

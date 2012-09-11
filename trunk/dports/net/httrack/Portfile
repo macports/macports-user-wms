@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                httrack
+version             3.45.3
+categories          net
+platforms           darwin
+maintainers         ross-williams.net:ross
+license             GPL-2+
+
+description         Website Copier/Offline Browser
+
+long_description    HTTrack is an offline browser utility that allows you to \
+                    download a website from the Internet to a local directory.
+
+homepage            http://www.httrack.com/
+master_sites        http://mirror.httrack.com/
+
+checksums           rmd160  4a6c3fb3df765f62b111f001ebfb8acdcc0782f1 \
+                    sha256  8b5e8267f485b237fcf23f6c3939ef8a6eab10356eab7310dcf8234eacb2db8b
+
+depends_lib         port:zlib
+
+patchfiles          patch-src-htsweb.c.diff \
+                    patch-src-webhttrack.diff
+
+post-patch {
+    reinplace -locale C "s|@PREFIX@|${prefix}|g" \
+        ${worksrcpath}/src/htsweb.c \
+        ${worksrcpath}/src/webhttrack
+}
+
+configure.args      --with-zlib=${prefix}
+
+# Makefile fails during parallel builds
+use_parallel_build  no
+
+post-destroot {
+    # Remove metadata files not used by darwin or OS X
+    file delete ${destroot}${prefix}/share/pixmaps/httrack.xpm
+    file delete -force ${destroot}${prefix}/share/applications/
+}
+
+livecheck.type      regex
+livecheck.url       http://download.httrack.com/cserv.php3?queryVersionNumberDigit
+livecheck.regex     ^(.+)$

@@ -1,0 +1,19 @@
+# $Id$
+
+PortSystem           1.0
+PortGroup            perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup          PostScript-Simple 0.07
+revision             3
+maintainers          email.arc.nasa.gov:sal
+description          Produce PostScript files from Perl
+long_description     PostScript::Simple allows you to have a simple method \
+                     of writing PostScript files from Perl. It has graphics \
+                     primitives that allow lines, curves, circles, polygons \
+                     and boxes to be drawn. Text can be added to the page \
+                     using standard PostScript fonts.
+platforms            darwin
+checksums            md5 4f67d5aabff883aa111197528172e804
+
+supported_archs noarch

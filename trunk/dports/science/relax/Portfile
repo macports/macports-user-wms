@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python27 1.0
+
+name                relax
+version             2.0.0
+categories          science python
+maintainers         bromo.med.uc.edu:howarth
+description         Protein dynamics by NMR relax. data analysis
+long_description    The program relax is designed for the study of the \
+                    dynamics of proteins or other macromolecules though the \
+                    analysis of NMR relaxation data.
+homepage            http://www.nmr-relax.com/
+platforms           darwin
+master_sites        http://download.gna.org/relax/
+distfiles           ${name}-${version}.src.tar.bz2
+dist_subdir         ${name}
+checksums           md5     3449d0fca777925b0f15a10b88a72a85 \
+                    sha1    d8e23c515a92d3d144729515af9000c19b66f781 \
+                    rmd160  66b402494497ff0821d99c0af1795f9bab87d5cc
+use_bzip2           yes
+depends_lib-append  port:scons port:py27-scipy port:py27-numpy \
+                    port:py27-wxpython-devel port:pymol
+patchfiles          relax.patch
+post-patch {
+    reinplace  "s|@DEST_ROOT@|${destroot}|g" ${worksrcpath}/sconstruct
+    reinplace  "s|@PREFIX@|${prefix}|g" ${worksrcpath}/sconstruct \
+                                        ${worksrcpath}/relax
+}
+build.cmd           ${prefix}/bin/scons
+build.target
+test.run            yes
+test.cmd            relax
+test.target         --test-suite
+destroot.cmd        ${build.cmd}
+destroot.destdir    DESTDIR=${destroot}
+post-destroot {
+    reinplace  "s|${destroot}${prefix}|${prefix}|g" ${destroot}${prefix}/lib/relax/sconstruct
+    ln -sf ${prefix}/lib/relax/relax ${destroot}${prefix}/bin/relax
+    file delete -force ${destroot}${prefix}/lib/relax/version.pyc
+    eval file delete -force [glob -directory ${destroot}${prefix}/lib/relax/scons/ *.pyc]
+    system "${python.bin} -O ${python.libdir}/compileall.py -d ${prefix}/lib/relax ${destroot}${prefix}/lib/relax"
+}
+
+universal_variant   no

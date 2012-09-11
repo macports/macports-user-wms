@@ -1,0 +1,16 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        linear-algebra 1.0.8
+platforms           darwin
+license             GPL-2+ GPL-3+ LGPL-2.1+
+maintainers         nomaintainer
+description         Additional linear algebra code, including general SVD and \
+                    matrix functions.
+long_description    ${description}
+
+checksums           md5     a40aaca0061117cc483eef89c2f9530f \
+                    sha1    08332368e1d7f933802320fae22c4ed7ab72a9b2 \
+                    rmd160  e19b067efb39afa244a27c0442af650bf588f72b

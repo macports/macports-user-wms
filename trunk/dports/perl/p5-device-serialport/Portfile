@@ -1,0 +1,19 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup                     Device-SerialPort 1.04
+revision                        2
+license                         {Artistic-1 GPL}
+maintainers                     nomaintainer
+
+description                     A POSIX-based version of the Win32::Serialport module
+
+long_description       	A POSIX-based version of the Win32::Serialport module \
+			that provides modem support to Perl applications
+
+platforms               darwin
+
+checksums               md5 82c698151f934eb28c65d1838cee7d9e

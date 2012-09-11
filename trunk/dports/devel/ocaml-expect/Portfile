@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup ocaml     1.0
+
+name                ocaml-expect
+version             0.0.3
+categories          devel ml
+maintainers         googlemail.com:benedikt.meurer
+license             LGPL-2.1
+description         Expect-like framework
+long_description    This is a simple implementation of `expect` to help building \
+                    unitary testing of interactive program. It helps to receive \
+                    question and send answers from an interactive process. You \
+                    can match the question using a regular expression (Str). You \
+                    can also use a timeout to ensure that the process answer in \
+                    time.
+
+homepage            http://forge.ocamlcore.org/projects/ocaml-expect/
+platforms           darwin
+master_sites        http://forge.ocamlcore.org/frs/download.php/894/
+
+checksums           rmd160  1aeb840a72f349f2fe69a1affcdeccb7f17bf718 \
+                    sha256  97480912f205dc1af75cbb7e9aa55cb60cf68580f75f663a3c849043fd410bdb
+
+depends_lib         port:ocaml-extlib \
+                    port:ocaml-ounit \
+                    port:ocaml-pcre
+
+livecheck.type      regex
+livecheck.url       http://forge.ocamlcore.org/frs/?group_id=177
+livecheck.regex     {>ocaml-expect-(.*)\.tar\.gz}
+
+use_oasis           yes
+use_oasis_doc       yes
+
+configure.args-append --destdir "${destroot}" --docdir "${prefix}/share/doc/caml-expect"

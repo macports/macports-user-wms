@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem			1.0
+PortGroup			perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup			Inline 0.46
+revision			4
+license				{Artistic-1 GPL}
+maintainers			nomaintainer
+description			Write Perl subroutines in other programming languages
+long_description \
+	Inline lets you write Perl subroutines in other programming languages \
+	like C, C++, Java, Python, Tcl and even Assembly. You don't need to \
+	compile anything. All the details are handled transparently so you can \
+	just run your Perl script like normal.
+
+platforms			darwin
+
+checksums           md5     4c2f14829fbe83cb456e9c5c0dac06b3 \
+                    sha1    b1718517bdd4a9dd4603c9a35a2575e7958440a4 \
+                    rmd160  dffc15351730722e6899953517e9673b0a4dd2ff
+
+if {${perl5.major} != ""} {
+depends_lib-append			port:p${perl5.major}-parse-recdescent
+
+supported_archs noarch
+
+patchfiles		patch-C-Makefile.PL
+}

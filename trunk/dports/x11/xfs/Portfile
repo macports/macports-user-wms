@@ -1,0 +1,62 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xfs
+version             1.1.2
+categories          x11 graphics
+maintainers         jeremyhu openmaintainer
+description         X11 font server
+long_description \
+   xfs is the X Window System font server.  It supplies fonts to X Window \
+   System display servers.
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           sha1    d4a64e12f8a773bd0120977191586ca12baf1ace \
+                    rmd160  375ceab9ea932978b49af641cc3dc907f67259f9 \
+                    sha256  0dea61cce3897b4d9d844bbd2c7850cd4e80e12c12b38158b4f92574b027e39d
+
+depends_build       port:pkgconfig port:xorg-util-macros port:xorg-xtrans
+
+depends_lib         port:xorg-libFS port:xorg-libXfont
+
+configure.args \
+	--without-xmlto \
+	--without-fop \
+	--disable-devel-docs
+
+build.args V=1
+
+# Depending on ghostscript for the PDF documentation creates a dependency
+# loop, so you may want to install first without the docs variant
+variant docs description "Install extra documentation" {
+	depends_build-append \
+		port:fop \
+		port:xmlto
+
+	depends_skip_archcheck-append \
+		xmlto
+
+	configure.args-delete \
+		--without-xmlto \
+		--without-fop \
+		--disable-devel-docs
+
+	configure.args-append \
+		--with-xmlto \
+		--with-fop \
+		--enable-devel-docs
+
+	configure.env-append \
+		XMLTO="${prefix}/bin/xmlto" \
+		FOP="${prefix}/bin/fop"
+}
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

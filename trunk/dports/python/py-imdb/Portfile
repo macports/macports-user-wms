@@ -1,0 +1,24 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+name                py-imdb
+version             4.8.2
+license             {GPL-2+ BSD}
+python.versions     26
+python.default_version 26
+maintainers         nomaintainer
+description         python module providing access to the IMDb movie database
+long_description \
+   py-imdb is a Python package useful to retrieve and manage the data of the \
+   IMDb movie database.
+
+platforms           darwin
+
+homepage            http://imdbpy.sourceforge.net/
+master_sites        sourceforge:imdbpy
+distname            IMDbPY-${version}
+
+checksums           rmd160  7641b6743fdc82dc01d673a6fe8be737000b4b16 \
+                    sha256  38973f80f794238fded6ca1794d4832c9c039d33664f0da27fc5adf595c2588f
+

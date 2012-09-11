@@ -1,0 +1,28 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                qtruby
+version             4.8.3
+categories          kde kde4 devel
+license             GPL-2+ LGPL-2.1+
+maintainers         nicos openmaintainer
+description         Binding to Ruby for KDE.
+long_description    Very complete bindings to both the KDE API and the Qt APIs. The Korundum \
+                    package includes both a QtRuby Qt-only binding along with the full combined Qt/KDE one. \
+                    The QtRuby package contains just Qt bindings with no dependencies on KDE.
+platforms           darwin
+homepage            http://rubyforge.org/projects/korundum/
+master_sites        kde:stable/${version}/src/
+use_xz              yes
+distname            ${name}-${version}
+checksums           rmd160  f91ff2f15e7a3ca45010965d8bdba5fb0ef0efaf \
+                    sha256  595e44b2ba568cafcff1bba34d20e3b6f85fc2a65c96485ac2df824756ce7cb8
+
+depends_lib-append  port:smokegen \
+                    port:ruby
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/latest/src/
+livecheck.regex     ${name}-(\\d+\\.\\d+\\.\\d+)${extract.suffix}

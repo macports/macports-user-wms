@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem	        1.0
+PortGroup	        perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup	        Crypt-GCrypt 1.25
+revision            2
+
+maintainers	        snc openmaintainer
+license             {Artistic GPL}
+
+description	        Perl interface to the GNU Cryptographic library
+long_description    Crypt::GCrypt provides a Perl interface to the libgcrypt \
+                    cryptographic functions. It currently supports symmetric \
+                    ciphers such as AES/Rikndael, Twofish, Triple DES, Arcfour \
+                    etc., while asymmetric cryptography is being developed.
+
+platforms	        darwin
+if {${perl5.major} != ""} {
+depends_lib-append	port:libgcrypt
+
+checksums           rmd160  798dc77beee3a179f89c1590cc1bb7386eaae217 \
+                    sha256  9d0bccec5cbb57c6d3d5c65024c6a746762b6e6bfd699e23083708ec09456086
+
+configure.pre_args-append	GCRYPTLIBPATH=${prefix}/lib GCRYPTINCPATH=${prefix}/include
+
+    livecheck.type      none
+} else {
+    livecheck.regex     ${perl5.module}-(\\d+\\.\\d+)
+}

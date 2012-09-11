@@ -1,0 +1,29 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup	    perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup	    MogileFS-Client 1.09
+revision        3
+categories          perl net sysutils
+platforms	    darwin
+maintainers	    pmq openmaintainer
+
+description         Client library for the MogileFS distributed file system
+long_description    \
+    This module is a client library for the MogileFS distributed file \
+    system. The class method 'new' creates a client object against a \
+    particular mogilefs tracker and domain. This object may then be used \
+    to store and retrieve content easily from MogileFS.
+
+homepage            http://www.danga.com/mogilefs
+master_sites        http://search.cpan.org/CPAN/authors/id/D/DO/DORMANDO
+checksums           md5 8bfb118e8164ce59198cb0f8cf83e888 \
+		    sha1 4d3554b7600d5d194490e41f4b8ad2c09a28fc7f
+
+if {${perl5.major} != ""} {
+depends_run-append  port:p${perl5.major}-io-stringy port:p${perl5.major}-libwww-perl
+
+supported_archs noarch
+}

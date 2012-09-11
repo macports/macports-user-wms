@@ -1,0 +1,34 @@
+# $Id$
+
+PortSystem 1.0
+
+name			postgresql_autodoc
+version			1.31
+revision        1
+categories		databases textproc
+platforms		darwin
+maintainers		nomaintainer
+description		Automatic documentation generator for postgresql databases
+long_description	Automatic documentation generator for postgresql \
+				databases. It supports output in HTML, GraphViz, SGML \
+				DocBook and DIA formats.
+
+homepage		http://www.rbt.ca/autodoc/
+master_sites	http://www.rbt.ca/autodoc/binaries/
+checksums		md5 0dbb61cf8b78da7ae9d12221f7a14d27 \
+				sha1  2f9dbd73593ce71229fcaf72d5e69c18b8812117 \
+				rmd160 7c7b3a60c79acde53fa8eb542d4d435423324002
+
+depends_lib		port:perl5.12 \
+				port:p5.12-dbi \
+				port:p5.12-dbd-pg \
+				port:p5.12-html-template \
+				port:p5.12-term-readkey
+
+worksrcdir		${name}
+
+destroot.destdir	prefix=${destroot}${prefix}
+
+livecheck.type		regex
+livecheck.url		${homepage}
+livecheck.regex 	"Stable Release - (\\d(?:\\.\\d+))*"

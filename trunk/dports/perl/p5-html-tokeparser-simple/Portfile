@@ -1,0 +1,25 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                  1.0
+PortGroup                   perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup                 HTML-TokeParser-Simple 3.15
+revision                    3
+platforms                   darwin
+maintainers                 ryandesign openmaintainer
+description                 a simpler interface to HTML::TokeParser
+long_description            HTML::TokeParser::Simple is a subclass of \
+                            HTML::TokeParser that uses easy-to-remember \
+                            method calls to work with the tokens.
+
+checksums                   md5     2867824be9cbe3e86e94ca677d042ffe \
+                            sha1    f31f74997e6ba5905e9414236ccb716fe989f98b \
+                            rmd160  55c2c72281afed2b700d48ccfd94cd8791fb3901
+
+if {${perl5.major} != ""} {
+depends_lib-append          port:p${perl5.major}-html-parser
+
+supported_archs             noarch
+}

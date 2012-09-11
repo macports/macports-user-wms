@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        tcl-octave 0.1.8
+platforms           darwin
+license             public-domain
+maintainers         nomaintainer
+description         socket implementation of a tcl-octave connection
+long_description    ${description}
+
+checksums           md5     a98faee2560360e6282f153f185995bf \
+                    sha1    e4d32b7b38bb5978e39374d207d3977d0a739b3e \
+                    rmd160  d7b4f7f40638bd99e195e6fc65157ef4c869c5d6

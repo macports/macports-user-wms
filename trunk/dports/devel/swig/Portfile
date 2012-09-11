@@ -1,0 +1,156 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name		swig
+version		2.0.8
+
+categories	devel
+# The swig tool itself is GPL, but code incorporated into dependents has a
+# permissive license. 
+license		{GPL-3+ Permissive}
+maintainers	kevin jwa
+
+description	Tool to wrap C/C++ libraries in high-level languages.
+long_description	\
+    SWIG is a software development tool that connects programs written in C \
+    and C++ with a variety of high-level programming languages. SWIG is \
+    primarily used with common scripting languages such as Perl, Python, \
+    Tcl/Tk, Ruby, Guile and MzScheme, however the list of supported languages \
+    also includes non-scripting languages such as Java and OCAML. SWIG is \
+    most commonly used to create high-level interpreted programming \
+    environments, user interfaces, and as a tool for testing and \
+    prototyping C/C++ software. SWIG may be freely used, distributed, and \
+    modified for commercial and noncommercial use.
+
+homepage	http://www.swig.org/
+platforms	darwin
+master_sites	sourceforge:project/swig/swig/swig-${version}
+
+checksums           rmd160  defca7a34be7ce8407949d6bd17b860e5169618d \
+                    sha256  aeeefa20bbe1c03bacf23f0af9e7d6193e8b807b7585470615b71b1ee0c8ca4f
+
+depends_build	port:bison \
+    port:gsed
+
+post-patch {
+    # The configure script should use GNU sed
+    reinplace "s/\[\[:<:\]\]sed\[\[:>:\]\]/gsed/g" ${worksrcpath}/configure
+}
+
+build.target
+
+test.run        yes
+test.target     check
+
+array set bindings {
+    allegro     {port:allegro           allegrocl}
+    chicken     {port:chicken           chicken}
+    clisp       {port:clisp             clisp}
+    csharp      {port:mono              csharp}
+    gcj         {port:gcc45             "gcj=${prefix}/bin/gcj-mp-4.5 --with-gcjh=${prefix}/bin/gcjh-mp-4.5"}
+    go          {port:go                go}
+    guile       {port:guile             guile}
+    java        {bin:java:kaffe         java}
+    lua         {port:lua               lua}
+    mzscheme    {port:mzscheme          mzscheme}
+    ocaml       {port:ocaml             ocaml}
+    octave      {path:bin/octave:octave octave}
+    perl        {path:bin/perl:perl5    perl5=${prefix}/bin/perl}
+    php         {port:php_select        php}
+    php5        {path:bin/php:php5      php}
+    pike        {port:pike              pike}
+    python      {port:python_select     python}
+    r           {port:R                 r}
+    ruby        {port:ruby              ruby}
+    tcl         {port:tcl               tcl}
+}
+array set prettynames {allegrocl Allegro chicken Chicken clisp CLISP csharp "C#"
+    gcj GCJ go Go guile Guile java Java lua Lua mzscheme MzScheme
+    ocaml "Objective Caml" octave Octave perl5 Perl php "PHP 5" pike Pike
+    python Python r R ruby Ruby tcl Tcl}
+
+options         swig.lang
+default         swig.lang ""
+
+foreach lang [lsort [array names bindings]] {
+    set arg      [lindex $bindings($lang) 1]
+    set arg_name [lindex [split ${arg} =] 0]
+    subport swig-${lang} "
+        depends_lib-append      [lindex $bindings($lang) 0]
+        configure.args-append   --with-${arg}
+        destroot.args           lib-languages=\"${arg_name}\"
+        swig.lang               $arg_name
+    "
+    if {${swig.lang} != $arg_name} {
+        configure.args-append --without-${arg_name}
+    }
+}
+
+subport swig-gcj {
+    variant gcc43 conflicts gcc44 gcc45 description {build using GCJ 4.3} {
+        depends_lib-delete port:gcc45
+        depends_lib-append port:gcc43
+        configure.args-delete --with-gcj=${prefix}/bin/gcj-mp-4.5 --with-gcjh=${prefix}/bin/gcjh-mp-4.5
+        configure.args-append --with-gcj=${prefix}/bin/gcj-mp-4.3 --with-gcjh=${prefix}/bin/gcjh-mp-4.3
+    }
+
+    variant gcc44 conflicts gcc43 gcc45 description {build using GCJ 4.4} {
+        depends_lib-delete port:gcc45
+        depends_lib-append port:gcc44
+        configure.args-delete --with-gcj=${prefix}/bin/gcj-mp-4.5 --with-gcjh=${prefix}/bin/gcjh-mp-4.5
+        configure.args-append --with-gcj=${prefix}/bin/gcj-mp-4.4 --with-gcjh=${prefix}/bin/gcjh-mp-4.4
+    }
+
+    # just a placeholder variant until gcc46 gets added
+    variant gcc45 conflicts gcc43 gcc44 description {build using GCJ 4.5} {}
+
+    if {![variant_isset gcc43] && ![variant_isset gcc44]} {
+        default_variants +gcc45
+    }
+}
+
+if {${swig.lang} == ""} {
+    depends_lib	    port:pcre
+
+    set docdir      ${prefix}/share/doc/${name}-${version}
+    
+    destroot.args   lib-languages="typemaps"
+    
+    post-destroot {
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} ANNOUNCE CHANGES LICENSE README \
+            TODO ${destroot}${docdir}
+    }
+    
+    variant doc description {Install extra documentation} {
+        post-destroot {
+            xinstall -d ${destroot}${docdir}/html
+            eval xinstall -m 0644 [glob ${worksrcpath}/Doc/Manual/*.{css,html,pdf,png}] \
+                ${destroot}${docdir}/html
+        }
+    }
+    
+    livecheck.type      regex
+    livecheck.url       http://www.swig.org/download.html
+    livecheck.regex     ${name}-(\\d+(?:\\.\\d+)*)
+} else {
+    description     $prettynames(${swig.lang}) binding for swig
+    long_description    \
+        SWIG is a software development tool that connects programs written in C \
+        and C++ with a variety of high-level programming languages. This is the \
+        $prettynames(${swig.lang}) binding.
+    supported_archs     noarch
+    depends_lib-append  port:swig
+    livecheck.type      none
+    post-destroot {
+        delete ${destroot}${prefix}/bin
+        delete ${destroot}${prefix}/share/man
+        foreach f [glob -directory ${destroot}${prefix}/share/swig/${version} *] {
+            if {[file tail $f] != ${swig.lang}} {
+                delete $f
+            }
+        }
+    }
+}

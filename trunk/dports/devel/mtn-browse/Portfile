@@ -1,0 +1,46 @@
+# $Id$
+
+PortSystem          1.0
+
+name                mtn-browse
+version             0.72
+revision            1
+categories          devel
+platforms           darwin
+maintainers         tommyd openmaintainer
+description         A GTK+ based browser for version control system monotone
+
+long_description    Monotone browser (mtn-browse) is an application for \
+                    browsing Monotone VCS databases without the need of a \
+                    workspace. The interface allows one to do various tasks \
+                    very easily like selecting revisions, display file \
+                    contents, compare changesets and much more.
+
+homepage            http://www.coosoft.plus.com/software.html
+master_sites        sourceforge:mtn-browse
+
+checksums           md5     79737ca10ea540c08dd8525c466a5d32 \
+                    sha1    1490c29d7d9e4cea47b594f6848a72b7a1c5265b \
+                    rmd160  e2f2bfd767f31c3781f662fb91a73a9e4a7b774e
+
+depends_run         port:p5.12-monotone-automatestdio \
+                    port:p5.12-gnome2 \
+                    port:p5.12-gtk2-gladexml \
+                    port:p5.12-gtk2-sourceview \
+                    port:p5.12-libintl-perl
+
+use_configure       no
+
+build {
+    reinplace "s|/usr/bin/perl|${prefix}/bin/perl5.12|g" \
+        ${worksrcpath}/mtn-browse \
+        ${worksrcpath}/linux-installer
+}
+
+destroot {
+    system "cd ${worksrcpath} && ./linux-installer \
+        --destdir=${destroot} --prefix=${prefix} \
+        --no-use-dists-mas --file-comparison=opendiff \
+        --globs-file=${prefix}/share/mime/globs" \
+}
+

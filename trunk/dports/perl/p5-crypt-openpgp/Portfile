@@ -1,0 +1,36 @@
+# $Id$
+
+PortSystem			1.0
+PortGroup			perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup			Crypt-OpenPGP 1.04
+revision			4
+maintainers			nomaintainer
+description			Pure-Perl OpenPGP implementation
+long_description	Crypt::OpenPGP is a pure-Perl implementation of \
+					the OpenPGP standard.] In addition to support \
+					for the standard itself, Crypt::OpenPGP claims \
+					compatibility with many other PGP implementations, \
+					both those that support the standard and those \
+					that preceded it.
+
+checksums           md5     981cb9387728918e5c37524bb3787dc8 \
+                    sha1    492a0b357086ef266721f984903c6fb81605ed8d 
+
+platforms			darwin
+
+if {${perl5.major} != ""} {
+depends_lib-append			port:p${perl5.major}-crypt-dsa \
+					port:p${perl5.major}-crypt-blowfish \
+					port:p${perl5.major}-crypt-CAST5 \
+					port:p${perl5.major}-crypt-DES \
+					port:p${perl5.major}-crypt-IDEA \
+					port:p${perl5.major}-crypt-RIPEMD160 \
+					port:p${perl5.major}-crypt-Rijndael \
+					port:p${perl5.major}-crypt-RSA \
+					port:p${perl5.major}-crypt-Twofish \
+					port:p${perl5.major}-file-homedir \
+					port:p${perl5.major}-libwww-perl \
+					port:p${perl5.major}-uri
+}

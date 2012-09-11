@@ -1,0 +1,25 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Data-Dump 1.21
+revision        1
+maintainers         nomaintainer
+license             {Artistic GPL}
+description         Pretty printing of data structures
+long_description    This module provides a single function called dump() \
+                    that takes a list of values as its argument and produces \
+                    a string as its result. The string contains Perl code \
+                    that, when evaled, produces a deep copy of the original \
+                    arguments. The string is formatted for easy reading. If \
+                    dump() is called in a void context, then the dump is \
+                    printed on STDERR instead of being returned.
+
+platforms           darwin
+
+checksums           rmd160  cee46a00f23d60e0ff05bd9cc9d12c797382eb8b \
+                    sha256  bdf9f4a7ed8a5cbd2ee2d35054c8725ff539b4b5ff50501e7aca007211369eb9
+
+supported_archs     noarch

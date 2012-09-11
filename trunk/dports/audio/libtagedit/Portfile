@@ -1,0 +1,25 @@
+# $Id$
+
+PortSystem 1.0
+
+name			libtagedit
+version			1.1.0
+categories		audio
+platforms		darwin
+maintainers		nomaintainer
+description		C++ interface to music file tag editing
+long_description	libtagedit provides a C++ interface to music file tag \
+				editing which should be as easy as possible. It has a plugin \
+				structure and is easily extendable. Currently, it includes \
+				plugins for MP3 (ID3v2 r/w and ID3v1 reading), OGG and FLAC \
+				files.
+
+homepage		http://www.diotavelli.net/tagedit.html
+master_sites	sourceforge
+checksums		md5 ac9bd586b77b7aca9451b3ddfe9064d0
+use_bzip2		yes
+
+depends_build	path:bin/pkg-config:pkgconfig
+depends_lib		port:libvorbis \
+				port:libogg \
+				port:flac

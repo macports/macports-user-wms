@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                kdemultimedia4
+conflicts           kdelibs4-experimental
+version             4.8.3
+revision            1
+categories          kde kde4
+maintainers         sharky
+license             GPL-2+ LGPL-2+ GFDL-1.2
+description         KDE4 multimedia applications
+long_description    KDE applications for managing audio and video files.
+platforms           darwin
+homepage            http://www.kde.org
+master_sites        kde:stable/${version}/src/
+use_xz              yes
+distname            kdemultimedia-${version}
+
+checksums           rmd160  3cca6d3100eb4e4df86d322650717c7dcb11354b \
+                    sha256  9dbad22a853cfc3042305218035ad097b9cb1da287591ace410f9fe430e1b4c8
+
+depends_lib-append  port:kde4-runtime \
+                    port:libogg \
+                    port:libvorbis \
+                    port:ffmpeg \
+                    port:taglib
+
+configure.args-append   -DBUILD_dragonplayer=ON \
+                        -DBUILD_juk=ON \
+                        -DBUILD_kmix=OFF \
+                        -DWITH_Taglib=ON \
+                        -DWITH_PulseAudio=OFF \
+                        -DWITH_MusicBrainz3=OFF \
+                        -DWITH_Xine=OFF \
+                        -DWITH_TunePimp=OFF \
+                        -DWITH_Cdparanoia=OFF
+universal_variant   no
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/latest/src/
+livecheck.regex     kdemultimedia-(\\d+\\.\\d+\\.\\d+)${extract.suffix}

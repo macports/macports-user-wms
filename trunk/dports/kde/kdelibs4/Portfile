@@ -1,0 +1,96 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                kdelibs4
+version             4.8.3
+revision            3
+categories          kde kde4
+maintainers         sharky michaelld
+license             GPL-2+
+description         KDE4 core libraries
+long_description    Core libraries for KDE4 applications to function
+platforms           darwin
+homepage            http://www.kde.org
+master_sites        kde:stable/${version}/src/
+use_xz              yes
+distname            kdelibs-${version}
+
+checksums           rmd160  3a17967b49ae2077baa45609e0f5bc39aab64564 \
+                    sha256  ce3756788dd1b2cf0b8160d1dba870a92b421c81236dff923171d429c4728b58
+
+depends_build-append port:flex port:gmake port:docbook-xsl-ns
+
+depends_lib-append  port:bzip2 port:zlib \
+                    port:soprano port:cyrus-sasl2 \
+                    port:strigi port:gettext \
+                    port:pcre port:shared-mime-info \
+                    lib:libgif:giflib port:tiff \
+                    port:jpeg port:libpng \
+                    port:jasper port:openexr \
+                    port:expat port:libart_lgpl \
+                    port:libidn port:libiconv \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:openssl port:enchant \
+                    port:aspell port:aspell-dict-en \
+                    port:attica port:xz \
+                    port:avahi port:qca \
+                    port:dbusmenu-qt port:docbook-xml \
+                    port:docbook-xsl port:grantlee \
+                    port:kerberos5 \
+                    port:shared-desktop-ontologies
+
+# the aspell dictionaries are just files
+depends_skip_archcheck aspell-dict-en
+
+conflicts           kdelibs3
+
+patchfiles          add-bundles-to-path.patch \
+                    default-kde4-xdg-menu-prefix.patch \
+                    workaround-kdeinit4-crash.patch \
+                    patch-cmake-modules-FindKDE4-Internal.cmake.diff \
+                    patch-cmake-modules-FindPhonon.cmake.diff \
+                    patch-cmake-modules-FindQt4.cmake.diff
+
+patch.pre_args      -p1
+
+# explicitly define certain headers and libraries, to avoid
+# conflicts with those installed into system paths by the user.
+configure.args-append   -DWITH_ENCHANT=ON \
+                        -DWITH_Soprano=ON \
+                        -DWITH_Avahi=ON \
+                        -DKDE_DEFAULT_HOME=Library/Preferences/KDE \
+                        -DWITH_HSPELL=OFF \
+                        -DWITH_FAM=OFF
+
+if { [file exists ${destroot}${prefix}/lib/kde4/kspell_aspell.so] } {
+    notes "
+Only the English dictionary has been installed.
+You will need to install extra dictionaries to
+get support for spell checking other languages.
+The command 'port search aspell-dict' will show
+you the currently available dictionary options.
+"
+}
+
+pre-activate {
+    if {![catch {set vers [lindex [registry_active kde4-runtime] 0]}]
+        && [vercmp [lindex $vers 1] 4.8.1] < 0} {
+        set deactivate_proc registry_deactivate_composite
+        if {[info commands registry_deactivate_composite] == {}} {
+            set deactivate_proc registry_deactivate
+        }
+        $deactivate_proc kde4-runtime "" [list ports_nodepcheck 1]
+    }
+}
+
+post-destroot {
+    xinstall -d ${destroot}${prefix}/include/nepomuk
+    eval xinstall -m 644 [glob ${worksrcpath}/nepomuk/core/*.h] \
+        ${destroot}${prefix}/include/nepomuk
+}
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/latest/src/
+livecheck.regex     kdelibs-(\\d+\\.\\d+\\.\\d+)

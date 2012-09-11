@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem 1.0
+
+name                drill
+version             1.6.8
+categories          net devel
+platforms           darwin
+license             BSD
+maintainers         durchmesser.ch:marius.rieder
+description         A dig-style dnssec-aware dns debugging tool
+long_description    Drill is a tool ala dig from BIND. \
+                    It was designed with DNSSEC in mind and should be a useful \
+                    debugging/query tool for DNSSEC.
+
+homepage            http://www.nlnetlabs.nl/projects/drill/
+master_sites        http://www.nlnetlabs.nl/downloads/ldns/
+distname            ldns-${version}
+dist_subdir         ldns
+
+checksums           sha1    e736160f36b7dcc0303269d3c0a9be88b7ad10c4 \
+                    rmd160  480e85795ed48725e41fdb18770235a35030af54
+
+depends_build       bin:glibtool:libtool
+depends_lib         port:ldns port:openssl
+
+worksrcdir          ldns-${version}/drill
+configure.args      --mandir=${prefix}/share/man --with-ldns=${prefix} --with-ssl=${prefix}

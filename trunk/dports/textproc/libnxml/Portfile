@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem 1.0
+
+name			libnxml
+version			0.18.2
+categories		textproc devel
+platforms		darwin
+maintainers		mww
+description		C library for parsing, writing, and creating XML files
+long_description	nXML is a C library for parsing, writing, and creating XML \
+			1.0 and 1.1 files or streams. It supports UTF-8, UTF-16be and \
+			UTF-16le, UCS-4 (1234, 4321, 2143, 2312).
+
+homepage		http://www2.autistici.org/bakunin/codes.php
+master_sites	http://autistici.org/bakunin/libnxml/
+checksums		sha1 0ddf96fb28ee8a0327c8eb6a8a51399a3afa9464
+
+depends_lib		port:curl
+

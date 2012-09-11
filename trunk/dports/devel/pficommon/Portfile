@@ -1,0 +1,118 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        pfi pficommon 3a92b2991b28f03b81d9a0b2db1c3b4a4c542a96
+version             1.3.1.2012072403
+
+categories          devel
+maintainers         hum openmaintainer
+
+description         Common Library of C++
+long_description    ${name} is a general purpose C++ library.
+
+platforms           darwin
+license             BSD
+
+fetch.type          git
+
+patchfiles          patch-wscript.diff
+
+# optional database version: my = MySQL, pg = PostgreSQL.
+set my_version      5
+set pg_version      91
+
+post-patch {
+    reinplace "s|@prefix@|${prefix}|g"         ${worksrcpath}/src/database/wscript
+    reinplace "s|@my_version@|${my_version}|g" ${worksrcpath}/src/database/wscript
+    reinplace "s|@pg_version@|${pg_version}|g" ${worksrcpath}/src/database/wscript
+}
+
+# msgpack for jubatus.
+default_variants    +mprpc
+
+configure.cmd       ./waf configure
+configure.universal_args
+configure.args-append     --disable-mysql \
+                          --disable-postgresql \
+                          --disable-mprpc \
+                          --disable-fcgi \
+                          --disable-magickpp 
+
+variant mysql requires mysql5 description {Obsolete compatibility variant} {}
+
+variant mysql5 description {Enable MySQL 5} {
+    depends_lib-append    port:mysql5
+    configure.args-delete --disable-mysql
+}
+
+variant postgresql requires postgresql91 description {Obsolete compatibility variant} {}
+
+variant postgresql91 conflicts postgresql90 postgresql84 description {Enable PostgreSQL 9.1} {
+    depends_lib-append    port:postgresql91
+    configure.args-delete --disable-postgresql
+}
+
+variant postgresql90 conflicts postgresql91 postgresql84 description {Enable PostgreSQL 9.0} {
+    depends_lib-append    port:postgresql90
+    set pg_version        90
+    configure.args-delete --disable-postgresql
+}
+
+variant postgresql84 conflicts postgresql91 postgresql90 description {Enable PostgreSQL 8.4} {
+    depends_lib-append    port:postgresql84
+    set pg_version        84
+    configure.args-delete --disable-postgresql
+}
+
+variant fcgi description {Enable FastCGI module} {
+    depends_lib-append    port:fcgi
+    configure.args-replace s|--disable-fcgi|--with-fcgi=${prefix}|
+}
+
+variant mprpc description {Enable MessagePack RPC module} {
+    depends_lib-append    port:msgpack
+    configure.args-delete --disable-mprpc
+}
+
+variant magickpp description {Enable Magick++ of ImageMagick module} {
+    depends_lib-append    port:ImageMagick
+    configure.args-delete --disable-magickpp
+}
+
+build.cmd           ./waf build
+build.target
+
+destroot.cmd        ./waf
+destroot.args       --destdir=${destroot}
+destroot.destdir
+
+post-destroot {
+    set libdir   ${destroot}${prefix}/lib
+    foreach libname [glob -tails -directory ${libdir} *.dylib] {
+        system "install_name_tool -id ${prefix}/lib/${libname} ${libdir}/${libname}"
+    }
+    set bindir   ${destroot}${prefix}/bin
+    set builddir ${worksrcpath}/build/src
+    foreach path [concat [glob ${libdir}/*.dylib] ${bindir}/genrpc] {
+        system "install_name_tool -change ${builddir}/libpficommon.dylib                                         ${prefix}/lib/libpficommon.dylib                     ${path}"
+        system "install_name_tool -change ${builddir}/concurrent/libpficommon_concurrent.dylib                   ${prefix}/lib/libpficommon_concurrent.dylib          ${path}"
+        system "install_name_tool -change ${builddir}/data/libpficommon_data.dylib                               ${prefix}/lib/libpficommon_data.dylib                ${path}"
+        system "install_name_tool -change ${builddir}/database/mysql/libpficommon_database_mysql.dylib           ${prefix}/lib/libpficommon_database_mysql.dylib      ${path}"
+        system "install_name_tool -change ${builddir}/database/postgresql/libpficommon_database_postgresql.dylib ${prefix}/lib/libpficommon_database_postgresql.dylib ${path}"
+        system "install_name_tool -change ${builddir}/lang/libpficommon_lang.dylib                               ${prefix}/lib/libpficommon_lang.dylib                ${path}"
+        system "install_name_tool -change ${builddir}/math/libpficommon_math.dylib                               ${prefix}/lib/libpficommon_math.dylib                ${path}"
+        system "install_name_tool -change ${builddir}/network/libpficommon_network_base.dylib                    ${prefix}/lib/libpficommon_network_base.dylib        ${path}"
+        system "install_name_tool -change ${builddir}/network/cgi/libpficommon_network_cgi.dylib                 ${prefix}/lib/libpficommon_network_cgi.dylib         ${path}"
+        system "install_name_tool -change ${builddir}/network/http/libpficommon_network_http.dylib               ${prefix}/lib/libpficommon_network_http.dylib        ${path}"
+        system "install_name_tool -change ${builddir}/network/mprpc/libpficommon_network_mprpc.dylib             ${prefix}/lib/libpficommon_network_mprpc.dylib       ${path}"
+        system "install_name_tool -change ${builddir}/network/rpc/libpficommon_network_rpc.dylib                 ${prefix}/lib/libpficommon_network_rpc.dylib         ${path}"
+        system "install_name_tool -change ${builddir}/system/libpficommon_system.dylib                           ${prefix}/lib/libpficommon_system.dylib              ${path}"
+        system "install_name_tool -change ${builddir}/text/libpficommon_text.dylib                               ${prefix}/lib/libpficommon_text.dylib                ${path}"
+        system "install_name_tool -change ${builddir}/visualization/libpficommon_visualization.dylib             ${prefix}/lib/libpficommon_visualization.dylib       ${path}"
+    }
+}
+
+livecheck.version   [join [lrange [split ${version} .] 0 2] .].0

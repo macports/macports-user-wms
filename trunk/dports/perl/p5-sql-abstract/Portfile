@@ -1,0 +1,36 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           SQL-Abstract 1.72
+revision              3
+categories-append     databases
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+description           Generate SQL from Perl data structures
+long_description      This module was inspired by the excellent DBIx::Abstract. \
+                      However, in using that module I found that what I really \
+                      wanted to do was generate SQL, but still retain complete \
+                      control over my statement handles and use the DBI \
+                      interface. So, I set out to create an abstract SQL \
+                      generation module.
+
+platforms             darwin
+
+checksums             md5 ca64d0e803eafa040e7c712afe482c94 \
+                      sha1 a1a209ea55d8371bc9905a36605ca5c05dff1fa3 \
+                      rmd160 f286ae7c4ad9fafc639431648b200323135bdcdb
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-test-exception \
+                      port:p${perl5.major}-test-warn \
+                      port:p${perl5.major}-test-deep \
+                      port:p${perl5.major}-test-simple \
+                      port:p${perl5.major}-class-accessor-grouped \
+                      port:p${perl5.major}-getopt-long-descriptive \
+                      port:p${perl5.major}-hash-merge
+
+supported_archs       noarch
+}

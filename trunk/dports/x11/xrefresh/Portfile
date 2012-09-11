@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xrefresh
+version             1.0.4
+categories          x11
+maintainers         jeremyhu openmaintainer
+description         Refresh all or part of an X11 screen
+long_description    ${description}
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           md5     2f63f88ad0dcecd33c8cf000f38e9250 \
+                    sha1    5e85ee14ea9a357c1d4372bbc068a8d452a134aa \
+                    rmd160  707de5cfee30f69948b058b4fa71efabeaa454ed
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libX11
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

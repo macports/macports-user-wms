@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               github 1.0
+
+github.setup            visionmedia git-extras 1.7.0
+maintainers             singingwolfboy openmaintainer
+platforms               darwin
+categories              devel
+supported_archs         noarch
+
+description             Git utilities
+long_description        \
+    ${description} -- repo summary, repl, changelog population, author \
+    commit percentages and more
+license                 MIT
+checksums               rmd160  205aa0d11e6966eb01bd102453d7089db8055112 \
+                        sha256  270e941af5a437c98e96dab0bd86e1dfa908a14dcd769536dadebe9584240b85
+
+configure {
+    reinplace "s| /etc| ${prefix}/etc|g" ${worksrcpath}/Makefile
+}
+build {}
+destroot.destdir        PREFIX=${destroot}${prefix}
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${subport}
+    xinstall -d ${docdir}
+    eval xinstall -m 644 [glob ${worksrcpath}/man/*.html] ${docdir}
+}

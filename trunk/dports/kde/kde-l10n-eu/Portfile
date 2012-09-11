@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+PortGroup       kde4 1.1
+
+name            kde-l10n-eu
+version         4.8.3
+categories      kde kde4
+maintainers     nomaintainer
+license         {LGPL-2.1 LGPL-3+ GPL-2+ MIT BSD}
+description     KDE basque language files.
+long_description \
+                ${description}
+platforms       darwin
+homepage        http://www.kde.org/
+
+master_sites    kde:stable/${version}/src/kde-l10n/
+use_xz          yes
+
+supported_archs noarch
+depends_lib     port:kdelibs4
+
+checksums           rmd160  4b7b8e6b1520b450082f5ffa7d2d14e2c35831bf \
+                    sha256  9efb6ca33901d152f36caa4a43f455747076ba7e0e4e067aaeac4cd43dd064cf
+
+post-destroot {
+    xinstall -d -m 755 ${destroot}${prefix}/share/doc/kde-installed-packages
+    system "touch ${destroot}${prefix}/share/doc/kde-installed-packages/kde-l10n-basque"
+}
+
+livecheck.type  none

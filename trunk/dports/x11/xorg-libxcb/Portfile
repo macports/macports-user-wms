@@ -1,0 +1,85 @@
+# $Id$
+
+PortSystem 1.0
+
+name		xorg-libxcb
+version		1.8.1
+revision        2
+categories	x11 devel
+license		X11
+maintainers	jeremyhu openmaintainer
+description	X.org libxcb
+homepage	http://xcb.freedesktop.org/
+platforms	darwin macosx
+long_description The X C Binding \\(XCB\\) library
+master_sites	 ${homepage}/dist/
+
+distname	libxcb-${version}
+checksums           sha1    98199b6054750a06cddd4e77baa4354af547ce6f \
+                    rmd160  19496c65b1e86d469a2fda6ea5037b4cadc4d681 \
+                    sha256  d2f46811e950710e7e79e45615d24f2c7ec318b9de9dc717972723da58bffa0d
+use_bzip2	yes
+use_parallel_build yes
+
+depends_build   port:pkgconfig
+
+depends_lib	port:xorg-libXau \
+                port:xorg-libXdmcp \
+                port:xorg-xcb-proto \
+                port:xorg-libpthread-stubs
+
+configure.args  --disable-build-docs
+
+patch.pre_args -p1
+patchfiles \
+    0001-xcb_connect-launchd-Don-t-fall-back-on-tcp-if-DISPLA.patch
+
+variant docs description "Install extra documentation" {
+    depends_build-append \
+        port:doxygen
+
+    depends_skip_archcheck-append \
+        doxygen
+
+    configure.args-delete \
+        --disable-build-docs
+
+    configure.args-append \
+        --enable-build-docs
+
+    configure.env-append \
+        DOXYGEN="${prefix}/bin/doxygen"
+}
+
+variant python25 conflicts python26 python27 python31 python32 description {Use python 2.5} {
+    depends_run-append      port:python25
+    configure.python        ${prefix}/bin/python2.5
+}
+
+variant python26 conflicts python25 python27 python31 python32 description {Use python 2.6} {
+    depends_run-append      port:python26
+    configure.python        ${prefix}/bin/python2.6
+}
+
+variant python27 conflicts python25 python26 python31 python32 description {Use python 2.7} {
+    depends_run-append      port:python27
+    configure.python        ${prefix}/bin/python2.7
+}
+
+variant python31 conflicts python25 python26 python27 python32 description {Use python 3.1} {
+    depends_run-append      port:python31
+    configure.python        ${prefix}/bin/python3.1
+}
+
+variant python32 conflicts python25 python26 python27 python31 description {Use python 3.2} {
+    depends_run-append      port:python32
+    configure.python        ${prefix}/bin/python3.2
+}
+
+if {![variant_isset python25] && ![variant_isset python26] && ![variant_isset python31] && ![variant_isset python32]} {
+    default_variants +python27
+}
+
+livecheck.type  regex
+livecheck.url   ${master_sites}?C=M&O=D
+livecheck.regex libxcb-(\\d+(?:\\.\\d+)*)

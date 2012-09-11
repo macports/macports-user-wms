@@ -1,0 +1,68 @@
+# $Id$
+
+PortSystem          1.0
+
+name                ejabberd
+version             2.1.11
+categories          net
+platforms           darwin
+license             GPL-2
+maintainers         ciserlohn
+description         ejabberd is an XMPP application server.
+long_description    ${description} ejabberd stands for "Erlang Jabber Daemon"
+
+homepage            http://www.process-one.net/en/ejabberd/
+master_sites        http://www.process-one.net/downloads/ejabberd/${version}/
+
+checksums           rmd160  d714aa744f7181b8c96f228787e4a1c32594be3f \
+                    sha256  91d5c10e64f9faa60c345c68304746f493d71f82723302955d40d6619e3d87de
+
+extract.suffix      .tgz
+
+worksrcdir          ${worksrcdir}/src
+
+depends_lib         port:erlang \
+                    port:expat \
+                    port:openssl \
+                    port:libiconv \
+                    port:zlib
+
+# erlang is not universal
+universal_variant   no
+
+configure.args      --with-expat=${prefix} \
+                    --with-zlib=${prefix} \
+                    --with-openssl=${prefix}
+
+# All ejabberd configuration files.
+set conf_files      {ejabberd.cfg ejabberdctl.cfg inetrc}
+
+destroot.keepdirs   ${destroot}${prefix}/var/log/ejabberd/
+
+set etc ${prefix}/etc/ejabberd
+post-destroot {
+    # Create sample configuration files so they don't get overwritten by an
+    # update.
+    foreach file ${conf_files} {
+        file rename ${destroot}${etc}/${file} ${destroot}${etc}/${file}.sample
+    }
+
+    # Install documentation.
+    set doc ${destroot}${prefix}/share/doc
+    xinstall -d ${doc}
+    file copy ${worksrcpath}/../doc ${doc}/${name}-${version}
+}
+
+notes "
+Before running ${name} for the first time, you must copy the sample\
+configuration files:
+
+cd ${etc}/
+"
+foreach file ${conf_files} {
+    notes-append "cp ${file}.sample ${file}"
+}
+
+livecheck.type      regex
+livecheck.url       ${homepage}release_notes
+livecheck.regex     "${name} (\\d+(?:\\.\\d+)*)"

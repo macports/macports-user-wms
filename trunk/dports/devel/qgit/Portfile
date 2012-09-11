@@ -1,0 +1,54 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           qt4 1.0
+
+name                qgit
+version             2.3
+categories          devel
+maintainers         free.fr:ocroquette openmaintainer
+description         A QT graphical interface to git repositories
+long_description    A QT graphical interface to git repositories
+
+homepage            http://sourceforge.net/projects/qgit/
+platforms           darwin
+
+use_bzip2           yes
+worksrcdir          ${name}
+
+master_sites        sourceforge
+
+checksums           sha1    6a75079e786a55d1d23a2752c0d93099af8aafd3 \
+                    rmd160  c117cb7f9985045891f20981ce64f00c5741699e
+
+depends_lib-append  port:git-core
+
+patchfiles          patch_src_namespace_def.cpp.diff  patch_src_qgit.cpp.diff
+
+variant debug description "Build as both release and debug" {}
+
+post-patch {
+    # when not doing debug ...
+    if {![variant_isset debug]} {
+        # ... build just the release version
+        reinplace "s@debug_and_release@release@" ${worksrcpath}/qgit.pro
+        reinplace "s@debug_and_release@release@" ${worksrcpath}/src/src.pro
+    }
+    # nothing to do if +debug is specified; this is the default.
+}
+
+universal_variant   no
+
+configure.cmd       ${qt_qmake_cmd}
+configure.pre_args   
+configure.args       
+configure.post_args
+
+destroot {
+    copy ${worksrcpath}/bin/qgit.app ${destroot}${applications_dir}
+
+    # Also link to ${prefix}/bin for easier access from the command line
+    # Especially useful since qgit is supposed to be started from
+    # the GIT repository location.
+    ln -s ${applications_dir}/qgit.app/Contents/MacOS/qgit ${destroot}${prefix}/bin
+}

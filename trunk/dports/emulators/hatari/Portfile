@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    hatari
+version                 1.5.0
+revision                1
+categories              emulators
+platforms               darwin
+maintainers             nomaintainer
+
+description             Atari ST/STe/STfm emulator
+
+long_description        Hatari is an Atari ST/STe/STfm (and somewhat Falcon) emulator
+
+homepage                http://hatari.berlios.de/
+master_sites            http://download.berlios.de/hatari/
+
+checksums               sha1    5028abd9c110d5f9b6bb9ae5b9500e5fd088934e \
+                        rmd160  2b7b9f7ae5fb54051ddd8be5c87a007a7f8e5a17
+
+use_bzip2               yes
+
+depends_lib             path:lib/pkgconfig/sdl.pc:libsdl \
+                        port:libpng \
+                        port:readline
+
+depends_build           port:cmake
+
+configure.cflags        -O3 -pipe -fomit-frame-pointer
+configure.universal_args-delete --disable-dependency-tracking
+configure.args-append   --disable-osx-bundle

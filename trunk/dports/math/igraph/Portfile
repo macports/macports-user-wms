@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                igraph
+version             0.6
+revision            1
+
+categories          math devel
+license             GPL-2+
+maintainers         snc openmaintainer
+description         high performance graph library for C
+long_description    high performance graph library, primarily aimed \
+                    at complex network research and analysis.
+homepage            http://igraph.sourceforge.net
+
+platforms           darwin
+depends_lib         port:gmp
+
+master_sites        sourceforge
+
+checksums           rmd160  f54f138598cdf500535921cb19655906528c12bd \
+                    sha256  1d8523392ae6860e1ccc478dc5027da3f44bcad693f7e9d912b7199ac35d32b9
+
+test.run            yes
+test.target         check
+
+livecheck.url       ${homepage}
+livecheck.type      regex
+livecheck.regex     <b>(\\d(\\.\\d+)+)

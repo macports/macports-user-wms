@@ -1,0 +1,27 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           Apache-Session 1.89
+revision              3
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+description           A persistence framework for session data
+long_description      Apache::Session is a persistence framework which is \
+                      particularly useful for tracking session data \
+                      between httpd requests.
+
+platforms             darwin
+
+checksums             md5 a21d1fbb30723e8d155c1936c7d9a37c \
+                      sha1 034adb90d17d6df3acd5f284dbc8e546df4e3061 \
+                      rmd160 0d1dd85855ee544b456b453dd03547a335532b09
+
+if {${perl5.major} != ""} {
+    depends_lib-append    port:p${perl5.major}-test-deep \
+                          port:p${perl5.major}-test-exception
+}
+
+supported_archs       noarch

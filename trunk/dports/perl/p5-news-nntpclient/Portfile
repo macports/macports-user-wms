@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         News-NNTPClient 0.37
+revision            3
+platforms           darwin
+maintainers         nomaintainer
+categories-append   news
+description         Perl module to talk to NNTP servers
+long_description    This module implements a client interface to NNTP, \
+                    enabling a Perl 5 application to talk to NNTP servers.
+
+checksums           md5     1b0257d13f38d2b71bb85d5ac76f5fd1 \
+                    sha1    0340afb1dd6eba853a3f6b537e5c92ee2d9376c0 \
+                    rmd160  c268301d67732b52f349bab82d81d2c3303b0ba4
+
+homepage            http://search.cpan.org/dist/NNTPClient-${perl5.moduleversion}/
+master_sites        http://search.cpan.org/CPAN/authors/id/R/RV/RVA/
+distname            NNTPClient-${perl5.moduleversion}
+
+supported_archs noarch
+
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     NNTPClient-(\[0-9.\]+)<

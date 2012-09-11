@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-amqplib
+version             1.0.2
+revision            0
+categories-append   devel
+license             LGPL
+platforms           darwin
+supported_archs     noarch
+
+maintainers         stromnov openmaintainer
+
+description         Simple non-threaded Python client library for AMQP.
+long_description    ${description}
+
+homepage            http://code.google.com/p/py-amqplib/
+master_sites        googlecode:py-amqplib
+distname            amqplib-${version}
+extract.suffix      .tgz
+
+checksums           md5     5c92f17fbedd99b2b4a836d4352d1e2f \
+                    sha1    ef4379ecb982669e22f6aae06123a73ef3d1293a \
+                    rmd160  75cc47bf148a1be2b1349ec1d37268423038bf63
+
+python.versions     24 25 26 27
+
+if {$subport != $name} {
+    depends_lib     port:py${python.version}-distribute
+}

@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-lang-french
+version             26756
+revision            0
+
+categories          tex
+maintainers         dports
+license             Copyleft Permissive
+description         TeX Live: French
+long_description    Support for typesetting French and Basque.
+
+checksums           texlive-lang-french-26756-run.tar.xz \
+                    rmd160  723e9dd1d17188e6a4d637df7b69b169c3fa61e6 \
+                    sha256  e403b1e7a29cb74974d2e93df31fe5b013d1db1f15105b7c272afd8a0e14ea81 \
+                    texlive-lang-french-26756-doc.tar.xz \
+                    rmd160  5fd159c8460c977eeb77242a719a65490c18173e \
+                    sha256  39d0122a5ddb22ffde132275b3b82d5d821294f424c6cef2e5d6bc58c3288543 \
+                    texlive-lang-french-26756-src.tar.xz \
+                    rmd160  c342e0f4c09453c5ab9c3ab4005b5be8e2ac52b0 \
+                    sha256  924961a20f0338bb1c712d5c13ef49aa2ef2d1b02c73e3c8a0eae2f29848a9b6
+
+depends_lib         port:texlive-basic
+
+texlive.languages      \
+    {basque loadhyph-eu.tex 2 2 {} {hyph-eu.pat.txt} {} {} } \
+    {french loadhyph-fr.tex 2 3 {patois francais} {hyph-fr.pat.txt} {} {} }
+
+texlive.maps      \
+    {Map tabvar.map}
+
+
+texlive.texmfport

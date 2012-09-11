@@ -1,0 +1,25 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                      1.0
+PortGroup                       pure 1.0
+
+pure.setup                      g2 0.2
+revision                        1
+categories                      graphics
+platforms                       darwin
+maintainers                     ryandesign
+license                         BSD
+supported_archs                 noarch
+
+description                     an interface to the g2 graphics library for Pure
+
+long_description                ${name} provides ${description}.
+
+# 0.2 was stealth-updated 2011-10-20
+dist_subdir                     ${name}/${version}_1
+
+checksums                       rmd160  e889689d71fa352a0f5da1ca8d0f0dadd21a8ec7 \
+                                sha256  b99e54aa6cd3fe54affd18930b88a09727bb42f9af64ec23c286ddb48d8e24a1
+
+depends_run-append              port:g2

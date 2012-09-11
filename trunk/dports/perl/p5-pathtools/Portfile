@@ -1,0 +1,23 @@
+# $Id$
+
+PortSystem	1.0
+PortGroup       perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup     PathTools 3.33 ../../authors/id/S/SM/SMUELLER/
+revision        3
+
+platforms       darwin
+maintainers	geeklair.net:dluke openmaintainer
+description	PathTools contains path building and modification classes.
+license         {GPL Artistic}
+maintainers		geeklair.net:dluke openmaintainer
+description		PathTools contains path building and modification classes.
+
+long_description	$description
+
+homepage        http://search.cpan.org/dist/${perl5.module}/
+
+checksums           md5     92f0df032c399fadef2e2e647ebc3111 \
+                    sha1    d99d09d8f985fcf25d4d0372d9302a5acf02f60f \
+                    rmd160  49419e6dc3b6cbf1d2b4d2dc471a0861fce7fc86

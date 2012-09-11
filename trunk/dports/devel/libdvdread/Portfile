@@ -1,0 +1,44 @@
+# $Id$
+
+PortSystem      1.0
+
+name            libdvdread
+version         4.2.0
+categories      devel multimedia
+platforms       darwin
+# nav_print.c and nav_types.h do not allow "any later version"
+license         GPL-2
+maintainers     nomaintainer
+description     simple foundation for reading DVD-Video images
+
+long_description \
+    libdvdread provides a simple foundation for reading DVD-Video \
+    images. It offers DVD applications: \
+    1. A simple abstraction for reading the files on a DVD image \
+       (dvd_reader.h). \
+    2. A simple library for parsing the information (IFO) files \
+       (ifo_read.h/ifo_types.h). \
+    3. A simple library for parsing the navigation (NAV) packets \
+       (nav_read.h/nav_types.h).
+
+homepage        http://www.dtek.chalmers.se/groups/dvd/
+master_sites    http://dvdnav.mplayerhq.hu/releases/
+
+use_bzip2           yes
+checksums           md5     ab7a19d3ab1a437ae754ef477d6231a4 \
+                    sha1    431bc92195f27673bfdd2be67ce0f58338da8d3b \
+                    rmd160  71953f12e834a9d22ff4cf9e25a3949c431174c0
+
+depends_build   port:autoconf port:automake port:libtool
+depends_lib     port:libdvdcss
+
+patchfiles      patch-src_dvd_input.c.diff
+post-patch {
+    reinplace -locale C "s|@@PREFIX@@|${prefix}|" ${worksrcpath}/src/dvd_input.c
+}
+
+configure.cmd   ./autogen.sh
+
+livecheck.type  regex
+livecheck.url   http://www1.mplayerhq.hu/MPlayer/releases/dvdnav/
+livecheck.regex "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

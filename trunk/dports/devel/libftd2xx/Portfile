@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name                libftd2xx
+version             1.1.0
+categories          devel
+maintainers         gmail.com:ranauei
+description         FTDI D2XX Driver
+long_description    D2XX Driver: allow direct access to the USB device through \
+                    a DLL. Devices supported: FT2232H, FT4232H, FT232R, \
+                    FT245R, FT2232, FT232B, FT245B, FT8U232AM, FT8U245AM
+                  
+homepage            http://www.ftdichip.com/Drivers/D2XX.htm
+platforms           macosx
+distname            D2XX${version}
+master_sites        http://www.ftdichip.com/Drivers/D2XX/MacOSX/
+
+checksums           sha256 a999921b91df4644025647fd24271525e8825994aaf19abe244b29386f58252e \
+                    rmd160 13416d771df71a4cbfe89c11c5b2450bb65864c8
+
+use_dmg             yes
+use_configure       no
+
+variant universal {}
+
+if { ${os.major}=="8" } {
+    set os_dir 10.4
+    supported_archs     i386 ppc
+    configure.universal_archs i386 ppc
+} elseif { ${os.major}>=9 } {
+    set os_dir 10.5-10.7
+    supported_archs     i386 ppc x86_64
+    configure.universal_archs i386 ppc x86_64
+}
+
+build {
+    if {![variant_isset universal]} {
+        system "cd '${worksrcpath}/D2XX/bin/${os_dir}' && lipo -extract ${configure.build_arch} ${name}.${version}.dylib -output ${name}.${version}.dylib"
+    }
+}
+
+destroot {
+   xinstall ${worksrcpath}/D2XX/bin/${os_dir}/${name}.${version}.dylib ${destroot}${prefix}/lib
+   xinstall -m 644 -W ${worksrcpath}/D2XX bin/ftd2xx.h Samples/WinTypes.h ${destroot}${prefix}/include
+   ln -s ${name}.${version}.dylib ${destroot}${prefix}/lib/${name}.dylib
+   system "install_name_tool -id ${prefix}/lib/${name}.${version}.dylib ${destroot}${prefix}/lib/${name}.${version}.dylib"
+}
+
+livecheck.type      regex
+livecheck.regex     D2XX(\[0-9.\]+)${extract.suffix}

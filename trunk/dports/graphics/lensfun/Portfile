@@ -1,0 +1,81 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           muniversal 1.0
+
+name                lensfun
+version             0.2.6
+categories          graphics
+platforms           darwin
+maintainers         gmail.com:julians37
+license             GPL-3 LGPL-3
+
+description         Library for fixing lens geometry distortion
+
+long_description    Provides a database of photographic lenses and a library \
+                    that allows advanced access to the database including \
+                    functions to correct images based on intimate knowledge \
+                    of lens characteristics and calibration data.
+
+homepage            http://lensfun.berlios.de/
+master_sites        http://download.berlios.de/lensfun/
+use_bzip2           yes
+
+checksums           rmd160  03d3513ae2d66464313eb6f0587e8ec8a1c33387 \
+                    sha256  eebf35851f6d40ecf007578b859f9ecb66af417c1895d1fc0c5776d5d9bdb26e
+
+depends_build       port:pkgconfig bin:makedep:gccmakedep
+
+depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2
+
+# Ensure lensfun.pc is created
+patchfiles          patch-pkgconfig.diff
+
+# Set the correct library install_name and current_version
+patchfiles-append   patch-build-tibs-target-mac-mak.diff
+post-patch {
+    reinplace "s|@VERSION@|${version}|g" ${worksrcpath}/build/tibs/target/mac.mak
+}
+
+configure.args      -v
+configure.env       LD="${configure.cxx}"
+
+platform darwin 8 {
+    # lensfun requires make >= 3.81; Tiger comes with 3.80
+    depends_build-append port:gmake
+    # fix configure script check which is hardcoded to using "make"
+    post-extract {
+        xinstall -d ${workpath}/bin
+        ln -s ${prefix}/bin/gmake ${workpath}/bin/make
+    }
+    configure.env PATH=${workpath}/bin:$env(PATH)
+    # fix build and destroot
+    build.cmd ${prefix}/bin/gmake
+}
+
+if {[variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        set merger_host($arch) ""
+    }
+    set merger_configure_args(ppc64)  "--target=mac.powerpc64.G5 --vectorization=''"
+    set merger_configure_args(ppc)    "--target=mac.powerpc.powerpc --vectorization=''"
+    set merger_configure_args(i386)   "--target=mac.x86.i686"
+    set merger_configure_args(x86_64) "--target=mac.x86_64.generic"
+} elseif {${build_arch} == "ppc64"} {
+    configure.args-append --target=mac.powerpc64.G5 --vectorization=''
+} elseif {${build_arch} == "ppc"} {
+    configure.args-append --target=mac.powerpc.powerpc --vectorization=''
+} elseif {${build_arch} == "i386"} {
+    configure.args-append --target=mac.x86.i686
+} elseif {${build_arch} == "x86_64"} {
+    configure.args-append --target=mac.x86_64.generic
+}
+
+configure.universal_args-delete --disable-dependency-tracking
+
+build.args          V=1 GCC.LD="${configure.cxx}"
+
+livecheck.type      regex
+livecheck.url       http://developer.berlios.de/project/showfiles.php?group_id=9034
+livecheck.regex     "lensfun-(\\d+(?:\\.\\d+)*).tar"

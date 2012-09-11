@@ -1,0 +1,92 @@
+# $Id$
+
+PortSystem 1.0
+
+name                bash
+set bash_version    4.2
+set bash_patchlevel 37
+version             ${bash_version}.${bash_patchlevel}
+distname            ${name}-${bash_version}
+categories          shells
+platforms           darwin freebsd
+license             GPL-3
+maintainers         raimue
+description         Bash (bourne-again shell) is a UNIX command interpreter
+long_description    \
+    Bash is an sh-compatible shell that incorporates useful     \
+    features from the Korn shell (ksh) and C shell (csh). It is     \
+    intended to conform to the IEEE POSIX P1003.2/ISO 9945.2 Shell  \
+    and Tools standard. It offers functional improvements over sh   \
+    for both programming and interactive use. In addition, most     \
+    sh scripts can be run by Bash without modification.
+homepage            http://www.gnu.org/software/bash/bash.html
+
+master_sites        gnu
+patch_sites         gnu:${name}/${distname}-patches
+checksums           ${distname}${extract.suffix} \
+                    md5     3fb927c7c33022f1c327f14a81c0d4b0 \
+                    sha1    487840ab7134eb7901fbb2e49b0ee3d22de15cb8 \
+                    rmd160  df7ae51783f039a1234d3b720ffcf4bfa5d09673
+
+# Generate patchfiles
+for {set i 1} {$i <= $bash_patchlevel} {incr i} {
+    patchfiles-append \
+        [format "%s%s-%03d" $name [strsed ${bash_version} {g/\.//}] $i]
+}
+
+checksums-append \
+    bash42-001 sha1 c069f07492c9199bc7cff71a4f032f668ba4ea0a \
+    bash42-002 sha1 75b6726656a08e47172704545c57a290e29075e9 \
+    bash42-003 sha1 c18390edcc87c347cade67d9c1653f1f220ce64d \
+    bash42-004 sha1 e10f0e8d3c24c10efffbca4605acb966393901ff \
+    bash42-005 sha1 c1dd32f9aab963830cb9bf5c0973eefa4d7f8881 \
+    bash42-006 sha1 4ae28b47a46850db3a5936ff0fafb9056f15329f \
+    bash42-007 sha1 31cf0373b1d4d61540474b6f527bf7675e8773f3 \
+    bash42-008 sha1 7f0961aaf284b36eac1503824cd9e85926628120 \
+    bash42-009 sha1 c7f9dede34e30494a9adb479e406814f4d62da2a \
+    bash42-010 sha1 662192c4675300f488897a6ed8774e16e7a13e2e \
+    bash42-011 sha1 5f4131f3ab9751a6828269ef4079a841258671cb \
+    bash42-012 sha1 aad2483f7f48c29274ce0ef63027f3749b8388fc \
+    bash42-013 sha1 2d60fc3b0ee40f9eb308b76185142f865df0fa17 \
+    bash42-014 sha1 320bba1f869602c07a9972862d38b9ba108726a6 \
+    bash42-015 sha1 7b9c9a91ab5a79b8344877ff45ed204ba1b04ef3 \
+    bash42-016 sha1 f4a39fb2b79f7c5c04ee78fb598199ba7440fd70 \
+    bash42-017 sha1 f80797fce1fefff4047cecf0f32731bc30f6faee \
+    bash42-018 sha1 3624c31ed7d8c613b566e3d465480beed34bdaba \
+    bash42-019 sha1 21a75dadb1398775b48718e94785642f5fad9777 \
+    bash42-020 sha1 5c4afeef6ef7321fcc5a08f2d3024c484868fa59 \
+    bash42-021 sha1 55aabc84fdac1f3b26312f478fb9b7f14c81f2be \
+    bash42-022 sha1 f2e7ff4050dce9ff5893cd027716caf22d17f369 \
+    bash42-023 sha1 16224bc48c89df4dff22b8365e7d1d295f4adc9b \
+    bash42-024 sha1 a78b4c48d0f372280ebe137b15bc3ef8807f7f8b \
+    bash42-025 sha1 c1362e8405fe09773f189488e9fae5f3e2b0a0d0 \
+    bash42-026 sha1 d976cd03a3d6a0006b498dd3531a85dfe88b57c0 \
+    bash42-027 sha1 baad3c5f1f3c20c96bf7cd6cf932b4e8abc1f0c5 \
+    bash42-028 sha1 c63104992b8f95ef966dc8604f89b0bc595d0d08 \
+    bash42-029 sha1 4e7cde1f18fd553035270283a6156760b4de86c5 \
+    bash42-030 sha1 7d48877115135786c0ae55d15ab434b45b45d86f \
+    bash42-031 sha1 1b3e2d8bfb95ede10a8f1b2e03f49eee8b9eb3d2 \
+    bash42-032 sha1 b8e2be5f93a42bacde2d6c07c5275ec270632f09 \
+    bash42-033 sha1 f102fb9a2a0b0255efc5cad48e214f8f3ba7d45b \
+    bash42-034 sha1 1e8d1ecde65036d7230de1f8d411f8360948c92a \
+    bash42-035 sha1 5637c4cfa28fa62f394238e92a4ada2016e20127 \
+    bash42-036 sha1 4977fb64a9e9c7d8e2f731c4a32555da788a3f96 \
+    bash42-037 sha1 8d3edfb297bcf65d2d9b72a626b775d3679a78d9
+
+depends_build           bin:grep:grep \
+                        bin:bison:bison
+depends_lib             port:gettext
+
+variant universal {}
+
+configure.ldflags-append \
+    "-Wl,-search_paths_first -lncurses"
+configure.args          --mandir=${prefix}/share/man \
+                        --infodir=${prefix}/share/info \
+                        --without-installed-readline \
+                        CFLAGS_FOR_BUILD="[get_canonical_archflags]"
+
+livecheck.type          regex
+livecheck.url           http://ftp.gnu.org/gnu/${name}/${name}-${bash_version}-patches/?C=M&O=D
+livecheck.version       [format %03d ${bash_patchlevel}]
+livecheck.regex         ${name}[strsed ${bash_version} {g/\.//}]-(\\d\\d\\d)

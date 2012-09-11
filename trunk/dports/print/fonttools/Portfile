@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem			1.0
+PortGroup			python26 1.0
+
+name            	fonttools
+version             2.3
+description     	XML<->TrueType/OpenType Converter
+long_description	TTX is a tool to convert OpenType and TrueType fonts to \
+					and from XML. FontTools is a library for manipulating \
+					fonts, written in Python. It supports TrueType, OpenType, \
+					AFM and to an extent Type 1 and some Mac-specific formats.
+platforms       	darwin
+categories      	print
+maintainers     	nomaintainer
+homepage			http://www.letterror.com/code/ttx/
+master_sites		sourceforge
+
+checksums           sha1    3d434d6192a1feb6605d67975c1e973e084e86d7 \
+                    rmd160  df5021ea53b8a7fa016dfd3ff763b1dfaf0d7c4b
+
+depends_build		port:py26-numpy
+
+post-destroot {
+	foreach binfile [glob -tails -directory ${destroot}${python.prefix}/bin *] {
+		ln -s ${python.prefix}/bin/${binfile} \
+			${destroot}${prefix}/bin/${binfile}
+	}
+	foreach manfile [glob -tails -directory ${destroot}${python.prefix}/share/man/man1 *] {
+		ln -s ${python.prefix}/share/man/man1/${manfile} \
+			${destroot}${prefix}/share/man/man1/${manfile}
+	}
+}
+
+livecheck.regex	<title>FontTools/TTX Source Code (.*) released.*</title>

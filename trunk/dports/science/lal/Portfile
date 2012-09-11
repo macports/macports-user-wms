@@ -1,0 +1,40 @@
+# $Id$
+
+PortSystem    1.0
+
+name          lal
+version       6.7.2
+categories    science
+platforms     darwin
+maintainers   ram
+license       GPL
+
+description   LSC Algorithm Library
+long_description \
+  LIGO Scientific Collaboration Algorithm Library containing core \
+  routines for gravitational wave data analysis.
+
+homepage      https://www.lsc-group.phys.uwm.edu/daswg/projects/lalsuite.html
+master_sites  http://www.lsc-group.phys.uwm.edu/daswg/download/software/source/lalsuite
+
+checksums     rmd160 28847d0a2240cb0d76ee6e67dd7b1a54be2b021c \
+              sha256 317824ee4cb936ae2bf7b8ccf66fd3f1394725951f54eeb3fcb470cabf09192e
+
+depends_build port:pkgconfig \
+              port:python27
+
+depends_lib   port:gsl \
+              port:fftw-3 \
+              port:fftw-3-single
+
+configure.python ${prefix}/bin/python2.7
+configure.args --mandir=${prefix}/share/man \
+               --disable-silent-rules \
+               --disable-gcc-flags \
+               --disable-debug
+
+use_parallel_build yes
+
+livecheck.type   regex
+livecheck.url    ${master_sites}
+livecheck.regex  {lal-(\d+(?:\.\d+)*).tar.gz}

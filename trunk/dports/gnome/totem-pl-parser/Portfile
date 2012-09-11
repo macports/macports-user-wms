@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+
+name            totem-pl-parser
+version         2.30.4
+set branch      [join [lrange [split ${version} .] 0 1] .]
+categories      gnome
+license         LGPL-2+
+maintainers     devans openmaintainer
+description     Gnome Playlist parser
+long_description \
+        totem-pl-parser is a simple GObject-based library to parse \
+        a host of playlist formats, as well as save those
+
+homepage        http://live.gnome.org/Totem
+platforms       darwin
+master_sites    gnome:sources/${name}/${branch}/
+
+checksums       md5     eaa98c8829aa51a3e8eae3b43371fd36 \
+                sha1    bfa00c5dc1276939df154cc3b7f769e38b6232fd \
+                rmd160  8bad37682cb0ef46e2391743e340d1ad72eab3d3
+
+use_bzip2       yes
+
+depends_build   port:pkgconfig \
+                port:intltool \
+                port:gtk-doc
+
+depends_lib     port:libsoup \
+                port:gmime
+
+configure.args  --enable-introspection=no
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

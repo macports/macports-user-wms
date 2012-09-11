@@ -1,0 +1,23 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           Module-Metadata 1.000009 ../by-authors/id/D/DA/DAGOLDEN/
+revision        1
+license               {Artistic GPL}
+maintainers           nomaintainer
+description           Gather package and POD information from perl module files
+long_description      ${description}
+
+platforms             darwin
+
+checksums             rmd160  b380c97ec06680cf99431f9173a82d2414163a20 \
+                      sha256  da73b487727e044caf5e075c32655d05ec550d4429b8829b9615a937fff30638
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-version
+
+supported_archs       noarch
+}

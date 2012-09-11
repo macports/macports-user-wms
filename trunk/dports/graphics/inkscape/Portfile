@@ -1,0 +1,122 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name            inkscape
+conflicts       inkscape-devel
+version         0.48.3.1
+revision        4
+license         GPL-2 LGPL-2.1
+maintainers     devans
+categories      graphics gnome
+platforms       darwin
+homepage        http://www.inkscape.org/
+
+description     Inkscape is an open source SVG editor.
+
+long_description \
+                Inkscape is an open source SVG editor with \
+                capabilities similar to Illustrator, CorelDraw, \
+                Visio, etc. Supported SVG features include basic \
+                shapes, paths, text, alpha blending, transforms, \
+                gradients, node editing, svg-to-png export, \
+                grouping, and more.
+
+use_bzip2       yes
+master_sites    sourceforge:project/inkscape/inkscape/${version}
+
+checksums       rmd160  139720f01b987001b558226ec2de60b36fb1123c \
+                sha256  073bf585b6a708747485f2de1f5a1b77c3f45a79e6ee128bf946bae99476db88
+
+depends_build   port:pkgconfig \
+                port:intltool \
+                path:bin/perl:perl5
+
+depends_lib     path:lib/libgc.dylib:boehmgc \
+                port:gsl \
+                port:gtkmm \
+                port:gnome-vfs \
+                port:lcms \
+                port:libpng \
+                port:poppler \
+                port:boost \
+                port:ImageMagick \
+                port:libwpg \
+                port:gtkspell2
+
+#
+# external dependencies for included Python extensions
+#
+
+# libwpg libwpd are not universal
+
+universal_variant no
+
+#
+# backport patches from upstream bzr to allow building with poppler >= 0.20
+#
+
+patchfiles      patch-configure-poppler20.diff \
+                patch-config.h.in.diff \
+                patch-libpng15.diff \
+                patch-src-extension-internal-pdfinput-pdf-parser.cpp.diff \
+                patch-src-extension-internal-pdfinput-svg-builder.cpp.diff
+
+variant python26 conflicts python27 description {Configure to use Python version 2.6} {
+    depends_lib-append \
+        port:py26-lxml \
+        port:py26-numpy
+
+    patchfiles-append  patch-configure-python26.diff
+
+    post-patch {
+        reinplace "s|\"python-interpreter\", \"python\"|\"python-interpreter\", \"python2.6\"|g" ${worksrcpath}/src/extension/implementation/script.cpp
+        reinplace "s|^#include \"Object.h\"|#include \"${prefix}/include/poppler/Object.h\"|" ${worksrcpath}/src/extension/internal/pdfinput/pdf-parser.h
+        reinplace "s|^#include \"Object.h\"|#include \"${prefix}/include/poppler/Object.h\"|" ${worksrcpath}/src/extension/internal/pdfinput/pdf-parser.cpp
+    }
+
+    configure.python \
+        ${prefix}/bin/python2.6
+}
+
+variant python27 conflicts python26 description {Configure to use Python version 2.7} {
+    depends_lib-append \
+        port:py27-lxml \
+        port:py27-numpy
+
+    patchfiles-append  patch-configure-python27.diff
+
+    post-patch {
+        reinplace "s|\"python-interpreter\", \"python\"|\"python-interpreter\", \"python2.7\"|g" ${worksrcpath}/src/extension/implementation/script.cpp
+        reinplace "s|^#include \"Object.h\"|#include \"${prefix}/include/poppler/Object.h\"|" ${worksrcpath}/src/extension/internal/pdfinput/pdf-parser.h
+        reinplace "s|^#include \"Object.h\"|#include \"${prefix}/include/poppler/Object.h\"|" ${worksrcpath}/src/extension/internal/pdfinput/pdf-parser.cpp
+    }
+
+    configure.python \
+        ${prefix}/bin/python2.7
+}
+
+if {${configure.compiler} == "clang"}  {
+    configure.compiler llvm-gcc-4.2
+}
+
+configure.args  --with-gnome-vfs \
+                --with-python \
+                --enable-lcms \
+                --enable-poppler-cairo
+
+configure.cppflags-append \
+        -I${worksrcpath}/src/extension/script
+
+if {![variant_isset python26] && ![variant_isset python27]} {
+    default_variants +python27
+}
+
+post-activate {
+        system "${prefix}/bin/gtk-update-icon-cache -f -t ${prefix}/share/icons/hicolor"
+}
+
+livecheck.type          regex
+livecheck.url           http://sourceforge.net/projects/inkscape/files/
+livecheck.regex         "(?i)${name}-(\\d+(?:\\.\\d+)*)"

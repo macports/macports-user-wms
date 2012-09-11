@@ -1,0 +1,55 @@
+# $Id$
+
+PortSystem 1.0
+
+name			libutf8proc
+version			1.1.5
+categories		textproc
+platforms		darwin
+maintainers		mww
+description		library for processing UTF-8 encoded Unicode strings
+long_description	${description}
+
+homepage		http://www.public-software-group.org/utf8proc
+master_sites	http://www.public-software-group.org/pub/projects/utf8proc/v${version}
+distname		utf8proc-v${version}
+
+checksums		sha1    1ce2bd02f28184ed5908399fe0791e19cd15b9cf \
+				rmd160  99f340fe6c325f5b1f1d47e28bc699be916823e6
+
+use_configure	no
+
+build.args		libdir="${prefix}/lib"
+build.target	libutf8proc.a libutf8proc.dylib
+build.args-append	CC=${configure.cc}
+
+variant universal {
+	configure.cflags-append ${configure.universal_cflags}
+}
+if {![variant_isset universal] && ${build_arch} != ""} {
+	configure.cflags-append ${configure.cc_archflags}
+}
+
+pre-build {
+	build.args-append	CFLAGS="[join ${configure.cflags}]"
+}
+
+destroot {
+	xinstall -m 755 -W ${worksrcpath} \
+		libutf8proc.dylib libutf8proc.a \
+		${destroot}${prefix}/lib/
+	xinstall -m 644 ${worksrcpath}/utf8proc.h \
+		${destroot}${prefix}/include
+	set docdir ${destroot}${prefix}/share/doc/${name}
+	xinstall -d ${docdir}
+	xinstall -m 644 -W ${worksrcpath} \
+		Changelog \
+		LICENSE \
+		README \
+		${docdir}
+}
+
+livecheck.type	regex
+livecheck.url	${homepage}
+livecheck.regex	utf8proc-v(\[0-9\.\]+).tar.gz
+

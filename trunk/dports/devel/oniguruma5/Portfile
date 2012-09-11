@@ -1,0 +1,25 @@
+# $Id$
+
+PortSystem 1.0
+
+name            oniguruma5
+version         5.9.2
+maintainers     nomaintainer
+categories      devel
+license         BSD
+platforms       darwin
+homepage        http://www.geocities.jp/kosako3/oniguruma/
+
+description     A regular expressions library.
+long_description \
+    Oniguruma is a regular expressions library in which \
+    different character encoding can be specified for every expression. \
+    Supports Unicode Porperty/Script. N.B. 5.x is unrelated to Ruby.
+
+distname        onig-${version}
+master_sites    http://www.geocities.jp/kosako3/oniguruma/archive/
+checksums       md5 0f4ad1b100a5f9a91623e04111707b84
+
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     ">Latest release version (\\d+(?:\\.\\d+)*)<"

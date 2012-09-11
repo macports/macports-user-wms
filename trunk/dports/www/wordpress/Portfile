@@ -1,0 +1,57 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    wordpress
+version                 3.2.1
+categories              www
+platforms               darwin freebsd
+maintainers             freebsd.org:miwi
+supported_archs         noarch
+worksrcdir              ${name}
+
+description             A state-of-the-art semantic personal publishing platform
+
+long_description        WordPress is a state-of-the-art semantic personal publishing platform \
+                        with a focus on aesthetics, web standards, and usability.
+
+homepage                http://wordpress.org/
+master_sites            ${homepage}
+
+checksums               sha1    674bcf0abe80770ac08dfb4c5f21df3303bf771a \
+                        rmd160  a78f1aec0d142e1de32f214fd65ac2aef256979d
+
+depends_lib             port:php5-web \
+                        port:php5-mysql \
+                        port:php5-zip \
+                        port:php5-gd
+
+livecheck.type          regex
+livecheck.url           ${homepage}
+livecheck.regex         "Download&nbsp;WordPress&nbsp;(\\d+(?:\\.\\d+)*)"
+
+use_configure           no
+build                   {}
+
+destroot {
+    file copy ${worksrcpath} ${destroot}${prefix}/www/${name}
+}
+
+notes "
+If your webserver is already running with php and mysql, connect on http://localhost/wordpress/ to finish the install.
+Temporarily allow the webserver write access so it can create wp-config.php (or do it yourself)
+$ sudo chmod 1777 ${prefix}/www/wordpress
+$ sudo chmod 755 ${prefix}/www/wordpress
+
+If Apache is not set, set an alias to the wordpress dir and some access like
+-- ${prefix}/apache2/conf/extra/wordpress.conf
+Alias /wordpress/ \"${prefix}/www/wordpress/\"
+<Directory \"${prefix}/www/wordpress\">
+    Options Indexes FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+</Directory>
+--
+"

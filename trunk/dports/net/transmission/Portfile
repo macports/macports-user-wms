@@ -1,0 +1,65 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+PortGroup       xcode 1.0
+
+name            transmission
+version         2.42
+categories      net aqua
+maintainers     mnick openmaintainer
+license         MIT GPL-2
+
+description     Lightweight BitTorrent client
+long_description \
+    Transmission is a free, lightweight BitTorrent client. \
+    It features a simple, intuitive interface on top of an \
+    efficient, cross-platform back-end. Transmission is open \
+    source (MIT license) and runs on Mac OS X (Cocoa interface), \
+    Linux/NetBSD/FreeBSD/OpenBSD (GTK+ interface) and BeOS \
+    (native interface). \
+    This is the Cocoa version.
+homepage        http://www.transmissionbt.com/
+
+master_sites    http://download.m0k.org/transmission/files/ \
+                http://download.transmissionbt.com/files/
+
+checksums       md5     2ade0818d465779bd956b8b72ea56b02 \
+                sha1    744068c76f68c141d2aada689bc49a5b56cd618b \
+                rmd160  83f380f0b4f63e52c129c906dc8e8e4649e04c5c
+
+use_bzip2       yes
+
+patchfiles      patch-xcodebuild.diff patch-sparkle.diff
+platforms       macosx
+
+depends_lib     port:gettext \
+                port:libevent
+
+xcode.target            Transmission
+xcode.configuration     Release
+
+pre-patch {
+    reinplace -E "s%third-party/(curl|libevent|openssl)/(include|lib)%@@PREFIX@@/\\2%g" \
+        ${worksrcpath}/Transmission.xcodeproj/project.pbxproj
+}
+
+post-patch {
+    reinplace -E "s|@@PREFIX@@|${prefix}|g" \
+        ${worksrcpath}/Transmission.xcodeproj/project.pbxproj
+}
+
+destroot {
+    file copy ${worksrcpath}/build/${xcode.configuration}/Transmission.app \
+        ${destroot}${applications_dir}/Transmission.app
+}
+
+if {${os.major} < 11} {
+    pre-fetch {
+        ui_error "${name} ${version} requires Mac OS X 10.7 or greater."
+        return -code error "incompatible Mac OS X version"
+    }
+}
+
+livecheck.url       ${homepage}/download.php
+livecheck.regex     The current release version is <b>(.*)</b>

@@ -1,0 +1,67 @@
+# $Id$
+
+PortSystem 1.0
+
+name                    qemu
+version                 1.2.0
+revision                1
+categories              emulators
+license                 GPL-2+
+platforms               darwin
+maintainers             nomaintainer
+
+description             Emulator for various architectures
+long_description        QEMU is a generic and open source machine emulator. \
+                        It can run OSes and programs made for one machine on a \
+                        different machine. By using dynamic translation, it \
+                        achieves very good performance.
+
+homepage                http://qemu.org
+master_sites            ${homepage}/download
+use_bzip2 yes
+
+checksums               rmd160  f6ebeeca42e2e694f17ab83cca3652baf7e74d1c \
+                        sha256  c8b84420d9f4869397f84cad2dabd9a475b7723d619a924a873740353e9df936
+
+patchfiles              patch-configure.diff \
+                        patch-net-tap-interface.diff
+
+depends_build           port:texinfo \
+                        port:pkgconfig
+
+depends_lib             port:curl \
+                        port:cyrus-sasl2 \
+                        port:gnutls \
+                        port:libidn \
+                        port:libtasn1 \
+                        port:ncurses \
+                        port:libpng \
+                        port:jpeg \
+                        port:ossp-uuid
+
+configure.args          --cpu=${configure.build_arch} \
+                        --cc=${configure.cc} \
+                        --objcc=${configure.objc} \
+                        --host-cc=${configure.cc}
+
+set target_list {}
+pre-configure {
+    configure.args-append --target-list=${target_list}
+}
+
+foreach t {i386 x86_64 ppc ppc64 arm cris m68k mips mipsel mips64 mips64el ppcemb sh4 sh4eb sparc} {
+    variant target_${t} description "add ${t} target support" "append target_list \",${t}-softmmu\""
+}
+default_variants    +target_i386 +target_x86_64
+
+# Default universal variant does not work
+universal_variant       no
+
+platform darwin 8 {
+    depends_build-append port:gmake
+    build.cmd ${prefix}/bin/gmake
+}
+
+livecheck.type  regex
+livecheck.url   [lindex ${master_sites} 0]
+livecheck.regex ${name}-(\\d+(?:\\.\\d+)*)(?:-\\d+)*\\.tar

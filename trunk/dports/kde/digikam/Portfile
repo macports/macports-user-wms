@@ -1,0 +1,70 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4 1.1
+
+name                digikam
+version             2.8.0
+revision            2
+categories          kde kde4
+license             GPL-2+
+maintainers         hyper-world.de:jan openmaintainer
+platforms           darwin
+
+description         Photo Management Program
+long_description    Digital photo management program to import, organize, enhance, search and export your digital images.
+
+homepage            http://www.digikam.org/
+master_sites        sourceforge:project/digikam/digikam/${version}
+
+checksums           rmd160  2687ad63b6c424cd60bef1b2bcd73d90646a1ca4 \
+                    sha256  93f1f577cbf5a0f3ca56244b76e4eecc0c445fe4cede51b301aa63db1c0508bc
+
+use_bzip2           yes
+
+patchfiles          patch-for-libgphoto2.5.diff
+
+# Dependencies of Digikam and kipi-plugins.
+depends_lib-append  port:kdelibs4 \
+                    port:libkdcraw \
+                    port:libkexiv2 \
+                    port:libkipi \
+                    port:libpng \
+                    port:qt4-mac \
+                    port:kdepimlibs4 \
+                    port:tiff
+
+# Dependencies of kipi-plugins.
+depends_lib-append  port:expat\
+                    port:gdk-pixbuf2 \
+                    port:jpeg \
+                    port:libgpod \
+                    port:libksane \
+                    port:libxml2 \
+                    port:libxslt \
+                    port:marble \
+                    port:opencv \
+                    port:qca \
+                    port:qjson
+
+# opencv is not universal
+universal_variant   no
+
+# Dependencies of Digikam.
+depends_lib-append  port:boost \
+                    port:gettext \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:lcms \
+                    port:lensfun \
+                    port:libgphoto2 \
+                    port:liblqr \
+                    port:libusb \
+                    port:jasper \
+                    path:bin/mysql_config5:mysql5 \
+                    port:shared-desktop-ontologies
+
+depends_run-append  port:oxygen-icons
+
+configure.args-append -DOpenCV_DIR=${prefix}/lib/cmake ../${distname}
+

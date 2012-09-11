@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name            upower
+version         0.9.18
+license         GPL-2+
+description     UPower is an abstraction for enumerating power devices, \
+                listening to device events and querying history and statistics.
+
+long_description \
+                ${description} \
+                Any application or service on the system can access the \
+                org.freedesktop.UPower service via the system message bus.
+
+maintainers     devans openmaintainer
+categories      devel
+platforms       darwin
+homepage        http://upower.freedesktop.org/
+master_sites    http://upower.freedesktop.org/releases/
+
+checksums       rmd160  ffb238728ef79780e39289b27a05c4fbeeebb36a \
+                sha256  a1a1505d2f95e9398a9bed90917c78a6ee0c3d7956aef1ce011717d20467068f
+
+use_xz          yes
+
+depends_build   port:pkgconfig \
+                port:intltool \
+                port:gtk-doc
+
+depends_lib     port:dbus-glib \
+                port:policykit
+
+patchfiles      patch-configure.diff \
+                patch-doc-man-Makefile.in.diff
+
+configure.args  --disable-introspection \
+                --disable-silent-rules
+
+livecheck.type  regex
+livecheck.url   ${master_sites}
+livecheck.regex "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

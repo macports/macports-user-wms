@@ -1,0 +1,92 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+PortGroup       archcheck 1.0
+
+name            dia
+version         0.97.2
+revision        3
+set branch      [join [lrange [split ${version} .] 0 1] .]
+maintainers     nomaintainer
+license         GPL-2+
+categories      gnome graphics
+platforms       darwin
+description     A diagram program.
+
+long_description \
+    Dia is designed to be much like the commercial Windows \
+    program Visio. It can be used to draw many different kinds \
+    of diagrams. It currently has special objects to help draw \
+    entity relationship diagrams, UML diagrams, flowcharts, \
+    network diagrams, and simple circuits. It is also possible \
+    to add support for new shapes by writing simple XML files, \
+    using a subset of SVG to draw the shape.
+
+homepage        http://live.gnome.org/Dia
+master_sites    gnome:sources/${name}/${branch}/
+use_xz       yes
+
+checksums       sha1    dc7ed6f8cd83acc8f421d28f30e4042fe370e9ba \
+                rmd160  f9270f1f2cb6ad505219463827d02e3759693796
+
+# backport patches for glib 2.32 compatibility and to fix crash on
+# start (#34520)
+patch.pre_args  -p1
+patchfiles      \
+    0001-aa94ba030885f3105e6452929d04917a2ef94393.patch \
+    0002-ae61326cf5e7aaba6e72af757a5cd33efe8280a1.patch \
+    0003-3a589dedfbf2b0ada111a3e2cb6b14837f2c8b5e.patch
+
+post-patch {
+    reinplace s/isspecial/char_isspecial/ \
+        ${worksrcpath}/objects/GRAFCET/boolequation.c
+}
+
+depends_build \
+    port:intltool \
+    port:pkgconfig
+
+depends_lib \
+    path:lib/pkgconfig/cairo.pc:cairo \
+    port:freetype \
+    port:libart_lgpl \
+    port:libpng \
+    port:libxml2 \
+    port:libxslt \
+    port:gettext \
+    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+    port:gtk2 \
+    path:lib/pkgconfig/pango.pc:pango \
+    port:popt \
+    port:zlib
+
+depends_run \
+    port:librsvg
+
+archcheck.files \
+    lib/libcairo.dylib \
+    lib/libfreetype.dylib \
+    lib/libart_lgpl_2.dylib \
+    lib/libgdk_pixbuf-2.0.dylib \
+    lib/libglib-2.0.dylib \
+    lib/libintl.dylib \
+    lib/libpango-1.0.dylib \
+    lib/libpng.dylib \
+    lib/libxml2.dylib \
+    lib/libxslt.dylib \
+    lib/libpopt.dylib \
+    lib/libz.dylib
+
+configure.args \
+    --with-cairo \
+    --disable-libemf \
+    --with-xslt-prefix=${prefix}
+
+post-activate {
+    system "${prefix}/bin/gtk-update-icon-cache -f -t ${prefix}/share/icons/hicolor"
+}
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*(?:-pre\d)*)}

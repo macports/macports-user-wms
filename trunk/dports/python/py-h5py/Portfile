@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-h5py
+version             2.0.1
+
+# h5py needs to be re-built after hdf5-18 upgrades
+revision            3
+
+python.versions     26 27 31 32
+python.default_version 27
+platforms           darwin
+categories          python
+license             BSD
+maintainers         macports.org:eborisch \
+                    openmaintainer
+description         Python Module for working with HDF5 files
+
+long_description    HDF5 for Python (h5py) is a general-purpose Python \
+                    interface to the Hierarchical Data Format library, \
+                    version 5. HDF5 is a versatile, mature scientific \
+                    software library designed for the fast, flexible \
+                    storage of enormous amounts of data. \n\n\
+                    From a Python programmer's perspective, HDF5 provides \
+                    a robust way to store data, organized by name in a \
+                    tree-like fashion. You can create datasets (arrays on \
+                    disk) hundreds of gigabytes in size, and perform \
+                    random-access I/O on desired sections. Datasets are \
+                    organized in a filesystem-like hierarchy using \
+                    containers called 'groups', and accessed using the \
+                    tradional POSIX /path/to/resource syntax.
+
+
+homepage            http://code.google.com/p/h5py/
+master_sites        http://h5py.googlecode.com/files/
+distname            h5py-${version}
+
+checksums           md5     ea271f5cc8a78a531316918906aacdd0 \
+                    sha1    beddbfadb6f9fab651aeb8bede40b74fc2aeb889 \
+                    rmd160  75170ff5de1f7fb0eeda02525343285fb6213ced
+
+if {$subport != $name } {
+    depends_lib-append  port:py${python.version}-numpy \
+                        port:hdf5-18
+}
+
+livecheck.regex       {h5py-(\d+(?:\.\d+)*).tar.gz}
+

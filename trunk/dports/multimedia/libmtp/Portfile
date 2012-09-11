@@ -1,0 +1,27 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; truncate-lines: t -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                libmtp
+version             1.1.2
+revision            4
+categories          multimedia
+license             LGPL-2+
+maintainers         nomaintainer
+description         libmtp is an implementation of Microsoft's Media Transfer Protocol (MTP)
+long_description    ${description}
+
+homepage            http://libmtp.sourceforge.net/
+master_sites        sourceforge:project/${name}/${name}/${version}
+
+platforms           darwin
+depends_build       port:pkgconfig
+depends_lib         port:libusb
+
+checksums           rmd160  cdfa6c3b6ea9dfc6e104ef9366429b1a73e976ed \
+                    sha256  4bcf0fba0fc82c6bfd2062236917bc9735f92fcdf5a541a230496500968e2f75
+
+patchfiles          patch-pc-files.diff
+
+livecheck.version   ${name}-${version}

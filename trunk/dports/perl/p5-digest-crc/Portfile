@@ -1,0 +1,19 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Digest-CRC 0.18
+license             public-domain
+maintainers         nomaintainer
+description         Generic CRC functions
+long_description    The Digest::CRC module calculates CRC sums of all \
+                    sorts. It contains wrapper functions with the correct \
+                    parameters for CRC-CCITT, CRC-16 and CRC-32.
+
+platforms           darwin
+
+checksums           rmd160  d30d502bea3efca219b6aa0dd9345c6c3cc12757 \
+                    sha256  5c5329f37c46eb79835169508583da8767d9839350b69bb2b48ac6f594f70374

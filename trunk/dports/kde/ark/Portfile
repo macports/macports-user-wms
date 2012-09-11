@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                ark
+version             4.8.3
+revision            1
+categories          kde kde4
+license             GPL-2+
+maintainers         nicos openmaintainer
+description         Handle file archives
+long_description    Ark is a program for managing various archive formats \
+                    within the KDE environment.
+platforms           darwin
+homepage            http://utils.kde.org/projects/ark/
+master_sites        kde:stable/${version}/src
+use_xz              yes
+distname            ${name}-${version}
+checksums           rmd160  34e8731c0f05371cbed9477dd8a8b0146c530609 \
+                    sha256  c6e62c41c19910a4ca397fa1711c503cfce3689ccc7ed38d8e0eaf7ccd3810fb
+
+depends_lib-append  port:kdelibs4 \
+                    port:oxygen-icons \
+                    port:libarchive \
+                    port:zlib \
+                    port:bzip2 \
+                    port:qjson
+
+if {![variant_isset docs]} {
+    patchfiles      patch-CMakeLists.txt.diff
+}
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/latest/src
+livecheck.regex     ${name}-(\\d+\\.\\d+\\.\\d+)${extract.suffix}

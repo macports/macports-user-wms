@@ -1,0 +1,36 @@
+# $Id$
+PortSystem      1.0
+name            loudmouth
+version         1.4.3
+revision        1
+maintainers     nomaintainer
+categories      net devel
+license         LGPL-2+
+platforms       darwin 
+homepage        http://developer.imendio.com/projects/loudmouth/
+
+description A lightweight C library for the jabber protocol.
+long_description \
+    Loudmouth is a lightweight and easy-to-use C \
+    library for programming with the Jabber protocol. \
+    It's designed to be easy to get started with and yet \
+    extensible to let you do anything the Jabber protocol allows.  
+
+master_sites    http://ftp.imendio.com/pub/imendio/loudmouth/src/
+checksums       md5     7ca8bf7c2313d7b7f27088c373d195e2 \
+                sha1    eb81e06cbcea54d782bd91eae5588df3a57a41e6 \
+                rmd160  f19851a1f6aa4d1501710b76cb2a5373fcd01708
+
+# gtk-doc is needed for m4 files due to the use of use_autoreconf below
+depends_build   port:pkgconfig port:gtk-doc
+depends_lib     port:gnutls path:lib/pkgconfig/glib-2.0.pc:glib2
+
+# Use pkg-config to detect gnutls now
+# http://groups.google.com/group/loudmouth-dev/browse_thread/thread/3f78255837048daf
+patchfiles      patch-configure.ac.diff \
+                patch-loudmouth-lm-error.c.diff
+
+use_autoreconf  yes
+
+configure.args  --without-check
+

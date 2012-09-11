@@ -1,0 +1,107 @@
+# $Id$
+
+PortSystem          1.0
+
+name                mongodb
+epoch               1
+version             2.0.7
+license             AGPL-3
+categories          databases
+maintainers         ryandesign
+
+description         High-performance, schema-free document-oriented database
+long_description    ${description}
+
+platforms           darwin
+
+homepage            http://www.mongodb.org/
+master_sites        http://downloads.mongodb.org/src/
+distname            ${name}-src-r${version}
+
+checksums           rmd160  7a80f463ea2f7f1de80972fcded3fbe982e6f8f0 \
+                    sha256  b204d94bc912692bdc154402fbfc2e5c4bd60b09dcbe244f3b2b7657f0a82736
+
+depends_build       port:scons
+
+depends_lib         port:boost \
+                    port:pcre \
+                    port:spidermonkey \
+                    port:libpcap \
+                    port:snappy
+
+patchfiles          patch-SConstruct.diff \
+                    patch-distsrc-client-SConstruct.diff \
+                    patch-util-compress.cpp.diff
+
+post-patch {
+    reinplace "s|@@PREFIX@@|${prefix}|g" \
+        ${worksrcpath}/SConstruct \
+        ${worksrcpath}/distsrc/client/SConstruct
+}
+
+use_configure       no
+
+variant universal {}
+
+if {${configure.compiler} == "clang" && [vercmp ${xcodeversion} 4.3] < 0} {
+    configure.compiler llvm-gcc-4.2
+}
+
+pre-configure {
+    # https://trac.macports.org/ticket/35118
+    # https://jira.mongodb.org/browse/SERVER-4314
+    set boost_version_int [exec awk {/#define BOOST_VERSION/ {print $3}} ${prefix}/include/boost/version.hpp]
+    scan ${boost_version_int} {%1d%3d%2d} boost_major boost_minor boost_patch
+    set boost_version "${boost_major}.${boost_minor}.${boost_patch}"
+    if {[vercmp ${boost_version} 1.50] >= 0} {
+        ui_error "mongodb ${version} requires boost 1.49.0 or older but you have boost ${boost_version}."
+        ui_error "To downgrade boost, see https://trac.macports.org/wiki/howto/InstallingOlderPort"
+        ui_error "or more specifically https://trac.macports.org/ticket/35118#comment:12"
+        ui_error "After installing boost 1.49.0, install mongodb without upgrading dependencies, i.e.:"
+        ui_error "    sudo port -n install mongodb"
+        return -code error "boost ${boost_version} is too new"
+    }
+}
+
+build.env           TERM=xterm \
+                    CFLAGS="[get_canonical_archflags cc]" \
+                    CPPFLAGS="-I${prefix}/include/js" \
+                    CXXFLAGS="[get_canonical_archflags cxx]" \
+                    LINKFLAGS="[get_canonical_archflags ld] -lpcre"
+
+build.cmd           scons
+build.target        all mongobridge mongosniff
+build.args          --cxx=${configure.cxx} \
+                    --full \
+                    --use-system-all \
+                    --usesm
+
+eval destroot.env   [option build.env]
+destroot.args       ${build.args}
+destroot.destdir    --prefix=${destroot}${prefix}
+
+set dbdir           ${prefix}/var/db/mongodb
+set logdir          ${prefix}/var/log/mongodb
+if {"darwin" == ${os.platform} && ${os.major} > 8} {
+    set mongouser       _mongo
+} else {
+    set mongouser       mongo
+}
+add_users           ${mongouser} group=${mongouser} realname=MongoDB\ Server
+
+post-destroot {
+    xinstall -W ${worksrcpath} mongobridge ${destroot}${prefix}/bin
+
+    xinstall -m 755 -o ${mongouser} -g ${mongouser} -d \
+        ${destroot}${dbdir} \
+        ${destroot}${logdir}
+    destroot.keepdirs-append  \
+        ${destroot}${dbdir} \
+        ${destroot}${logdir}
+}
+
+startupitem.create      yes
+startupitem.executable  sudo -u ${mongouser} ${prefix}/bin/mongod --dbpath ${dbdir} --logpath ${logdir}/mongodb.log --logappend
+
+livecheck.url       ${homepage}downloads
+livecheck.regex     {mongodb-src-r(\d+\.\d*[02468]\.\d+)\.}

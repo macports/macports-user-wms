@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name            glibmm
+version         2.32.1
+set branch      [join [lrange [split ${version} .] 0 1] .]
+description     C++ interface to glib
+long_description \
+                ${description}
+maintainers     devans openmaintainer
+categories      devel x11
+platforms       darwin
+license         LGPL-2.1+
+homepage        http://www.gtkmm.org/
+master_sites    gnome:sources/${name}/${branch}/
+use_xz          yes
+
+checksums       rmd160  d41c8d7109c58030510aadf39eea1cf238d2d1fe \
+                sha256  d6ed4d38e8739813941a0f0fec471c00ea93c5ed46179543340821c7ca798a2f
+
+depends_build   port:pkgconfig
+depends_lib     path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                port:libsigcxx2
+
+post-destroot {
+    set mmdoctooldir ${prefix}/share/glibmm-2.4/doctool
+    xinstall -d ${destroot}${mmdoctooldir}
+    xinstall -m 0644 -W ${worksrcpath}/docs doc-install.pl doc-postprocess.pl \
+                                            doxygen.css tagfile-to-devhelp2.xsl \
+                                            ${destroot}${mmdoctooldir}
+}
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/GNOME/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-([0-9\.]+)}

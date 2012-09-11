@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name		gnome-devel-docs
+version		2.30.1
+license         GFDL-1.1
+set branch	[join [lrange [split ${version} .] 0 1] .]
+description	The GNOME Developer Documentation Package
+long_description        This is the GNOME Developer Documentation package including the following: \
+                           - GNOME Platform Overview  \
+                           - GNOME Integration Guide \
+                           - GNOME Optimization Guide \
+                           - GNOME Accessibility Developers Guide \
+                           - GNOME Human Interface Guidelines \
+                           - GNOME Documentation Project Handbook \
+                           - GNOME Documentation Project Style Guide
+             
+maintainers	devans openmaintainer
+categories	gnome devel
+platforms	darwin
+homepage	http://www.gnome.org/
+master_sites    gnome:sources/${name}/${branch}/
+
+checksums       md5     6af984290595176fcd6f0717320b7643 \
+                sha1    a89f0d3655d63e8be360eb75297d9ee19b50ee15 \
+                rmd160  33dd813bc23bff8a74b9c864d98e7b4725e872ec
+
+depends_build   port:pkgconfig \
+                port:gnome-doc-utils
+
+use_bzip2 	yes
+
+configure.args  --disable-scrollkeeper
+
+post-activate {
+   system "scrollkeeper-update"
+}
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

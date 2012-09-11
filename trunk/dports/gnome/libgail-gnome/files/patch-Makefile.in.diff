@@ -1,0 +1,11 @@
+--- Makefile.in.orig	2010-06-21 06:24:59.000000000 -0700
++++ Makefile.in	2010-08-28 14:05:20.000000000 -0700
+@@ -265,7 +265,7 @@
+ top_build_prefix = @top_build_prefix@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+-SUBDIRS = gail-gnome test
++SUBDIRS = gail-gnome
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = libgail-gnome.pc
+ schemasdir = $(GCONF_SCHEMA_FILE_DIR)

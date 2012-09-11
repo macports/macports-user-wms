@@ -1,0 +1,70 @@
+# $Id$
+
+PortSystem 1.0
+
+name            xorg-libXi
+version         1.6.1
+categories      x11 devel
+license         X11
+maintainers     jeremyhu openmaintainer
+description     X.org libXi
+homepage        http://www.x.org
+platforms       darwin macosx
+long_description X11 Input Extension
+master_sites     xorg:individual/lib/
+
+distname    libXi-${version}
+checksums           sha1    4b53b41fdaa3acc86606c696c68d5eed11454612 \
+                    rmd160  2e368991d370d5696f55ef4bfa25306a5b44c214 \
+                    sha256  f2e3627d7292ec5eff488ab58867fba14a62f06e72a8d3337ab6222c09873109
+
+use_bzip2   yes
+use_parallel_build      yes
+
+depends_build   port:pkgconfig
+
+depends_lib     port:xorg-libXext \
+		port:xorg-inputproto
+
+configure.args \
+	--without-asciidoc \
+	--without-xmlto \
+	--without-fop \
+	--disable-specs
+
+build.args V=1
+
+# Depending on ghostscript for the PDF documentation creates a dependency
+# loop, so you may want to install first without the docs variant
+variant docs description "Install extra documentation" {
+	depends_build-append \
+		port:asciidoc \
+		port:fop \
+		port:xmlto \
+		port:xorg-sgml-doctools
+
+	depends_skip_archcheck-append \
+		asciidoc \
+		xmlto
+
+	configure.args-delete \
+		--without-asciidoc \
+		--without-xmlto \
+		--without-fop \
+		--disable-specs
+
+	configure.args-append \
+		--with-asciidoc \
+		--with-xmlto \
+		--with-fop \
+		--enable-specs
+
+	configure.env-append \
+		ASCIIDOC="${prefix}/bin/asciidoc" \
+		XMLTO="${prefix}/bin/xmlto" \
+		FOP="${prefix}/bin/fop"
+}
+
+livecheck.type  regex
+livecheck.url   http://xorg.freedesktop.org/archive/individual/lib/?C=M&O=D
+livecheck.regex libXi-(\\d+(?:\\.\\d+)*)

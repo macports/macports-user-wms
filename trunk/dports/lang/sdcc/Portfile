@@ -1,0 +1,46 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name                sdcc
+version             3.0.0
+categories          lang
+platforms           darwin
+license             GPL-3
+maintainers         snc openmaintainer
+description         ANSI C compiler targeting Intel 8051, Maxim 80DS390, Zilog Z80
+long_description    SDCC is a freeware, retargettable, optimizing ANSI C \
+                    compiler that targets the Intel 8051, Maxim 80DS390, and \
+                    Zilog Z80 based MCUs. Work is in progress on supporting \
+                    Motorola 68HC08 as well as Microchip PIC16 and PIC18 series.
+
+homepage            http://sdcc.sourceforge.net/
+master_sites        sourceforge
+
+checksums           rmd160  3821b238d4f8a201f23384bd58b9dafef8d69f68 \
+                    sha256  53097200e1b2b9466be80ede24484c51326886977b5b88b4a00182bfc5e3a99b
+
+depends_build       port:gputils
+depends_lib         port:readline
+depends_run         port:gputils
+
+use_bzip2           yes
+distfiles           ${name}-src-${version}${extract.suffix}
+
+worksrcdir          ${name}
+
+# Setting CPP explicitly is bad, because 'cpp' and 'gcc -E' are not the same.
+configure.cpp       {}
+configure.args      --enable-avr-port \
+                    --enable-xa51-port
+
+build.type          gnu
+
+destroot.destdir    prefix=${destroot}${prefix} \
+                    docdir=${destroot}${prefix}/share/doc/${name}
+
+platform darwin 8 {
+    depends_build-append    port:gmake
+    build.cmd               ${prefix}/bin/gmake
+}

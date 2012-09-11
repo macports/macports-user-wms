@@ -1,0 +1,20 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Astro-satpass 0.039
+revision            2
+maintainers         pixilla
+platforms           darwin
+
+description         Astro-satpass - Predict satellite passes over an observer.
+
+long_description    This package contains classes needed to predict \
+                    satellite visibility, and a demonstration application \
+                    (satpass) that makes use of these classes.
+
+checksums           sha1    ca2c546ba750f6f6576037898bdb1619fca69a37 \
+                    rmd160  1608e4a52f1aab36723fa8706c46c95295682797

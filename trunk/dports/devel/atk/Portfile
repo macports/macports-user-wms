@@ -1,0 +1,50 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    atk
+epoch                   2
+version                 2.2.0
+revision                2
+set branch              [join [lrange [split ${version} .] 0 1] .]
+categories              devel
+license                 LGPL
+maintainers             singingwolfboy openmaintainer
+platforms               darwin
+
+description             GNOME accessibility toolkit
+
+long_description        ATK is the GNOME Accessibility ToolKit
+
+homepage                http://projects.gnome.org/accessibility/
+master_sites            gnome:sources/${name}/${branch}/
+
+checksums               rmd160  20180c7af9af2de44678009260cc21f1f5d248d3 \
+                        sha256  d201e3f5808aef0b1aec2277bfa61074f68863e405428adb57a73aab5c838450
+
+use_bzip2               yes
+
+depends_build           port:pkgconfig
+
+depends_lib             path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                        port:gettext \
+                        port:libiconv \
+                        port:gobject-introspection
+
+configure.args          --enable-static \
+                        --enable-introspection \
+                        --disable-silent-rules
+
+# The rules enabled by gobject-introspection require GNU make 3.81+, #35200
+platform darwin 8 {
+    depends_build-append    port:gmake
+    build.cmd               ${prefix}/bin/gmake
+}
+
+# gobject-introspection uses $CC from env
+build.args-append       CC="${configure.cc} ${configure.cc_archflags}"
+
+livecheck.type          regex
+livecheck.url           http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex         {LATEST-IS-(\d+(?:\.\d+)*)}

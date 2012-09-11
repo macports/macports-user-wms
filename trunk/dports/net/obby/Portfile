@@ -1,0 +1,40 @@
+# $Id$
+
+PortSystem              1.0
+
+name                    obby
+version                 0.4.7
+categories              net
+license                 GPL-2+
+maintainers             nomaintainer
+description             Synced document buffers
+homepage                http://gobby.0x539.de/
+platforms               darwin freebsd
+
+long_description        obby is a library which provides synced document \
+                        buffers. It supports multiple documents in one session \
+                        and is portable to both Windows and POSIX platforms.
+
+master_sites            http://releases.0x539.de/${name}/ \
+                        http://gentoo.osuosl.org/distfiles/
+
+checksums               md5     33fac4228c1efc1a1635bacf6480dc31 \
+                        sha1    efe4e6b406eb0628af63e88807d5d2115d88f390 \
+                        rmd160  4042662bb2ab803f96c477c1a3035dbe169a8544
+
+depends_build           port:pkgconfig
+
+depends_lib             port:libsigcxx2 \
+                        port:avahi \
+                        port:net6
+
+configure.args          --with-zeroconf \
+                        --enable-ipv6
+
+if {${configure.compiler} == "clang"} {
+    configure.compiler llvm-gcc-4.2
+}
+
+livecheck.type          regex
+livecheck.url           [lindex ${master_sites} 0]
+livecheck.regex         ${name}-(\\d+(?:\\.\\d+)*\\.(?:\\d|\[0-8\]\\d))\\.tar

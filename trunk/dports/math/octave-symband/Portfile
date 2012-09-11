@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        symband 1.0.10
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Linear Algebra for Symmetric Banded Matrices.
+long_description    ${description}
+
+checksums           md5     3744cbef41294e517e78c8fc8265bb3e \
+                    sha1    c66738992c661f70865cf524e76b82e3a73455bb \
+                    rmd160  e21138ccca45d33986ca2ce58f930739030ec504

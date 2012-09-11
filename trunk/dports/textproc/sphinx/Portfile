@@ -1,0 +1,91 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                sphinx
+version             0.9.9
+revision            1
+categories          textproc net
+platforms           darwin
+maintainers         nomaintainer
+
+description         Sphinx is a full-text search engine
+
+long_description    Sphinx is a full-text search engine, meant to provide \
+                    fast, size-efficient and relevant fulltext search \
+                    functions to other applications. Sphinx was specially \
+                    designed to integrate well with SQL databases and \
+                    scripting languages. Currently built-in data sources \
+                    support fetching data either via direct connection to \
+                    MySQL or PostgreSQL, or from an XML pipe.
+
+homepage            http://sphinxsearch.com/
+master_sites        ${homepage}files/
+
+checksums           sha1    8c739b96d756a50972c27c7004488b55d7458015 \
+                    rmd160  ed3cd1a9328114c1d2a6325cce5520065076c275
+
+depends_lib         port:expat \
+                    port:libiconv
+
+patchfiles          endian.patch \
+                    src_sphinxexpr.cpp.patch
+
+configure.args      --mandir=${prefix}/share/man \
+                    --datadir=${prefix}/share/doc \
+                    --sysconfdir=${prefix}/etc/sphinx \
+                    --without-mysql \
+                    ac_cv_search_iconv=-liconv
+
+test.run            yes
+
+variant postgres conflicts postgresql83 postgresql84 postgresql90 postgresql91 description {Enable PostgreSQL 8.2 support} {
+    depends_lib-append      port:postgresql82
+    configure.args-append   --with-pgsql \
+                            --with-pgsql-includes=${prefix}/include/postgresql82 \
+                            --with-pgsql-libs=${prefix}/lib/postgresql82
+}
+
+variant postgresql83 conflicts postgres postgresql84 postgresql90 postgresql91 description {Enable PostgreSQL 8.3 support} {
+    depends_lib-append      port:postgresql83
+    configure.args-append   --with-pgsql \
+                            --with-pgsql-includes=${prefix}/include/postgresql83 \
+                            --with-pgsql-libs=${prefix}/lib/postgresql83
+}
+
+variant postgresql84 conflicts postgres postgresql83 postgresql90 postgresql91 description {Enable PostgreSQL 8.4 support} {
+    depends_lib-append      port:postgresql84
+    configure.args-append   --with-pgsql \
+                            --with-pgsql-includes=${prefix}/include/postgresql84 \
+                            --with-pgsql-libs=${prefix}/lib/postgresql84
+}
+
+variant postgresql90 conflicts postgres postgresql83 postgresql84 postgresql91 description {Enable PostgreSQL 9.0 support} {
+    depends_lib-append      port:postgresql90
+    configure.args-append   --with-pgsql \
+                            --with-pgsql-includes=${prefix}/include/postgresql90 \
+                            --with-pgsql-libs=${prefix}/lib/postgresql90
+}
+
+variant postgresql91 conflicts postgres postgresql83 postgresql84 postgresql90 description {Enable PostgreSQL 9.1 support} {
+    depends_lib-append      port:postgresql91
+    configure.args-append   --with-pgsql \
+                            --with-pgsql-includes=${prefix}/include/postgresql91 \
+                            --with-pgsql-libs=${prefix}/lib/postgresql91
+}
+
+variant mysql5 description {Enable MySQL 5 support} {
+    depends_lib-append      path:bin/mysql_config5:mysql5
+    configure.args-delete   --without-mysql
+    configure.args-append   --with-mysql-includes=${prefix}/include/mysql5/mysql \
+                            --with-mysql-libs=${prefix}/lib/mysql5/mysql
+}
+
+if {![variant_isset postgres] && ![variant_isset postgresql83] && ![variant_isset postgresql84] && ![variant_isset postgresql90] && ![variant_isset mysql5]} {
+    default_variants +mysql5
+}
+
+livecheck.type      regex
+livecheck.url       ${homepage}downloads/release/
+livecheck.regex     ${name}-(\[0-9.\]+)-release${extract.suffix}

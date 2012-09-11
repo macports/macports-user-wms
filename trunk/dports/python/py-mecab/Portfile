@@ -1,0 +1,49 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-mecab
+version             0.994
+python.versions     24 25 26 27
+categories-append   textproc japanese
+maintainers         hum gmail.com:rsky0711 openmaintainer
+
+description         a Python module for MeCab
+long_description    ${description}
+
+master_sites        googlecode:mecab
+checksums           rmd160  ddaef4f9ae8ab8f08dc4e5f3008087b8d481f789 \
+                    sha256  30d828c73f95492f91fc5f7770b3a40765e9e931afb8295f419109b32652f7ce
+
+homepage            http://mecab.sourceforge.net/
+platforms           darwin
+license             {GPL LGPL BSD}
+
+distname            mecab-python-${version}
+dist_subdir         mecab
+
+if {${subport} != ${name}} {
+    depends_lib-append  path:bin/mecab-config:mecab-utf8
+
+    post-patch {
+        reinplace "s|#!/usr/bin/python|#!${python.bin}|" \
+            ${worksrcpath}/test.py
+    }
+
+    post-destroot {
+        set exdir ${destroot}${prefix}/share/doc/${subport}/examples
+        xinstall -m 755 -d ${exdir}
+        xinstall -m 755 ${worksrcpath}/test.py ${exdir}
+    }
+
+    livecheck.type      none
+} else {
+    pre-destroot {
+        xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+    }
+    livecheck.type      regex
+    livecheck.url       http://code.google.com/p/mecab/downloads/list
+    livecheck.regex     {mecab-python-([\d\.]+)\.tar}
+}

@@ -1,0 +1,32 @@
+# $Id$
+
+PortSystem           1.0
+
+name                 gri
+version              2.12.18
+categories           science graphics
+platforms            darwin
+maintainers          dal.ca:dan.kelley
+description          A scientific graphics programming language
+long_description     Gri is a language for scientific graphics programming. \
+                     The word "language" is important: Gri is command-driven, \
+		     not point/click. \
+                     Some users consider Gri similar to LaTeX, since both \
+		     provide extensive power in exchange for patience in \
+		     learning syntax.\
+                     Gri can make x-y graphs, contour graphs, and image \
+		     graphs, in PostScript and (someday) SVG formats. \
+		     Control is provided over all aspects of drawing, e.g. \
+		     line widths, colors, and fonts. A TeX-like syntax \
+		     provides common mathematical symbols.
+homepage             http://gri.sourceforge.net
+master_sites         sourceforge
+checksums           md5 7bcc56936508a112507cbd335001e27e \
+                    sha1 978f7ebcff13bbc830b90a5d58b01acbf0321057 \
+                    rmd160 fbf66ac8c40010749c40ed96bf5f6b0086cfa0e9
+
+depends_build	    port:ImageMagick \
+                    bin:tex:texlive \
+                    port:ghostscript \
+                    path:bin/perl:perl5
+configure.args	     --infodir=${prefix}/share/info

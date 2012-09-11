@@ -1,0 +1,108 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               muniversal 1.0
+PortGroup               archcheck 1.0
+
+name                    freetype
+version                 2.4.10
+categories              print graphics
+maintainers             ryandesign
+license                 {FreeType GPL-2}
+homepage                http://freetype.sourceforge.net/
+use_bzip2               yes
+platforms               darwin
+use_parallel_build      yes
+
+description \
+    A software font engine
+
+long_description \
+    FreeType2 is a software font engine that is designed to \
+    be small, efficient, highly customizable and portable while \
+    capable of producing high-quality output (glyph images). \
+    It can be used in graphics libraries, display servers, font \
+    conversion tools, text image generation tools, and many \
+    other products as well.
+
+master_sites            sourceforge:project/freetype/freetype2/${version}:source \
+                        sourceforge:project/freetype/freetype-docs/${version}:docs \
+                        http://download.savannah.gnu.org/releases/freetype/
+
+set docdistname         ${name}-doc-${version}
+
+distfiles               [suffix ${distname}]:source \
+                        [suffix ${docdistname}]:docs
+
+checksums \
+    [suffix ${distname}] \
+        rmd160  9da7fcde9c42f81c399201d055d85109b2ae7814 \
+        sha256  0c8e242c33c45928de560d7d595db06feb41d1b22167e37260ceabe72f9e992f \
+    [suffix ${docdistname}] \
+        rmd160  8272137b331e0396023d33d495358c82bddf1fbe \
+        sha256  b83b46fd02d00c256eea12bddf598454f95858dbeaa853b76dac5974f0321fd8
+
+patchfiles \
+    patch-src_base_ftrfork.c.diff \
+    patch-modules.cfg.diff
+
+depends_lib             port:zlib \
+                        port:bzip2
+
+archcheck.files         lib/libz.dylib \
+                        lib/libbz2.dylib
+
+# See http://trac.macports.org/ticket/18232
+configure.cppflags-delete   -I${prefix}/include
+configure.cppflags-append   -isystem${prefix}/include
+
+configure.universal_args-delete --disable-dependency-tracking
+
+platform macosx {
+    if {${os.major} < 9} {
+        configure.args-append \
+            --with-old-mac-fonts
+    }
+}
+
+set docdir              ${prefix}/share/doc/${name}
+
+post-destroot {
+    xinstall -m 0755 -d ${destroot}${docdir}
+    
+    xinstall -m 0644 -W ${worksrcpath} \
+        ChangeLog \
+        README \
+        ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath}/docs \
+        CHANGES \
+        FTL.TXT \
+        GPLv2.TXT \
+        LICENSE.TXT \
+        PROBLEMS \
+        TODO \
+        formats.txt \
+        raster.txt \
+        ${destroot}${docdir}
+    
+    xinstall -m 0755 -d ${destroot}${docdir}/html
+    xinstall -m 0644 -W ${worksrcpath}/docs ft2faq.html ${destroot}${docdir}/html
+    foreach dir {design glyphs reference tutorial} {
+        copy ${worksrcpath}/docs/${dir} ${destroot}${docdir}/html
+    }
+}
+
+if { ${os.arch}=="i386" } {
+    if { ${os.major}>=10 } {
+        set merger_configure_env(ppc) CC_BUILD=${configure.cc}
+    }
+    set merger_configure_env(ppc64)   CC_BUILD=${configure.cc}
+} else {
+    set merger_configure_env(i386)    CC_BUILD=${configure.cc}
+    set merger_configure_env(x86_64)  CC_BUILD=${configure.cc}
+}
+
+livecheck.type          regex
+livecheck.url           ${homepage}index2.html
+livecheck.regex         {FreeType ([0-9.]+) has been released}

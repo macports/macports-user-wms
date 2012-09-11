@@ -1,0 +1,35 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup ocaml 1.0
+
+name                ocaml-fileutils
+version             0.4.4
+revision            1
+categories          devel ml
+maintainers         landonf openmaintainer
+license             LGPL-2.1
+description         OCaml POSIX-like file library
+long_description    Library to provide pure OCaml functions to manipulate  \
+                    real file (POSIX like) and filename.
+
+homepage            http://ocaml-fileutils.forge.ocamlcore.org/
+platforms           darwin
+master_sites        http://forge.ocamlcore.org/frs/download.php/892/
+
+checksums           rmd160  cd1b0445dd5d7b0ae436c4b9cb0829e97f545b76 \
+                    sha256  f18982110572eeb8f69662863202c01b88d69637efff3f9f160e92672b75c15c
+
+livecheck.type      regex
+livecheck.regex     {>ocaml-fileutils-(.*)\.tar\.bz2}
+
+depends_build       port:ocaml-findlib port:ocaml-ounit
+
+use_configure       no
+
+build.env           PREFIX=${prefix}
+build.target        build
+use_parallel_build  no
+
+destroot.env        OCAMLFIND_DESTDIR="${ocamlfind_destdir}"
+

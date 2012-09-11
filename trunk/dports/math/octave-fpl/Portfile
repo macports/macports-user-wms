@@ -1,0 +1,16 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        fpl 0.1.6
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Collection of routines to plot data on unstructured \
+                    triangular and tetrahedral meshes
+long_description    ${description}
+
+checksums           md5     65f181620dcfb3a7083908dcfcf3477f \
+                    sha1    67b351a8e0b2b1874adfc9bc61d1caab067e9078 \
+                    rmd160  a1edb91daae8bf57c2eeb24d50d7e2a87d769459

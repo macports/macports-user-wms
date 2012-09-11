@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                smokekde
+version             4.8.3
+categories          kde kde4 devel
+platforms           darwin
+license             GPL-2+ LGPL-2
+maintainers         nicos openmaintainer
+
+description         Scripting Meta Object Kompiler Engine (SMOKE) KDE bindings.
+long_description    ${description} SMOKE is a introspective wrapper around the Qt \
+                    and KDE frameworks. Legend has it that SMOKE stands for Scripting \
+                    Meta Object Kompiler Engine
+
+homepage            http://techbase.kde.org/Development/Languages/Smoke
+master_sites        kde:stable/${version}/src/
+distname            ${name}-${version}
+use_xz              yes
+
+checksums           rmd160  6517e5110949c4b35833f5020f7e1a8aafb28ab7 \
+                    sha256  f4335e178e42910a11604684ce0672c19afdd0e04eb0d8d7ab5c99d32106fe0a
+
+depends_lib-append  port:kdelibs4 \
+                    port:smokeqt \
+                    port:attica \
+                    port:akonadi \
+                    port:soprano \
+                    port:kdepimlibs4 \
+                    port:okular \
+                    port:openssl \
+                    port:perl5
+
+patchfiles          patch-kdeui_includes.diff \
+                    patch-kdeui-smokeconfig.diff
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/latest/src/
+livecheck.regex     ${name}-(\\d+\\.\\d+\\.\\d+)${extract.suffix}

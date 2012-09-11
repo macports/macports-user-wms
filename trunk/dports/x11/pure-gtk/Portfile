@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                      1.0
+PortGroup                       pure 1.0
+
+pure.setup                      gtk 0.11
+categories                      x11
+platforms                       darwin
+maintainers                     ryandesign
+license                         LGPL-3
+
+description                     a collection of bindings to use the GTK+ \
+                                GUI toolkit version 2.x with Pure
+
+long_description                ${name} is ${description}. The bindings \
+                                include the gtk (+gdk), glib, atk, cairo and \
+                                pango libraries, each in their own Pure module
+
+checksums                       rmd160  3f2f1c8130d7e8ddc254397c8e493474f5b33165 \
+                                sha256  3537942f7560dd1f177e8eab4f5772a609b567db621610854ec54101a8163183
+
+depends_build-append            port:pkgconfig
+
+depends_lib-append              path:lib/pure/ffi.dylib:pure-ffi \
+                                path:lib/pkgconfig/atk.pc:atk \
+                                path:lib/pkgconfig/cairo.pc:cairo \
+                                path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                                path:lib/pkgconfig/gtk+-2.0.pc:gtk2 \
+                                path:lib/pkgconfig/pango.pc:pango

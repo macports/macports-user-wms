@@ -1,0 +1,53 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                  1.0
+
+name                        e2fsprogs
+conflicts                   kerberos5
+version                     1.42.2
+categories                  sysutils
+platforms                   darwin
+maintainers                 nomaintainer
+license                     GPL-2 LGPL-2+ MIT BSD
+
+description                 Utilities for use with the ext2, ext3 and ext4 \
+                            filesystems
+
+long_description            Utilities to create, check and manipulate extended 2, \
+                            3 and 4 filesystem (ext2, ext3, ext4) which are \
+                            commonly used on Linux.
+
+homepage                    http://e2fsprogs.sourceforge.net/
+master_sites                sourceforge:project/e2fsprogs/e2fsprogs/v${version}
+
+checksums           sha1    bfba3716b78310cf2a288909f13214a718d91e25 \
+                    rmd160  3bcd03bb33a10f23a5fcc3759f1aba2803e5ccb5 \
+                    sha256  1d36fec5e34ac285f59dff3851d6f4ca9f0b964ddd7e8fe00f1f920b091cb8be
+
+depends_build               port:pkgconfig
+depends_lib                 port:gettext \
+                            port:ossp-uuid
+
+patchfiles                  patch-lib__Makefile.darwin-lib
+
+if {${configure.compiler} == "clang"} {
+   # This project is not C99 conformant and has return type conflicts that
+   # clang complains about
+   configure.cflags-append  "--std=gnu89 -Wno-return-type"
+}
+
+platform darwin 9 {
+   # hack around missing memalign (#33692)
+   patchfiles-append        patch-lib-ext2fs-inline.c.diff
+}
+
+universal_variant           no
+
+configure.args-append       --enable-bsd-shlibs \
+                            --disable-libuuid --disable-uuidd
+
+destroot.target-append      install-libs
+
+livecheck.type              regex
+livecheck.regex             ${name}-(\[0-9.\]+)\\.tar

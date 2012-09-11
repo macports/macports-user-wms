@@ -1,0 +1,27 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup python24 1.0
+
+name			py-zsi
+version			2.0
+categories		python net
+platforms		darwin
+maintainers		nomaintainer
+description		Zolera SOAP Infrastructure is a Python implementation of SOAP
+long_description	ZSI, the Zolera SOAP Infrastructure, is a pure-Python \
+				module that provides an implementation of SOAP \
+				messaging, as described in The SOAP 1.1 Specification. \
+				It can also be used to build applications using SOAP \
+				Messages with Attachments. ZSI is intended to make it \
+				easier to write web services in Python.
+
+homepage		http://pywebsvcs.sourceforge.net/
+master_sites	sourceforge:pywebsvcs
+distname		ZSI-${version}
+checksums		sha1 e691d9610f04afad9cf62f7990cfd3b4df47ff01
+
+post-destroot	{
+	xinstall -m 644 ${worksrcpath}/README \
+		${destroot}${prefix}/share/doc/${name}
+}

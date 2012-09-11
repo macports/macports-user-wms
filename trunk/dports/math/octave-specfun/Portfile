@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        specfun 1.0.8
+platforms           darwin
+license             GPL-2+ GPL-3+
+maintainers         nomaintainer
+description         Special functions including ellipitic functions, etc
+long_description    ${description}
+
+checksums           md5     b4d018a3ce98996ca9eb9b5720eccf53 \
+                    sha1    555b0c5b9f7bff25096fb7964cc2cddb52ed59f2 \
+                    rmd160  f42efcbd93bb03566d11e031f06bccaa0511fd14

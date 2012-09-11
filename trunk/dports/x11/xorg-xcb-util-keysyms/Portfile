@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem 1.0
+
+name		xorg-xcb-util-keysyms
+version		0.3.9
+categories	x11 devel
+license		X11
+maintainers	jeremyhu openmaintainer
+description	X.org xcb-util-keysyms
+homepage	http://xcb.freedesktop.org/
+platforms	darwin macosx
+long_description Utility libraries for XCB
+master_sites	 ${homepage}/dist/
+
+distname	xcb-util-keysyms-${version}
+checksums           sha1    74d9d0eeb13ec0e36b35f4b812e8073d1a09e51c \
+                    rmd160  6a155a76bd8efb3a761703895653d4e964d78452 \
+                    sha256  7be1acf053bd68a1910fc861b2cbcbad7637b5618590dd5484d43a96f7995c6e
+use_bzip2	yes
+use_parallel_build yes
+
+depends_build   port:pkgconfig
+depends_lib	port:xorg-libxcb
+
+livecheck.type  regex
+livecheck.url   ${master_sites}?C=M&O=D
+livecheck.regex xcb-util-keysyms-(\\d+(?:\\.\\d+)*)

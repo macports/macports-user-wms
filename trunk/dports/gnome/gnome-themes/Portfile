@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+
+name            gnome-themes
+version         2.30.2
+revision        1
+set branch      [join [lrange [split ${version} .] 0 1] .]
+maintainers     devans openmaintainer
+categories      gnome
+platforms       darwin
+supported_archs noarch
+license         LGPL-2 GPL-2
+description     A collection of themes and icons for GNOME 2 designed for accessibility.
+
+long_description \
+    New package of default themes for GNOME, \
+    which currently includes GTK+ and icon \
+    themes designed for accessibility.
+
+homepage        http://www.gnome.org/
+master_sites    gnome:sources/${name}/${branch}/
+use_bzip2       yes
+
+checksums       md5     a14d46ac59f651e04a333ae1dff23848 \
+                sha1    701343961956ded719d9ac7c6ff22a9b7603bad4 \
+                rmd160  dfa2cb96befff4f160507d7b0805abfcc71bbecf
+
+depends_build   port:icon-naming-utils \
+                port:pkgconfig \
+                port:intltool
+
+depends_lib     port:gtk2 \
+                port:gtk-engines2 \
+                port:gnome-icon-theme
+
+configure.args  --enable-all-themes
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/GNOME/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-([0-9\.]+)}

@@ -1,0 +1,85 @@
+# -*- coding: utf-8; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                tbb
+set rel_date        20120613
+set vers            4.0
+set update_ver      5
+version             ${vers}-${rel_date}
+maintainers         mnick openmaintainer
+
+categories          devel
+description         Intel Threading Building Blocks offers a rich and complete approach to parallelism in C++
+long_description    ${description} \
+                    It represents a higher-level, task-based parallelism that abstracts \
+                    platform details and threading mechanisms for scalability and performance
+license             GPL
+platforms           darwin
+
+homepage            http://threadingbuildingblocks.org
+master_sites        "${homepage}/uploads/77/187/${vers}%20update%20${update_ver}/"
+
+worksrcdir          ${name}40_${rel_date}oss
+distname            ${worksrcdir}_src
+extract.suffix      .tgz
+
+checksums           rmd160  f630bf7085808f45ebe179ae9998eea5d738a905 \
+                    sha256  aaa98146049e55f6ac969298340eeb49df61395403fcc1480824a4ecd0d46192
+
+patchfiles          patch-build-macos.inc.diff
+
+use_configure       no
+build.target        tbb tbbmalloc
+
+switch ${build_arch} {
+    i386 {
+        set arch_flag intel32
+    }
+    x86_64 {
+        set arch_flag intel64
+    }
+    default {
+        set arch_flag ${build_arch}
+    }
+}
+
+set compilers       "CONLY=${configure.cc} CPLUS=${configure.cxx}"
+build.args-append   ${compilers}
+build.env-append    arch=${arch_flag}
+test.env-append     arch=${arch_flag}
+
+destroot {
+    set build_dir [exec sh -c "cd ${worksrcpath} && ${build.env} make info ${compilers} | grep build_prefix | cut -f2 -d'='"]
+    set build_dir "${worksrcpath}/build/${build_dir}_release"
+
+    # fix paths
+    reinplace "s|\\(TBB30_INSTALL_DIR.\\)\".*\"|\\1\"${prefix}\"|g" \
+        ${build_dir}/tbbvars.sh ${build_dir}/tbbvars.csh
+    reinplace "s|\\(tbb_bin.\\)\".*\"|\\1\"${prefix}/lib\"|g" \
+        ${build_dir}/tbbvars.sh ${build_dir}/tbbvars.csh
+
+    # copy lib, include & bin
+    eval file copy [glob ${build_dir}/lib*.dylib] ${destroot}${prefix}/lib
+    eval file copy [glob ${build_dir}/tbbvars.*sh] ${destroot}${prefix}/bin
+    file copy ${worksrcpath}/include/tbb ${destroot}${prefix}/include/tbb
+
+    # fix install_name paths
+    system "install_name_tool -id ${prefix}/lib/libtbb.dylib ${destroot}${prefix}/lib/libtbb.dylib"
+    system "install_name_tool -id ${prefix}/lib/libtbbmalloc.dylib ${destroot}${prefix}/lib/libtbbmalloc.dylib"
+
+    # copy examples & docs
+    file mkdir ${destroot}${prefix}/share/${name}
+    file copy ${worksrcpath}/doc ${destroot}${prefix}/share/${name}/doc
+    file copy ${worksrcpath}/examples ${destroot}${prefix}/share/${name}/examples
+}
+
+test.run            yes
+test.cmd            make
+test.target         test
+
+livecheck.type      regex
+livecheck.url       http://threadingbuildingblocks.org/file.php?fid=77
+livecheck.version   [join [split [lrange [split ${version} -] 0 0] .] ""]_${rel_date}
+livecheck.regex     <a href="ver.php\\?fid=\\d+">${name}(\[\\d_\]+)oss</a>

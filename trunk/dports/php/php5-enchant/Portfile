@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+PortGroup       php5extension 1.0
+
+php5extension.setup enchant 5.3.15 bundled
+license         PHP
+categories      php textproc devel
+platforms       darwin
+maintainers     ryandesign
+description     libenchant binder, support near all spelling tools
+
+long_description \
+    Enchant is a binder for libenchant. Libenchant provides a common API for \
+    many spell libraries.
+
+checksums       rmd160  b82b9f57c4bdc3b451a0c179f131497ebbbfd94f \
+                sha256  f9b725659e64228a60883bd134afe1f638900b6b8fa93ba98053095b0892f1ef
+
+depends_lib-append \
+    port:enchant
+
+configure.args \
+    --with-enchant=${prefix}
+
+test.run yes
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 -W ${destroot.dir} CREDITS ${destroot}${docdir}
+
+    set examplesdir ${prefix}/share/examples/${name}
+    xinstall -d ${destroot}${examplesdir}
+    xinstall -m 644 ${destroot.dir}/docs/examples/example1.php \
+        ${destroot}${examplesdir}
+}

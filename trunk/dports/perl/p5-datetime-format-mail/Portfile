@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         DateTime-Format-Mail 0.3001
+revision            2
+platforms           darwin
+maintainers         l2g openmaintainer
+license             Artistic GPL
+supported_archs     noarch
+
+description         Convert between DateTime and RFC2822/822 formats
+
+long_description    ${description}
+
+checksums           sha1    7381aedca0ab6e7fbfd94e3bec804f2487dd815d \
+                    rmd160  f1e69814f1101e4c2b2e979252ecd385d416dbd0
+
+if {${perl5.major} != ""} {
+perl5.use_module_build
+}

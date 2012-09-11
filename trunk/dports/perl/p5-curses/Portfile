@@ -1,0 +1,27 @@
+# $Id$
+
+PortSystem                      1.0
+PortGroup                       perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup                     Curses 1.15
+revision                3
+extract.suffix			.tgz
+
+maintainers                     email.arc.nasa.gov:sal
+description                     terminal screen handling and optimization 
+long_description                Curses is the interface between Perl and your system's \
+				curses(3) library. For descriptions on the usage of a \
+				given function, variable, or constant, consult your \
+				system's documentation, as such information invariably \
+				varies (:-) between different curses(3) libraries and \
+				operating systems.
+platforms                       darwin
+checksums                       md5 6f3c5ea61cbbfabe15b0004febcb3a4d
+if {${perl5.major} != ""} {
+depends_lib-append              port:ncurses
+
+pre-configure { 
+	file copy -force ${worksrcpath}/hints/c-freebsd.ncurses.h ${worksrcpath}/c-config.h
+}
+}

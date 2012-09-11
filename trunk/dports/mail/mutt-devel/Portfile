@@ -1,0 +1,195 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                mutt-devel
+version             1.5.21 
+revision            2
+categories          mail
+platforms           darwin
+license             GPL-2
+maintainers         mnick openmaintainer
+description         Mongrel of Mail User Agents (part Elm, Pine, Mush, mh, etc)
+long_description    Mutt -- "The Mongrel of Mail User Agents" (part Elm, \
+                    part Pine, part mh, part slrn, part everything else) is \
+                    an interactive screen-oriented mailer program that \
+                    supersedes Elm, Pine, mail and mailx.  Features include \
+                    color support, message threading, MIME support \
+                    (including RFC1522 support for encoded headers), \
+                    customizable key bindings, POP3, Delivery Status \
+                    Notification (DSN) support, PGP/MIME, and S/MIME.
+
+homepage            http://www.mutt.org/
+master_sites        ftp://ftp.mutt.org/mutt/devel/ \
+                    sourceforge:project/mutt/mutt-dev
+distname            mutt-${version}
+checksums           ${distfiles} \
+                    md5     a29db8f1d51e2f10c070bf88e8a553fd \
+                    sha1    a8475f2618ce5d5d33bff85c0affdf21ab1d76b9 \
+                    rmd160  b235a42972ae410592253cdc117a90baf279f47a
+
+depends_lib         port:gettext \
+                    port:libiconv \
+                    port:ncurses
+
+patch.args          -p1
+# upstream changeset to fix segfault, ticket #28269
+patchfiles          1a4c43138685.diff
+# upstream changeset to fix build with automake 1.12, ticket #34296
+patchfiles-append   0488deb39a35.diff
+
+configure.args      --disable-warnings \
+                    --mandir=${prefix}/share/man \
+                    --with-docdir=${prefix}/share/doc/mutt \
+                    --with-libiconv-prefix=${prefix} \
+                    --with-curses=${prefix}
+
+default_variants    +pop +imap
+
+
+if {![variant_isset db4] && ![variant_isset qdbm] && ![variant_isset tokyocabinet]} {
+        variant_set gdbm
+}
+
+# These variants' patches modify Makefile.am
+if {[variant_isset compress] || [variant_isset sidebar]} {
+    use_autoreconf  yes
+}
+
+variant idn description {Internationalized Domain Name support} {
+    configure.args-append   --with-idn=${prefix}
+    depends_lib-append      port:libidn port:zlib
+}
+
+variant pop description {POP support} {
+    configure.args-append   --enable-pop
+}
+variant imap description {IMAP support} {
+    configure.args-append   --enable-imap
+}
+variant ssl description {Secure Sockets Layer support} {
+    configure.args-append   --with-ssl=${prefix}
+    depends_lib-append      port:openssl
+}
+variant sasl description {Simple Authentication and Security Layer support} {
+    configure.args-append   --with-sasl=${prefix}
+    depends_lib-append      port:cyrus-sasl2
+}
+
+variant debug description {Debugging support} {
+    configure.args-append   --enable-debug
+}
+
+variant gnuregex description {Use the GNU regular expression library} {
+    configure.args-append   --with-regex
+}
+
+variant compress description {Compressed folders} {
+    configure.args-append   --enable-compressed
+    patch_sites-append      http://www.mutt.org.ua/download/mutt-1.5.21/
+    patchfiles-append       patch-1.5.21.rr.compressed.gz
+    checksums-append        patch-1.5.21.rr.compressed.gz md5 \
+                                0632fd94c96b3e452144b730e3cf0fd3
+}
+
+variant headercache conflicts db4 description {Enable header caching (requires gdbm, qdbm, or tokyocabinet)} {
+    configure.args-append       --enable-hcache
+    configure.ldflags-append    "-L/usr/lib"
+}
+
+variant qdbm conflicts db4 gdbm tokyocabinet description {Use QDBM database} {
+    depends_lib-append      port:qdbm
+    configure.args-append   --with-qdbm --without-bdb --without-gdbm --without-tokyocabinet
+}
+
+variant gdbm conflicts db4 qdbm tokyocabinet description {Use GNU dbm database} {
+    depends_lib-append      port:gdbm
+    configure.args-append   --with-gdbm --without-bdb --without-qdbm --without-tokyocabinet
+}
+
+variant db4 conflicts qdbm gdbm tokyocabinet description {Use Berkeley DB database} {
+    depends_lib-append          port:db44
+    configure.args-append       --with-bdb=${prefix} --without-qdbm --without-gdbm --without-tokyocabinet
+    configure.cppflags-append   "-I${prefix}/include/db44"
+    configure.ldflags-append    "-L${prefix}/lib/db44"
+}
+
+variant tokyocabinet conflicts db4 gdbm qdbm description {Use Tokyo Cabinet database} {
+    depends_lib-append      port:tokyocabinet
+    configure.args-append   --enable-tokyocabinet --without-bdb --without-gdbm --without-qdbm
+}
+
+# The patches for nntp and sidebar conflict, see ticket #15135
+variant nntp conflicts sidebar description {NNTP support} {
+    configure.args-append   --enable-nntp
+    patch_sites-append      http://www.mutt.org.ua/download/mutt-1.5.21/
+    patchfiles-append       patch-1.5.21.vvv.nntp.gz
+    checksums-append        patch-1.5.21.vvv.nntp.gz md5 \
+                                afcf40f7e53a016b953cbf6af27b3cd8
+}
+
+variant deepif description {Allow nested if-else sequences in strings} {
+    patch_sites-append      http://home.uchicago.edu/~dgc/sw/mutt/
+    patchfiles-append       patch-1.5.8.dgc.deepif.1
+    checksums-append        patch-1.5.8.dgc.deepif.1 md5 \
+                                b892597eff7b60c450b48c011ab941cb
+}
+
+# whoa! messy FAIL
+#variant unbind description {Undo stroke and macro bindings} {
+#    patch_sites-append      http://home.uchicago.edu/~dgc/sw/mutt/
+#    patchfiles-append       patch-1.5.6.dgc.unbind.1
+#    checksums-append        patch-1.5.6.dgc.unbind.1 md5 \
+#                                47a1f47382b33f4cc5ce89de1cfea4e1
+#}
+
+variant date_conditional requires deepif description \
+    {Allow the format of dates in the index to vary based on how recent the message is} {
+    # original, but now dgc hosts it with -p1
+    #patch_sites-append http://www.schrab.com/aaron/mutt/
+    patch_sites-append      http://home.uchicago.edu/~dgc/sw/mutt/
+    patchfiles-append       patch-1.5.8.ats.date_conditional.1
+    checksums-append        patch-1.5.8.ats.date_conditional.1 md5 \
+                                83479a011390802b3f9f1c0f95b15199
+}
+
+variant xlabel description {Custom message-tagging - X-Label:} {
+    patchfiles-append       patch-1.5.21.mp.xlabel_ext.9
+}
+
+# patch_site appears to be dead, can re-enable the variant if a working one is found
+#variant checkseen {
+#    patch_sites-append      http://www.neuronix.cz/coding/mutt_imap/
+#    patchfiles-append       imap_checkseen_1.5.11.patch
+#    checksums-append        imap_checkseen_1.5.11.patch md5 \
+#                                37e49d7203149027e30e28a7bc74c365
+#}
+
+variant smtp description {Include internal SMTP relay support} {
+    configure.args-append   --enable-smtp
+}
+
+variant sidebar conflicts nntp description {Add a sidebar with a list of folders} {
+    # http://www.lunar-linux.org/index.php/en/component/content/article/44-mutt-sidebar.html
+    # "official" patch doesn't apply, use debians
+    patchfiles-append       patch-1.5.21.debian.sidebar.diff
+}
+
+variant trash description {Add a Trash folder} {
+    patchfiles-append       patch-1.5.20.bk.trash_folder-purge_message.1
+}
+
+variant gpgme description {Enable GPGME crypto support} {
+    configure.args-append   --enable-gpgme --with-gpgme-prefix=${prefix}
+    depends_lib-append      port:gpgme
+    # the following patch makes mutt 1.5.20 compatible with gpgme 1.2.0, 
+    # cf. http://bugs.gentoo.org/show_bug.cgi?id=278394
+    # and http://dev.mutt.org/trac/ticket/3300
+    patchfiles-append         patch-1.5.20.gpgme.diff
+    checksums-append       patch-1.5.20.gpgme.diff md5 \
+                                 6faa84e2520dad7c603e8a8b9e0a9b30
+}
+
+livecheck.type      regex
+livecheck.regex     {Mutt (\d+(?:\.\d+)*) was released}

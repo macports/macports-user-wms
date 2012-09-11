@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Email-Address 1.892
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         perl rfc email address formatting
+long_description    ${description}
+
+platforms           darwin
+
+checksums           md5 047e982b0ab7434406a32759164bfe1e \
+                    sha1 508aec815e8abb94e65bad452c5f5661bf26385f \
+                    rmd160 f9dcd11d98f9932cd0b2372fae423cb80a5ac497
+
+supported_archs     noarch

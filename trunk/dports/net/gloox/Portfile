@@ -1,0 +1,33 @@
+# $Id$
+
+PortSystem 1.0
+
+name			gloox
+version			1.0
+categories		net devel
+platforms		darwin
+license			{GPL-2 OpenSSLException} 
+maintainers		nomaintainer
+description		C++ Jabber/XMPP library taking care of the low-level protocol
+long_description	gloox is a C++ Jabber/XMPP library which takes care of the \
+				low-level protocol stuff. Additionally, it offers high-level \
+				interfaces for interaction with an XMPP server.
+
+homepage		http://camaya.net/gloox
+master_sites	http://camaya.net/download/
+checksums		md5     f8eacf1c6476e0a309b453fd04f90e31 \
+				sha1    8c788738f72b05fae7c05c744a67859419ffa09c \
+				rmd160  92089462ed778fb41bf97d882fc1785b8e82233f
+use_bzip2		yes
+
+depends_lib		port:iksemel port:gettext port:gnutls port:libgcrypt \
+				port:libgpg-error port:libiconv port:libidn \
+				port:zlib
+
+configure.args	--with-gnutls=${prefix} --with-zlib=${prefix} \
+				--with-libidn=${prefix}
+configure.cflags-append	"-I${prefix}/include"
+
+livecheck.type  regex
+livecheck.url   ${master_sites}
+livecheck.regex "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

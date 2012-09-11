@@ -1,0 +1,31 @@
+# $Id$
+
+PortSystem 1.0
+name            grep
+version         2.12
+platforms       darwin
+categories	sysutils
+license         GPL-3+
+installs_libs   no
+maintainers	nomaintainer
+description     GNU grep, the \"fastest grep in the west\" (we hope).
+long_description \
+    Grep searches one or more input files for lines containing a match  \
+    to a specified pattern. By default, grep prints the matching lines.
+homepage        http://www.gnu.org/software/grep/grep.html
+platforms       darwin
+master_sites    gnu
+use_xz          yes
+
+checksums       rmd160  036807faff0330b412fe1d261972e451715694aa \
+                sha256  4dce0a4fb83ddd0120df51e00b52fa760f2ed8675d4d4c0b0ae642ba692ead64
+
+patchfiles      patch-po-Makefile.in.in.diff
+
+# Ensure system version of grep is used instead of a possibly broken MacPorts version.
+configure.env   PATH=/usr/bin:$env(PATH)
+
+depends_lib     port:pcre port:gettext
+
+test.run        yes
+test.target     check

@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        ident 1.0.7
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Addition System Indentification Control functions.
+long_description    ${description}
+
+checksums           md5     29697948e4af19d868abc00d373278fb \
+                    sha1    5852903addf9038b301fdc1d15429b4f19a1bf99 \
+                    rmd160  bd768d51f36f21d3d826ab524eb42f7b8bb1e9ab

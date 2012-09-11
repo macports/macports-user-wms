@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Test-Tester 0.107
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Ease testing test modules built with Test::Builder
+long_description    ${description}
+
+platforms           darwin
+
+checksums           md5 998a8abe241992faaa3e90f330800840 \
+                    sha1 1cc2695d0b3dbbd39d63ed86ba6340079815f368 \
+                    rmd160 ccf1ffc20ece92103aff5e179bd34617b169913e
+
+supported_archs noarch

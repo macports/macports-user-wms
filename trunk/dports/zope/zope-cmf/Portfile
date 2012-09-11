@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem		1.0
+PortGroup		zope 1.0
+
+zope.setup		CMF 1.4.7 {CMFCore CMFDefault CMFTopic CMFCalendar DCWorkflow}
+license			ZPL-2
+maintainers		nomaintainer
+description		The Zope Content Management Framework (CMF)
+long_description	The Zope Content Management Framework provides a set \
+					of services and content objects useful for building \
+					highly dynamic, content-oriented portal sites.  As \
+					packaged, the CMF generates a site much like the \
+					Zope.org site.  The CMF is intended to be easily \
+					customizable, in terms of both the types of content \
+					used and the policies and services it provides.
+homepage		http://zope.org/Products/${zope.product}
+master_sites	${homepage}/${distname}/
+checksums		md5 2aca7518950444fa4f7437860865647f
+platforms		darwin freebsd
+
+post-destroot {
+	if {[file isdirectory ${worksrcpath}/docs]} {
+		set docPath ${destroot}${prefix}/share/doc
+		xinstall -d -m 0755 ${docPath}
+		system "cp -R ${worksrcpath}/docs ${docPath}/${name}"
+	}
+}

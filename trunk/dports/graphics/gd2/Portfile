@@ -1,0 +1,102 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                  1.0
+PortGroup                   archcheck 1.0
+PortGroup                   muniversal 1.0
+
+name                        gd2
+version                     2.0.35
+revision                    13
+categories                  graphics
+maintainers                 ryandesign
+license                     gd
+homepage                    http://www.libgd.org/
+platforms                   darwin
+distname                    gd-${version}
+use_bzip2                   yes
+use_parallel_build          yes
+
+description                 GD creates PNG and JPEG images, among other formats
+
+long_description            gd is a graphics library. It allows your code to \
+                            quickly draw images complete with lines, arcs, \
+                            text, multiple colors, cut and paste from other \
+                            images, and flood fills, and write out the result \
+                            as a .PNG file. This is particularly useful in \
+                            World Wide Web applications, where .PNG is the \
+                            format used for inline images. gd is not a paint \
+                            program. If you are looking for a paint program, \
+                            you are looking in the wrong place. If you are not \
+                            a programmer, you are looking in the wrong place.
+
+#master_sites                ${homepage}releases/ \
+#                            ${homepage}releases/oldreleases/
+master_sites                macports_distfiles
+
+checksums                   rmd160  f452a2c333b2ba9b7b4c143983ec2af18a335516 \
+                            sha256  bf222490749d2a9a9ac3593b01eb55aed98461ff81202414707f61b42aa300f9
+
+depends_build               port:gettext
+
+depends_lib                 port:zlib \
+                            port:libpng \
+                            port:jpeg \
+                            port:freetype \
+                            port:fontconfig \
+                            port:libiconv \
+                            port:expat
+
+archcheck.files             lib/libz.dylib \
+                            lib/libpng.dylib \
+                            lib/libjpeg.dylib \
+                            lib/libfreetype.dylib \
+                            lib/libfontconfig.dylib \
+                            lib/libiconv.dylib \
+                            lib/libexpat.dylib
+
+patchfiles                  patch-configure.ac.diff \
+                            patch-gdft.c.diff
+
+post-patch {
+    if {[file exists ${prefix}/share/libtool/config/ltmain.sh]} {
+        copy -force ${prefix}/share/libtool/config/ltmain.sh ${worksrcpath}/config
+    } else {
+        copy -force ${prefix}/share/libtool/ltmain.sh ${worksrcpath}/config
+    }
+}
+
+use_autoreconf              yes
+
+configure.cflags-append     -DDEFAULT_FONTPATH=\\\"/System/Library/Fonts:/Library/Fonts\\\"
+
+post-configure {
+    if {[variant_isset universal]} {
+        set dirs {}
+        foreach arch ${universal_archs_to_use} {
+            lappend dirs ${worksrcpath}-${arch}
+        }
+    } else {
+        set dirs ${worksrcpath}
+    }
+    foreach dir ${dirs} {
+        reinplace -E {s|-arch [a-z0-9_]+||g} \
+            ${dir}/config/gdlib-config
+    }
+}
+
+if {![variant_isset no_x11]} {
+    depends_lib-append      port:xpm
+    archcheck.files-append  lib/libXpm.dylib
+    configure.args-append   --x-includes=${prefix}/include \
+                            --x-libraries=${prefix}/lib
+}
+
+variant no_x11 description {disable use of X11} {
+    configure.args-append   --without-x \
+                            --without-xpm
+}
+
+livecheck.type              regex
+livecheck.url               ${homepage}Downloads
+livecheck.regex             gd-(\[0-9.\]+)\\.tar

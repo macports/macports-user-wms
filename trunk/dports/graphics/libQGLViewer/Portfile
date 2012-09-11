@@ -1,0 +1,75 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                      1.0
+
+name                            libQGLViewer
+version                         2.3.16
+platforms                       darwin
+maintainers                     raphael openmaintainer
+license                         {GPL-2+ Commercial}
+categories                      graphics
+description                     A C++ library based on Qt that eases the creation of OpenGL \
+                                3D viewers
+homepage                        http://www.libqglviewer.com/
+long_description                libQGLViewer is a C++ library based on Qt that eases the \
+                                creation of OpenGL 3D viewers. It provides some of the typical \
+                                3D viewer functionalities, such as the possibility to move the \
+                                camera using the mouse, which lacks in most of the other APIs. \
+                                Other features include mouse manipulated frames, interpolated \
+                                keyFrames, object selection, stereo display, screenshot saving \
+                                and much more. It can be used by OpenGL beginners as well as \
+                                to create complex applications, being fully customizable and \
+                                easy to extend.
+
+master_sites                    ${homepage}src/
+
+checksums                       rmd160  7a2393428c72e8da9deb685aa0c8d1f64745f7f7 \
+                                sha256  f1f5e95a4ca96ea94417292422a91be3e5d5e877d1be00c233cb07dc9b1fe6e9
+
+# exclude extended attributes of all files from extraction
+extract.post_args-append        "--exclude='._*'"
+
+patchfiles                      patch-QGLViewer.pro.diff \
+                                patch-designerPlugin.pro.diff
+# the terrain example does not compile on Lion; see #30886
+platform darwin 11 {
+    patchfiles-append           patch-contribs.pro.diff
+}
+
+variant x11 {}
+
+if {![variant_isset x11]} {
+    PortGroup                   qt4 1.0
+    configure.cmd               ${qt_qmake_cmd}
+} else {
+    depends_lib-append          port:qt4-x11
+    configure.cmd               ${prefix}/libexec/qt4-x11/bin/qmake
+    set qt_plugins_dir          ${prefix}/libexec/qt4-x11/plugins/designer
+}
+
+post-patch {
+    reinplace "s|@@QT_PLUGINS_DIR@@|${qt_plugins_dir}|g" ${worksrcpath}/designerPlugin/designerPlugin.pro
+}
+
+configure.pre_args              PREFIX=${prefix} \
+                                DOC_DIR=${prefix}/share/doc/${name} \
+                                -after QMAKE_POST_LINK=
+configure.universal_args
+
+use_parallel_build              no
+
+post-destroot {
+    system -W ${worksrcpath}/examples "make clean"
+    copy ${worksrcpath}/examples ${destroot}${applications_dir}/libQGLViewer\ Examples
+    xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} \
+        CHANGELOG \
+        GPL_EXCEPTION \
+        LICENCE \
+        README \
+        ${destroot}${prefix}/share/doc/${name}
+}
+
+livecheck.type                  regex
+livecheck.regex                 "Version (\\d+(?:\\.\\d+)*)"

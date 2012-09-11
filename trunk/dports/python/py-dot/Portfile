@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup python 1.0
+
+name			py-dot
+python.versions         24 25 26 27
+version			1.0.28
+revision		1
+categories		python graphics
+platforms		darwin
+maintainers		nomaintainer
+description		python module for creating graphs
+long_description	An interface for creating both directed and non \
+				directed graphs from Python. Currently all attributes \
+				implemented in the Dot language are supported (up to \
+				Graphviz 1.10).
+
+homepage		http://code.google.com/p/pydot/
+distfiles
+if { ${name} != ${subport} } {
+    replaced_by py${python.version}-pydot
+} else {
+    replaced_by py-pydot
+}
+
+pre-fetch {
+    ui_error "The $subport port is obsolete; please install $replaced_by instead."
+    return -code error "obsolete port"
+}

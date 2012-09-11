@@ -1,0 +1,88 @@
+# $Id$
+
+####################################################################
+# Marc Lehmann, the developer of rxvt-unicode, has no interest in  #
+# supporting it on Mac OS X. He is hostile about Apple, Mac OS X,  #
+# and Mac users, so do not contact him about his software when     #
+# used on Mac OS X. If you encounter problems updating this port   #
+# to a newer version, find a workaround and write a patch. Do not  #
+# report upstream. See http://trac.macports.org/ticket/17202       #
+####################################################################
+
+PortSystem      1.0
+
+name            rxvt-unicode
+version         9.11
+revision        1
+categories      x11
+maintainers     gmail.com:evangoldenberg \
+                openmaintainer
+description     Unicode-aware rxvt clone.
+long_description \
+                rxvt-unicode is a clone of the well-known terminal \
+                emulator rxvt. Some of its main features over rxvt are \
+                use of UCS-2 or UCS-4 to store text internally, \
+                locale-correct in- and output, stability, \
+                completely flicker-free \
+                display, support for Xft and core fonts in any \
+                combination, etc.
+platforms       darwin
+homepage        http://software.schmorp.de/pkg/rxvt-unicode.html
+master_sites    http://dist.schmorp.de/rxvt-unicode/ \
+                http://dist.schmorp.de/rxvt-unicode/Attic/
+use_bzip2       yes
+
+checksums       sha1    21d0fad9a6032dbcf2c43a85f288543c6bd5ab3d \
+                rmd160  957852e0cbec209aa5ae340a38b59cda0ff49edd
+
+depends_build \
+	port:pkgconfig
+
+depends_lib \
+	port:Xft2 \
+	port:expat \
+	port:ncurses \
+	path:bin/perl:perl5 \
+	port:zlib
+
+# FIXME: clang++ 3.0 produces unstable urxvt binary which sometimes causes errors like:
+#        "terminate called throwing an exceptionAbort trap: 6"
+if {${configure.compiler} == "clang"} {
+    configure.compiler llvm-gcc-4.2
+}
+
+configure.perl  ${prefix}/bin/perl
+
+patchfiles      patch-Makefile.in.diff
+
+configure.args  --enable-everything --enable-256-color --with-codesets=all \
+                --disable-utmp --disable-afterimage \
+                --mandir=${prefix}/share/man
+
+use_parallel_build  yes
+
+variant lite description {lightweight build options} {
+    depends_lib-delete      port:Xft2 \
+                            path:bin/perl:perl5 \
+                            port:zlib
+    depends_lib-append      port:xorg-libX11
+    configure.args-delete   --enable-everything
+    configure.args-append   --disable-everything \
+                            --enable-combining \
+                            --enable-resources \
+                            --enable-frills \
+                            --enable-font-styles \
+                            --enable-selectionscrolling \
+                            --enable-mousewheel \
+                            --enable-pointer-blank
+}
+
+destroot.env    TERMINFO=${destroot}${prefix}/share/terminfo
+pre-destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/share/terminfo
+}
+post-destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}/etc
+    xinstall -m 644 -W ${worksrcpath} COPYING Changes INSTALL README.FAQ README.configure ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath}/doc/etc rxvt-unicode.termcap rxvt-unicode.terminfo ${destroot}${prefix}/share/doc/${name}/etc
+}

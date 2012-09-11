@@ -1,0 +1,82 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-omniORBpy
+version             3.6
+revision            0
+categories-append   devel
+license             LGPL-2.1
+platforms           darwin
+supported_archs     i386 x86_64
+
+maintainers         stromnov openmaintainer
+
+description         Python bindings for omniORB
+
+long_description    omniORB is a robust high performance CORBA ORB for C++ and \
+                    Python. omniORB is largely CORBA 2.6 compliant.
+
+                    homepage            http://omniorb.sourceforge.net/
+master_sites        sourceforge:project/omniorb/omniORBpy/omniORBpy-${version}
+
+distname            omniORBpy-${version}
+
+checksums           rmd160  96b73cfcac7f2b8df2894c93b3e422bd85412251 \
+                    sha256  b845eef13b56dfb47c98d65636ede5155ed4b84b2a64e35831b94668878af7c7
+
+use_bzip2           yes
+
+# Use the python subports feature but omniORBpy uses make
+# rather than setup.py for building since there are compiled libraries.
+# So the build procedure must unravel the python PortGroup settings
+# and revert to values compatible with a make environment.
+# Ugly but it works.
+
+python.versions     24 25 26 27
+python.default_version 24
+
+if {$subport != $name} {
+    notes \
+"${name} must be compatible with the corresponding omniORB installation.
+Ensure that the same python version has been specified for the omniORB variant."
+
+    depends_lib         port:omniORB \
+                        port:python${python.version}
+
+    patchfiles          patch-dir.mk
+
+    post-patch {
+        # python libraries (PYTHON_PREFIX)
+        reinplace "s|get_python_lib(0,\[^)\]*)|get_python_lib()|g" \
+            ${worksrcpath}/configure
+        # compiled libraries to support python (PYTHON_EXEC_PREFIX)
+        reinplace "s|get_python_lib(1,\[^)\]*)|get_python_lib()|g" \
+            ${worksrcpath}/configure
+    }
+
+    use_configure       yes
+
+    build.type          gnu
+    build.cmd           make
+    build.target        all
+    build.args          {}
+
+    destroot.cmd        ${build.cmd}
+    destroot.target     install
+    destroot.args       {}
+    destroot.destdir    DESTDIR=${destroot}
+
+    variant ssl description {Enable SSL support} {
+        configure.args-append   --with-openssl
+        depends_lib-append      port:openssl
+    }
+
+    livecheck.type      none
+} else {
+    livecheck.type      regex
+    livecheck.url       http://omniorb.sourceforge.net/releases/
+    livecheck.regex     "omniORBpy-(\\d+(?:\\.\\d+)*)${extract.suffix}"
+}

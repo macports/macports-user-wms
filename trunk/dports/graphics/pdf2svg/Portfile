@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                pdf2svg
+version             0.2.1
+revision            11
+license             GPL-2
+categories          graphics
+maintainers         nomaintainer
+description         pdf to svg converter
+long_description    ${description}
+
+homepage            http://www.cityinthesky.co.uk/opensource/pdf2svg
+master_sites        http://www.cityinthesky.co.uk/_media/opensource/
+platforms           darwin
+checksums           md5 59b3b9768166f73b77215e95d91f0a9d \
+                    sha1 12f9d1bde6aa2e396eb7f196b6d8e29ade3cafe6 \
+                    rmd160 ccf1c6304ecb0fe4c54164996f4cf785a6ebaf22
+
+depends_build       port:pkgconfig
+depends_lib         port:gtk2 \
+                    port:poppler
+
+patchfiles          patch-pdf2svg.c.diff
+
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     ">${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}<"

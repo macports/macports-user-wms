@@ -1,0 +1,107 @@
+# $Id$
+
+PortSystem 1.0
+
+name			codeblocks
+version			10.05
+revision		1
+platforms		darwin freebsd
+categories		devel aqua x11
+maintainers		afb
+description		Open Source, Cross-platform, Free C/C++/D IDE
+long_description	Code::Blocks is a free C++ IDE built specifically \
+			to meet the most demanding needs of its users. \
+			It was designed, right from the start, to be \
+			extensible and configurable.
+
+homepage		http://codeblocks.org/
+master_sites		http://download.berlios.de/codeblocks/ \
+			sourceforge:codeblocks
+distname		${name}-${version}-src
+worksrcdir		${name}-${version}-release
+use_bzip2		yes
+checksums		md5 ab077d562e98b0586f2f86c14cb773ba \
+			sha1 b7697f512de69ad731f0febac4b91bb6c605fa57 \
+			rmd160 a1b4e93f4cc41ae6b7fd955689dae8648f0fd2f9
+
+configure.args  --with-contrib-plugins=all
+
+patchfiles	patch-HexEditor-HexEditPanel.cpp patch-MouseSap-Makefile.am patch-sdk-configmanager.cpp
+
+post-destroot {
+	system "strip -S ${destroot}${prefix}/bin/codeblocks"
+	system "strip -S ${destroot}${prefix}/lib/libcodeblocks*.so || true"
+	system "strip -S ${destroot}${prefix}/lib/libcodeblocks*.dylib || true"
+	system "strip -S ${destroot}${prefix}/lib/libwxsmithlib*.so || true"
+	system "strip -S ${destroot}${prefix}/lib/libwxsmithlib*.dylib || true"
+	system "strip -S ${destroot}${prefix}/lib/wxSmithContribItems/lib*.so || true"
+	system "strip -S ${destroot}${prefix}/lib/wxSmithContribItems/lib*.dylib || true"
+	system "strip -S ${destroot}${prefix}/lib/codeblocks/plugins/*.so"
+}
+
+platform macosx {}
+if { ([variant_isset macosx] || ([info exists os.subplatform] && ${os.subplatform} == "macosx"))
+     && ![variant_isset x11] } {
+    default_variants +aqua
+} else {
+    default_variants +x11
+}
+
+if { ([variant_isset macosx] || ([info exists os.subplatform] && ${os.subplatform} == "macosx")) } {
+variant aqua conflicts x11 description "Use the wxMac port of wxWidgets" {
+	# wxmac is not 64-bit
+	supported_archs	i386 ppc
+	depends_lib port:wxWidgets
+
+    patchfiles-append codeblocks-splashscreen.diff codeblocks-keybinder.diff codeblocks-debugger.diff
+
+    post-destroot {
+	xinstall -d -m 0755 ${destroot}${applications_dir}
+	set appPath ${destroot}${applications_dir}/CodeBlocks.app/Contents
+
+	xinstall -d -m 0755 ${appPath}
+	file copy -force ${worksrcpath}/codeblocks.plist \
+	          ${appPath}/Info.plist
+	xinstall -d -m 0755 ${appPath}/Resources
+	file copy -force ${worksrcpath}/src/src/resources/icons/app.icns \
+	          ${appPath}/Resources
+	file copy -force ${worksrcpath}/src/src/resources/icons/cbp.icns \
+	          ${appPath}/Resources
+	file copy -force ${worksrcpath}/src/src/resources/icons/csd.icns \
+	          ${appPath}/Resources
+	file copy -force ${worksrcpath}/src/src/resources/icons/c.icns \
+	          ${appPath}/Resources
+	file copy -force ${worksrcpath}/src/src/resources/icons/cg.icns \
+	          ${appPath}/Resources
+	file copy -force ${worksrcpath}/src/src/resources/icons/cpp.icns \
+	          ${appPath}/Resources
+	file copy -force ${worksrcpath}/src/src/resources/icons/d.icns \
+	          ${appPath}/Resources
+	file copy -force ${worksrcpath}/src/src/resources/icons/f.icns \
+	          ${appPath}/Resources
+	file copy -force ${worksrcpath}/src/src/resources/icons/h.icns \
+	          ${appPath}/Resources
+	file copy -force ${worksrcpath}/src/src/resources/icons/rc.icns \
+	          ${appPath}/Resources
+
+	xinstall -d -m 0755 ${appPath}/MacOS
+	ln -sf ${prefix}/bin/codeblocks ${appPath}/MacOS/CodeBlocks
+	xinstall -d -m 0755 ${appPath}/Resources/share
+	ln -sf ${prefix}/share/codeblocks ${appPath}/Resources/share/codeblocks
+	xinstall -d -m 0755 ${appPath}/Resources/lib
+	ln -sf ${prefix}/lib/codeblocks ${appPath}/Resources/lib/codeblocks
+	
+	delete ${destroot}${prefix}/share/applications/codeblocks.desktop
+	delete ${destroot}${prefix}/share/icons/hicolor
+	delete ${destroot}${prefix}/share/mime/packages/codeblocks.xml
+	delete ${destroot}${prefix}/share/pixmaps/codeblocks.png
+    }
+}
+}
+
+variant x11 description "Use the wxGTK port of wxWidgets" {
+	# wxgtk is not universal
+	universal_variant no
+	depends_lib port:wxgtk
+}
+

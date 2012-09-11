@@ -1,0 +1,67 @@
+# $Id$
+
+PortSystem          1.0
+
+name                exact-image
+version             0.8.4
+revision            1
+categories          graphics
+license             GPL-2
+maintainers         tobias-elze.de:macports openmaintainer
+description         a fast, modern and generic image processing library
+long_description \
+   ExactImage is ${description}.
+
+platforms           darwin
+
+homepage            http://www.exactcode.de/site/open_source/exactimage/
+master_sites        http://dl.exactcode.de/oss/exact-image/
+
+use_bzip2           yes
+checksums           md5 a7f18ca4d2970d9e2d74bdea84990c78 \
+                    sha1 36d946be607699e166e81fc451ee878f646a94c5 \
+                    rmd160 0e60d5fc30c6d88ea4ae8e1a5c34e119c281204a
+
+depends_build       port:pkgconfig
+depends_lib         port:antigraingeometry \
+                    port:libpng \
+                    port:jasper \
+                    port:expat \
+                    port:lcms
+
+platform darwin 9 {
+    # Undefined symbols: "BarDecode::code25i_t::tol", referenced from: __ZN9BarDecode9code25i_t3tolE$non_lazy_ptr in bardecode.o
+    configure.compiler gcc-4.2
+}
+
+patchfiles          codecs_png.cc.diff
+
+configure.args      --with-freetype \
+                    --with-libjpeg \
+                    --with-libtiff \
+                    --with-libpng \
+                    --with-jasper \
+                    --with-expat \
+                    --with-lcms \
+                    --without-libungif \
+                    --without-lua \
+                    --without-swig \
+                    --without-perl \
+                    --without-python \
+                    --without-php \
+                    --without-ruby
+
+configure.universal_args-delete --disable-dependency-tracking
+
+# gcc-4.2: -E, -S, -save-temps and -M options are not allowed with multiple -arch flags
+universal_variant   no
+
+build.args          CC="${configure.cc} [get_canonical_archflags cc]" \
+                    CXX="${configure.cxx} [get_canonical_archflags cxx]" \
+                    Q=
+
+eval destroot.args  ${build.args}
+
+livecheck.type      regex
+livecheck.url       [lindex ${master_sites} 0]
+livecheck.regex     ${name}-(\[0-9.\]+)${extract.suffix}

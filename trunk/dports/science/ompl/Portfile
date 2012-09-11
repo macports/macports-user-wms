@@ -1,0 +1,115 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup cmake 1.0
+
+name                ompl
+version             0.11.1
+categories          science
+maintainers         mmoll
+description         The Open Motion Planning Library (OMPL)
+long_description    The Open Motion Planning Library (OMPL) consists of a set \
+                    of sampling-based motion planning algorithms.
+homepage            http://ompl.kavrakilab.org
+platforms           darwin
+license             BSD
+master_sites        https://bitbucket.org/ompl/ompl/downloads
+checksums           md5     235ca56932ff20da0c01f8201657740a \
+                    sha1    e5b1827477f36d373f9a9a5dd88941bcdc7bae61 \
+                    rmd160  c45de5b40ff870f68cd62915f68ec05caaf3360d
+distname            ${name}-${version}-Source
+depends_lib-append  port:boost port:ode
+
+# no universal of gccxml-devel
+universal_variant   no
+configure.args-append   -DOMPL_BUILD_DEMOS=OFF
+# generate the extra C++ code needed for Python bindings. This code seems
+# somewhat dependent on compiler and/or boost version, so we can't
+# pre-generate them and make them available as an extra download.
+post-configure {
+    system "cd ${worksrcpath}; ${build.cmd} update_bindings"
+}
+
+# The +app variant includes all the content of the regular OMPL version, but
+# adds a simple GUI and an extra library with bindings to the assimp and pqp
+# libraries. The cascade of dependencies due to pyqt4 is rather large, so by
+# default the +app variant is not enabled. Also, the additions to OMPL in
+# this variant are distributed under a slightly different license than the
+# regular OMPL version.
+variant app description {Include GUI and extra demo code} {
+    distname            omplapp-${version}-Source
+    license             noncommercial
+    pre-extract {
+        ui_warn "The +app variant causes some extra code to be compiled that is
+distributed under the Rice University Software Distribution License. For
+details, please read:
+http://ompl.kavrakilab.org/license.html#ricelicense"
+    }
+    depends_build-append port:pkgconfig
+    depends_lib-append  port:assimp port:pqp port:flann port:libccd
+    checksums           md5     c5ed8fb9bb248632d762703239108ea0 \
+                        sha1    5ad5e77b4771b7faadddb19f2fd2c23bd9a77642 \
+                        rmd160  1911cf56b7c369591e18bf1af2766213fd9c8d4e
+}
+
+variant python26 description {Use python2.6 for python bindings} conflicts python27 {
+    depends_build-append    port:py26-pyplusplus-devel
+    depends_lib-append      port:python26
+    configure.args-append   -DPYTHON_EXEC=${prefix}/bin/python2.6
+    if { [variant_isset app] } {
+        depends_lib-append      port:py26-pyqt4 port:py26-opengl
+        post-destroot {
+            reinplace "s|#!/usr/bin/env python|#!${prefix}/bin/python2.6|g" \
+                ${destroot}${prefix}/bin/ompl_app
+            # not needed and causes problems with rpaths
+            delete \
+                ${destroot}${prefix}/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/site-packages/ompl/util/libompl.dylib \
+                ${destroot}${prefix}/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/site-packages/ompl/app/libompl_app.dylib
+        }
+    } else {
+        post-destroot {
+            # not needed and causes problems with rpaths
+            delete  \
+                ${destroot}${prefix}/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/site-packages/ompl/util/libompl.dylib
+        }
+    }
+}
+
+variant python27 description {Use python2.7 for python bindings} conflicts python26 {
+    depends_build-append    port:py27-pyplusplus-devel
+    depends_lib-append      port:python27
+    configure.args-append   -DPYTHON_EXEC=${prefix}/bin/python2.7
+    if { [variant_isset app] } {
+        depends_lib-append  port:py27-pyqt4 port:py27-opengl
+        post-destroot {
+            reinplace "s|#!/usr/bin/env python|#!${prefix}/bin/python2.7|g" \
+                ${destroot}${prefix}/bin/ompl_app
+            # not needed and causes problems with rpaths
+            delete \
+                ${destroot}${prefix}/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/ompl/util/libompl.dylib \
+                ${destroot}${prefix}/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/ompl/app/libompl_app.dylib
+        }
+    } else {
+        post-destroot {
+            # not needed and causes problems with rpaths
+            delete \
+                ${destroot}${prefix}/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/ompl/util/libompl.dylib
+        }
+    }
+}
+
+# enable one python variant so that the python bindings can be compiled
+if { ![variant_isset python26] && ![variant_isset python27] } {
+    default_variants        +python27
+}
+
+# the python bindings rely on Boost.Python, so make sure it is installed.
+pre-fetch {
+    if {![file exists ${prefix}/lib/libboost_python-mt.dylib]} {
+        return -code error "Please reinstall boost with the +python26 or +python27 variant enabled."
+    }
+}
+
+livecheck.type  regex
+livecheck.url   http://ompl.kavrakilab.org/download.html
+livecheck.regex (\[0-9.\]+), released

@@ -1,0 +1,31 @@
+# $Id$
+
+PortSystem		1.0
+PortGroup		perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		Net-SNMP 5.2.0
+revision        4
+license         {Artistic GPL}
+maintainers		nomaintainer
+description		Object oriented interface to SNMP
+long_description	The Net::SNMP module implements an object oriented \
+					interface to the Simple Network Management Protocol. \
+					Perl applications can use the  module to retrieve or \
+					update information on a remote host using the SNMP \
+					protocol.  The module supports SNMP version-1, SNMP \
+					version-2c (Community-Based SNMPv2), and SNMP \
+					version-3.  The Net::SNMP module assumes that the \
+					user has a basic understanding of the Simple Network \
+					Management Protocol and related network management \
+					concepts.
+checksums		md5 0e717723f843ab22a93248833f3ebff7
+platforms		darwin
+
+if {${perl5.major} != ""} {
+depends_lib-append		port:p${perl5.major}-digest-hmac \
+				port:p${perl5.major}-digest-sha1 \
+				port:p${perl5.major}-crypt-des
+
+supported_archs noarch
+}

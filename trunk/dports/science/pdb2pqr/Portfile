@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python26 1.0
+
+name                pdb2pqr
+version             1.7
+categories          science
+maintainers         bromo.med.uc.edu:howarth
+description         automate Poisson-Boltzmann electrostatics calculations
+long_description    PDB2PQR is a Python software package that automates many of the \
+                    common tasks of preparing structures for continuum electrostatics \
+                    calculations, providing a platform-independent utility for converting \
+                    protein files in PDB format to PQR format.
+homepage            http://pdb2pqr.sourceforge.net/
+platforms           darwin
+master_sites        sourceforge
+checksums           md5     058622cb2ca6ca12af04d4f11b272951 \
+                    sha1    df2bf4303dbc64b69a20d48331386d8c08c234f1
+use_parallel_build  no
+use_configure       yes
+build.cmd           make
+build.target        all
+depends_lib         port:gcc45 \
+                    port:py26-numeric
+post-patch {
+    reinplace   "s|fort xlf95 lf95 g95|gfortran-mp-4.5|g" ${worksrcpath}/propka/configure
+    reinplace   "s|/usr/bin/env python|${python.bin}|g" ${worksrcpath}/pdb2pka/pka.py
+    reinplace   "s|/usr/bin/python|${python.bin}|g" ${worksrcpath}/src/psize.py
+    reinplace   "s|-Wl,-framework -Wl,Python -bundle|${python.lib}  -bundle|g" \
+                                                    ${worksrcpath}/configure \
+                                                    ${worksrcpath}/propka/configure
+    delete      ${worksrcpath}/contrib
+}
+configure.args      --with-max-atoms="1000000" --without-url --with-python=${python.bin} \
+                    -with-f77=gfortran-mp-4.5
+destroot {
+      system "find ${worksrcpath} -name '*.o' -delete"
+      file mkdir ${destroot}${prefix}/share/{name}
+      move ${worksrcpath} ${destroot}${prefix}/share/${name}
+      system "echo '#!/bin/zsh -f' >| ${destroot}${prefix}/bin/pdb2pqr"
+      system "echo '${prefix}/share/${name}/pdb2pqr.py \"\$@\"' >> ${destroot}${prefix}/bin/pdb2pqr"
+      file attributes ${destroot}${prefix}/bin/pdb2pqr -permissions a+x
+      system "echo '#!/bin/zsh -f' >| ${destroot}${prefix}/bin/propka"
+      system "echo '${prefix}/share/${name}/propka/propka \"\$@\"' >> ${destroot}${prefix}/bin/propka"
+      file attributes ${destroot}${prefix}/bin/propka -permissions a+x
+}

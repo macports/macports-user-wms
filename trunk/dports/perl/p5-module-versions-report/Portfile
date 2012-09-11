@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		Module-Versions-Report 1.02
+revision        3
+maintainers		nomaintainer
+description		Report versions of all modules in memory
+long_description	${description}
+checksums		md5 a2ef9353386df4c4e49c7e4031c45bd3
+platforms		darwin
+
+supported_archs noarch

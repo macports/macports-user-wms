@@ -1,0 +1,38 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           ocaml 1.0
+
+name                ocaml-bin-prot
+version             108.00.02
+revision            1
+categories          devel ml
+maintainers         erickt openmaintainer
+license             {BSD LGPL-2}
+description         A binary protocol generator
+long_description    This library contains functionality for reading and writing OCaml-values \
+                    in a type-safe binary protocol. These functions are extremely efficient and \
+                    provide users with a convenient and safe way of performing I/O on any \
+                    extensionally defined data type. This means that functions, objects, and \
+                    values whose type is bound through a polymorphic record field are not \
+                    supported, but everything else is.
+
+homepage            https://ocaml.janestreet.com/code
+platforms           darwin
+master_sites        https://ocaml.janestreet.com/ocaml-core/${version}/individual/
+
+distname            bin_prot-${version}
+
+checksums           rmd160  ca7f331e5a26ec006fa748d1c0931db9381b617c \
+                    sha256  b54bce57590f52cf29c83f88be7cc2d0990813859d2ee8dd0caca5a40d8f8535
+
+depends_lib         port:ocaml port:ocaml-findlib port:ocaml-ounit port:ocaml-type-conv
+
+use_oasis           yes
+
+test.run            yes
+
+livecheck.type      regex
+livecheck.url       https://ocaml.janestreet.com/ocaml-core/
+livecheck.regex     (\[0-9\]+\\\.\[0-9\\\.\]+)
+

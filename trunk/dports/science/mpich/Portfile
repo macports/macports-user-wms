@@ -1,0 +1,54 @@
+# $Id$
+
+PortSystem 1.0
+
+name			mpich
+version			1.2.7p1
+categories		science parallel net
+maintainers		nomaintainer
+description		Message Passing Interface (MPI) Library
+long_description	\
+	MPICH is a portable implementation of the MPI (Message Passing \
+	Interface) standard. The goal of MPI, simply stated, is to develop a \
+	widely used standard for writing message-passing programs. As such \
+	the interface should establish a practical, portable, efficient, and \
+	flexible standard for message passing. Included are a full set of \
+	documents and parallel programming examples.
+homepage		http://www-unix.mcs.anl.gov/mpi/mpich1/
+platforms		darwin
+master_sites	ftp://ftp.mcs.anl.gov/pub/mpi/
+checksums		md5     4fc0f20bddfbd5061a11047cf2d17d31 \
+				sha1    68424f3fe1746ae597aeb1729be50d205ccba91c \
+				rmd160  8192e0518f160c12b212ba260371db6159a34049
+use_bzip2		yes
+
+patchfiles      patch-bin_tarch.diff
+
+universal_variant	no
+
+build.target
+
+destroot.destdir	PREFIX=${destroot}${prefix}
+destroot.violate_mtree yes
+post-destroot	{
+	file delete -force ${destroot}${prefix}/man/mandesc \
+		${destroot}${prefix}/share/man \
+		${destroot}${prefix}/examples \
+		${destroot}${prefix}/sbin/mpiuninstall
+	file rename ${destroot}${prefix}/man \
+		${destroot}${prefix}/share/man
+	xinstall -m 755 -d ${destroot}${prefix}/share/doc
+	file rename ${destroot}${prefix}/doc \
+		${destroot}${prefix}/share/doc/${name}
+	file rename ${destroot}${prefix}/share/examples \
+		${destroot}${prefix}/share/doc/${name}/examples
+	file rename ${destroot}${prefix}/www \
+		${destroot}${prefix}/share/doc/${name}/html
+	file rename ${destroot}${prefix}/share/machines.freebsd_ppc \
+		${destroot}${prefix}/share/doc/${name}/machines.freebsd_ppc
+	file rename ${destroot}${prefix}/share/machines.sample \
+		${destroot}${prefix}/share/doc/${name}/machines.sample
+	file rename ${destroot}${prefix}/share/Makefile.sample \
+		${destroot}${prefix}/share/doc/${name}/Makefile.sample
+}
+

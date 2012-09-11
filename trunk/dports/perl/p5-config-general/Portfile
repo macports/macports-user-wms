@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Config-General 2.50
+revision            3
+maintainers         nomaintainer
+license             {Artistic GPL}
+description         Generic Config Module
+long_description    ${description}
+
+platforms           darwin
+
+checksums           md5 18d9b00582e8943956b32f8a9ba23380 \
+                    sha1 6e246d22e9840a4da2572f24a2a0c9976f3ceb25 \
+                    rmd160 1868547515eba01c6fa6d7fa1c11a18a3297ad75
+
+supported_archs     noarch

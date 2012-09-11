@@ -1,0 +1,46 @@
+# $Id$
+
+PortSystem 1.0
+
+name             monotone
+version          1.0
+revision         2
+categories       devel
+maintainers      tommyd openmaintainer
+description      A distributed version control system
+long_description \
+       monotone is a free distributed version control system. It provides \
+       a simple, single-file transactional version store, with fully \
+       disconnected operation and an efficient peer-to-peer synchronization \
+       protocol. It understands history-sensitive merging, lightweight \
+       branches, integrated code review and 3rd party testing.
+homepage         http://www.monotone.ca/
+platforms        darwin
+master_sites     ${homepage}downloads/${version}/
+
+# stealth update at version 1.0 revision 2 (see #35611)?
+dist_subdir      ${name}/${version}_1
+
+use_bzip2        yes
+checksums        rmd160  4c0813ae0c11f271dc88f42dd8814e474a67e988 \
+                 sha256  5c530bc4652b2c08b5291659f0c130618a14780f075f981e947952dcaefc31dc
+
+depends_build    port:pkgconfig
+depends_lib      port:zlib \
+                 port:libiconv \
+                 port:libidn \
+                 port:gettext \
+                 port:boost \
+                 port:lua \
+                 port:pcre \
+                 port:sqlite3 \
+                 port:botan
+
+# botan is not universal
+universal_variant no
+
+configure.args   --with-libiconv-prefix=${prefix} \
+                 --infodir=${prefix}/share/info
+
+test.run         yes
+test.target      check

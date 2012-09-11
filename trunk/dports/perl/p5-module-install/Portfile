@@ -1,0 +1,39 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           Module-Install 1.06
+revision        1
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+description           Standalone, extensible Perl module installer
+long_description      Module::Install is a package for writing installers \
+                      for CPAN (or CPAN-like) distributions that are clean, \
+                      simple, minimalist, act in a strictly correct manner \
+                      with both the ExtUtils::MakeMaker and Module::Build \
+                      build systems, and will run on any Perl installation \
+                      version 5.004 or newer.
+
+platforms             darwin
+
+checksums             rmd160  2b9440a9fc251cbd10458580ff9c8d8a0d11f8ee \
+                      sha256  de9ec8395b3b497d6d9629859b54086643c3911dff80cc7e0e22b380cb194519
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-archive-tar \
+                      port:p${perl5.major}-file-remove \
+                      port:p${perl5.major}-json \
+                      port:p${perl5.major}-module-build \
+                      port:p${perl5.major}-module-scandeps \
+                      port:p${perl5.major}-par-dist \
+                      port:p${perl5.major}-parse-cpan-meta \
+                      port:p${perl5.major}-yaml-tiny \
+                      port:p${perl5.major}-test-simple \
+                      port:p${perl5.major}-extutils-install \
+                      port:p${perl5.major}-devel-ppport \
+                      port:p${perl5.major}-libwww-perl
+
+supported_archs       noarch
+}

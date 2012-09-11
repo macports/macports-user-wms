@@ -1,0 +1,53 @@
+# $Id$
+
+PortSystem 1.0
+
+name              gnupod
+version           0.99.7
+revision          1
+categories        multimedia perl
+maintainers       pmq
+platforms         darwin
+
+description       GNUpod is a collection of tools which allow you to \
+                  use your iPod with UNIX-like operating systems.
+long_description  ${description}
+
+homepage          http://blinkenlights.ch/gnupod
+master_sites      http://www.blinkenlights.ch/gnupod-dist/stable
+extract.suffix    .tgz
+checksums         sha1 3aa4b32cc896af435fb52d4bb154ee950ad08ce1
+
+depends_lib       port:perl5.12 port:p5.12-mp3-info port:p5.12-digest-md5 \
+                  port:p5.12-xml-parser port:p5.12-unicode-string \
+                  port:p5.12-libwww-perl port:p5.12-digest-sha1 port:p5.12-timedate \
+		  port:lame
+
+configure.perl    ${prefix}/bin/perl5.12
+
+configure.args    --infodir=${prefix}/share/info
+
+post-destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/share/${name}
+    xinstall -m 644 -W ${worksrcpath} doc/gnupodrc.example \
+    	     doc/gnutunesdb.example doc/ipod.svg doc/mkspl.html \
+	     doc/gnupod.html ${destroot}${prefix}/share/${name}
+}
+
+# should also use timidity
+variant flac description "Enable FLAC" {
+    depends_lib-append  port:flac port:p5.12-audio-flac-header
+}
+
+# should use Ogg::Vorbis::Header::PurePerl, won't work
+variant vorbis description "Enable Ogg/Vorbis" {
+    depends_lib-append  port:vorbis-tools port:p5.12-libvorbis-perl
+}
+
+variant aac description "Enable AAC" {
+    depends_lib-append  port:faac path:lib/libavcodec.dylib:ffmpeg
+}
+
+variant artwork description "Enable artwork support" {
+    depends_lib-append  port:ImageMagick
+}

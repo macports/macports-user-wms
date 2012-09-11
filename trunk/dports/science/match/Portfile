@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem    1.0
+
+name          match
+version       0.15
+categories    science
+platforms     darwin
+maintainers   ram, openmaintainer
+
+description   match, a program for matching star lists
+long_description \
+  This program is designed to match up items in two different lists, \
+  which may have two different systems of coordinates. The program \
+  allows the two sets of coordinates to be related by a linear, \
+  quadratic, or cubic transformation.
+
+homepage      http://spiff.rit.edu/match/
+master_sites  ${homepage}
+
+checksums     rmd160 6f2477bc118f4cc1ef77ce3b5bf83ee5894f84f2 \
+              sha256 73e7ba7ce43fae657e2845515c2bb77e52fe8ae10bf24fc51a0a94340203a102
+
+livecheck.type   regex
+livecheck.url    ${master_sites}
+livecheck.regex  {The current version is match (\d+(?:\.\d+)*)}

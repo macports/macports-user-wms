@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem       1.0
+PortGroup        cmake 1.0
+
+name             qlandkartegt
+categories       gis
+version          1.5.1
+platforms        darwin
+maintainers      puffin.lb.shuttle.de:michael.klein
+license          GPL-2+
+
+description      Use your Garmin GPS with Linux/Mac OS X
+long_description QLandkarte GT is the ultimate outdoor aficionado's tool. It \
+                 supports GPS maps in GeoTiff format as well as Garmin's img \
+                 vector map format.  Additional it is the PC side front end to \
+                 QLandkarte M, a moving map application for mobile devices.
+
+homepage         http://www.qlandkarte.org/
+master_sites     sourceforge:project/qlandkartegt/qlandkartegt/QLandkarteGT%20${version}
+
+checksums        rmd160  56bcd314704799978f6827a72d6600e5eeddb7e4 \
+                 sha256  095cd2390684eead61b2868e1efc85500d6d61e95f3d54d0fd255cd95f55aadd
+
+depends_lib      port:libexif \
+                 port:gdal \
+                 port:qt4-mac \
+                 port:gpsd \
+                 port:libdmtx \
+                 bin:gpsbabel:gpsbabel
+
+destroot {
+    xinstall -d ${destroot}${applications_dir}
+    copy "${worksrcpath}/bin/QLandkarte GT.app" ${destroot}${applications_dir}
+}
+
+livecheck.url    "http://sourceforge.net/api/file/index/project-id/212192/mtime/desc/rss"
+livecheck.regex  ${name}-(\[0-9.\]+)${extract.suffix}

@@ -1,0 +1,33 @@
+# $Id$
+
+PortSystem 1.0
+
+name                lzip
+version             1.12
+epoch               20091025
+categories          archivers
+platforms           darwin
+maintainers         nomaintainer
+description         Compression program based on LZMA similar to gzip or bzip2
+long_description    Lzip is a lossless data compressor based on the LZMA    \
+                    algorithm, with very safe integrity checking and a      \
+                    user interface similar to the one of gzip or bzip2.     \
+                    Lzip decompresses almost as fast as gzip and compresses \
+                    better than bzip2, which makes it well suited for       \
+                    software distribution and data archiving.
+homepage            http://www.nongnu.org/lzip/lzip.html
+master_sites        http://download.savannah.gnu.org/releases/lzip/
+checksums           md5     69a40172db5ce896b58d862c50fcd517 \
+                    sha1    4ea1d38d509e36ee41cf11e78a227e2f5d0e38e9 \
+                    rmd160  2068682bc648bd42bcab19dc5f46158d34decb58
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    file mkdir ${docdir}
+    xinstall -m 644 -v -W ${worksrcpath} \
+      AUTHORS ChangeLog COPYING NEWS ${docdir}
+}
+
+livecheck.type      regex
+livecheck.url       ${master_sites}/?C=M&O=D
+livecheck.regex     ${name}-(\[-0-9.\]+)\\.tar\\.gz

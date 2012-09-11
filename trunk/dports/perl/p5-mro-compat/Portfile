@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           MRO-Compat 0.11 ../../authors/id/F/FL/FLORA/
+revision              4
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+supported_archs       noarch
+
+description           mro::* interface compatibility for Perls < 5.9.5
+long_description      The "mro" namespace provides several utilities for \
+                      dealing with method resolution order and method caching \
+                      in general in Perl 5.9.5 and higher.
+
+platforms             darwin
+
+checksums             md5 462b68631d5bef8c807190f1c5c17306 \
+                      sha1 295954e3ce0cd5b1df1e992c987a89e5c6fb7713 \
+                      rmd160 8fe9b04f545db6686fb0a683930bec6537679a2a
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-class-c3
+}

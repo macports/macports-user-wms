@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-generic-extra
+version             26700
+revision            0
+
+categories          tex
+maintainers         dports
+license             Copyleft Permissive
+description         TeX Live: Extra generic packages
+long_description    Extra packages that work with multiple formats, typically both TeX and LaTeX.
+
+checksums           texlive-generic-extra-26700-run.tar.xz \
+                    rmd160  3e97a6c199c0f36b0f1851457531c6d8a1d91c21 \
+                    sha256  826bcdb585e4c41580cba8deb17903e3446b5a11ff6baa5e7ccd70f7a5bd95b7 \
+                    texlive-generic-extra-26700-doc.tar.xz \
+                    rmd160  35688a27f4b92c5e6879bb742753b7abae8dd5ac \
+                    sha256  538d9b200fb029c6efd7a8b9f8a6902c6354834efaee717b3f4dfbe255b12fe1 \
+                    texlive-generic-extra-26700-src.tar.xz \
+                    rmd160  dec2ea74ba1dc9e1a75f8f643f958742c73c8e80 \
+                    sha256  e37708511465cbe2d1c52f449d71f8c31d7c5dd0955943b91d30a0b604c69e96
+
+depends_lib         port:texlive-basic
+
+
+texlive.texmfport

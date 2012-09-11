@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem 1.0
+
+name			tlswrap
+version			1.04
+categories		net security
+platforms		darwin
+maintainers		nomaintainer
+description		TLS/SSL FTP wrapper/proxy
+long_description	TLSWrap is a TLS/SSL FTP wrapper/proxy, allowing you to \
+				use your favorite FTP client with any TLS/SSL-enabled FTP \
+				server.
+
+homepage		http://tlswrap.sunsite.dk/
+master_sites	${homepage}
+checksums           md5     68a4d937c1e817fa3056751e8902b691 \
+                    sha1    094c29902e40c2bf4d09ac65c8506e224d143cd7 \
+                    rmd160  ab03253fae341cf8104c69930c7890b2e95f9efc
+
+
+depends_lib		port:openssl
+
+configure.args	--with-ssl=${prefix}
+
+destroot.destdir	prefix=${destroot}${prefix}

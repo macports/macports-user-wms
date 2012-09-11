@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                hts_engine_API
+version             1.06
+categories          audio
+platforms           darwin
+maintainers         hum openmaintainer
+license             BSD
+
+description         HMM-Based Speech Synthesis Engine
+
+long_description    The hts_engine is software to synthesize speech waveform \
+                    from HMMs trained by the HMM-based speech synthesis system (HTS).
+
+homepage            http://hts-engine.sourceforge.net/ \
+                    http://hts.sp.nitech.ac.jp/
+master_sites        sourceforge:hts-engine
+checksums           rmd160  d620109048a700303d7e6703a24f938e80c43084 \
+                    sha256  a9f44146755eb3e51d358bf53e4bceadeaa411fd669a35224334f64248cd612d
+
+if {[variant_isset universal]} {
+    use_autoreconf  yes
+}
+
+livecheck.type      regex
+livecheck.url       http://sourceforge.net/projects/hts-engine/files/hts_engine%20API/
+livecheck.regex     /hts_engine_API-(\[0-9.\]+)/

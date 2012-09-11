@@ -1,0 +1,93 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                gsl
+conflicts           gsl-devel
+version             1.15
+revision            1
+categories          math science
+maintainers         openmaintainer jochen
+license             GPL-3+
+homepage            http://www.gnu.org/software/gsl
+description         A numerical library for C and C++ programmers
+long_description    The GNU Scientific Library (GSL) is a numerical library  \
+                    for C and C++ programmers.  It is free software under the \
+                    GNU General Public License.  \
+                    \
+                    The library provides a wide range of mathematical routines \
+                    such as random number generators, special functions and \
+                    least-squares fitting. There are over 1000 functions in total.
+
+master_sites        gnu
+checksums           md5     494ffefd90eef4ada678c306bab4030b \
+                    sha1    d914f84b39a5274b0a589d9b83a66f44cd17ca8e \
+                    rmd160  f34aa2a6514228f7df42fc94638286bcce5cd94c
+
+platforms           darwin
+
+depends_build       port:texinfo
+use_parallel_build  yes
+
+configure.args      --mandir=${prefix}/share/man --infodir=${prefix}/share/info
+test.run            yes
+test.target         check
+
+post-activate    {
+    system "install-info ${prefix}/share/info/gsl-ref.info ${prefix}/share/info/dir"
+}
+
+variant doc description "Install PDF and HTML documentation" {
+    depends_build   port:ghostscript bin:latex:texlive
+    post-destroot   {
+        system "cd ${worksrcpath} && make dvi"
+        system "cd ${worksrcpath}/doc && dvipdf gsl-ref.dvi gsl-ref.pdf"
+        xinstall -d -m 755 ${destroot}${prefix}/share/doc/${name}
+        xinstall -c -m 644 ${worksrcpath}/doc/gsl-ref.pdf ${destroot}${prefix}/share/doc/${name}
+        system "cd ${worksrcpath}/doc && latex fftalgorithms"
+        system "cd ${worksrcpath}/doc && bibtex fftalgorithms"
+        system "cd ${worksrcpath}/doc && latex fftalgorithms"
+        system "cd ${worksrcpath}/doc && latex fftalgorithms"
+        system "cd ${worksrcpath}/doc && dvipdf fftalgorithms.dvi fftalgorithms.pdf"
+        xinstall -c -m 644 ${worksrcpath}/doc/fftalgorithms.pdf ${destroot}${prefix}/share/doc/${name}
+        system "cd ${worksrcpath} && make html"
+        xinstall -d -m 755 ${destroot}${prefix}/share/doc/${name}/html
+        eval xinstall -c -m 644 [glob ${worksrcpath}/doc/gsl-ref.html/*] ${destroot}${prefix}/share/doc/${name}/html
+    }
+}
+
+variant gcc43 conflicts gcc44 gcc45 gcc46 gcc47 description "Use GCC 4.3 for compilation of GSL" {
+    depends_build-append        port:gcc43
+    configure.compiler          macports-gcc-4.3
+}
+
+variant gcc44 conflicts gcc43 gcc45 gcc46 gcc47 description "Use GCC 4.4 for compilation of GSL" {
+    depends_build-append        port:gcc44
+    configure.compiler          macports-gcc-4.4
+}
+
+variant gcc45 conflicts gcc43 gcc44 gcc46 gcc47 description "Use GCC 4.5 for compilation of GSL" {
+    depends_build-append        port:gcc45
+    configure.compiler          macports-gcc-4.5
+}
+
+variant gcc46 conflicts gcc43 gcc44 gcc45 gcc47 description "Use GCC 4.6 for compilation of GSL" {
+    depends_build-append        port:gcc46
+    configure.compiler          macports-gcc-4.6
+}
+
+variant gcc47 conflicts gcc43 gcc44 gcc45 gcc46 description "Use GCC 4.7 for compilation of GSL" {
+    depends_build-append        port:gcc47
+    configure.compiler          macports-gcc-4.7
+}
+
+variant optimize description "Provide further optimization options (depending on compiler used)" {
+    configure.cflags-append     "-ftree-vectorize -O3"
+}
+
+platform darwin i386 {
+    if { [variant_isset optimize] && ( [variant_isset gcc43] || [variant_isset gcc44] || [variant_isset gcc45] || [variant_isset gcc46] || [variant_isset gcc47] ) } {
+        configure.cflags-append "-march=native"
+    }
+}

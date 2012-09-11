@@ -1,0 +1,119 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                pidgin
+version             2.10.6
+revision        1
+categories          net
+platforms           darwin
+maintainers         otherware.org:nefar
+description         Multi-protocol Instant Messaging client
+long_description    Pidgin is an Open Source clone of America OnLine's \
+                    Instant Messenger client that uses GTK+ version 2.  It \
+                    features multiple groups, group chat, user information \
+                    fetching and registration, time stamping, and more.  It \
+                    also supports other IM protocols, including Yahoo!, MSN, \
+                    ICQ, Jabber, Napster, IRC, and Zephyr via included \
+                    plugins.
+
+homepage            http://www.pidgin.im/
+master_sites        sourceforge:project/pidgin/Pidgin/${version}
+
+checksums           rmd160  507d64cb719129196c887953edef552db326e805 \
+                    sha256  3e25a633b97cbfa8326999a30282e7a662a9b9bbf2853be84af0b8fb60392c96
+
+use_bzip2           yes
+
+depends_build       port:pkgconfig \
+                    port:intltool
+
+depends_lib         port:audiofile \
+                    port:gconf \
+                    port:libao \
+                    port:libidn \
+                    port:libxml2 \
+                    port:nspr \
+                    port:nss
+
+# nss is not universal
+universal_variant   no
+
+patchfiles          patch-configure.ac.diff \
+                    patch-libpurple-internal.h.diff
+
+use_autoreconf      yes
+
+configure.args      --disable-avahi \
+                    --disable-consoleui \
+                    --disable-farsight \
+                    --disable-gstreamer \
+                    --disable-gtkspell \
+                    --disable-meanwhile \
+                    --disable-nm \
+                    --disable-screensaver \
+                    --disable-sm \
+                    --disable-startup-notification \
+                    --disable-schemas-install \
+                    --disable-vv \
+                    --enable-nss \
+                    --mandir=${prefix}/share/man \
+                    --with-nspr-includes=${prefix}/include/nspr \
+                    --with-nspr-libs=${prefix}/lib/nspr \
+                    --with-nss-includes=${prefix}/include/nss \
+                    --with-nss-libs=${prefix}/lib/nss \
+                    --disable-dependency-tracking
+
+# --disable-dependency-tracking was added because a +universal perl will result in
+# PERL_CFLAGS containing multiple -arch arguments... this is the easiest workaround
+configure.ldflags-append    -bind_at_load
+configure.cppflags-append   -no-cpp-precomp
+
+variant finch_only requires finch description {Build without pidgin} {
+    configure.args-append   --disable-gtkui \
+                            --without-x
+}
+
+variant finch description {Build with finch} {
+    configure.args-delete   --disable-consoleui
+    patchfiles-append          patch-finch_libgnt_Makefile.in.diff patch-finch_libgnt_gntwm.c
+}
+
+post-destroot {
+    fs-traverse file ${destroot}${prefix}/lib/perl5 {
+        if {[file tail ${file}] == "perllocal.pod"} {
+            delete ${file}
+        }
+    }
+}
+
+post-activate {
+    system "dbus-uuidgen --ensure"
+    system "${prefix}/bin/gtk-update-icon-cache -f -t ${prefix}/share/icons/hicolor"
+    system "export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` && \
+        gconftool-2 --makefile-install-rule ${prefix}/etc/gconf/schemas/*.schemas"
+}
+
+variant no_x11 {
+    configure.args-append   --without-x
+}
+
+variant quartz requires no_x11 {
+    configure.args-append   --disable-gestures
+
+    depends_build-append    port:intltool
+
+    post-patch {
+        system "cd ${worksrcpath} && ${filespath}/autogen.sh"
+    }
+}
+
+variant spellcheck description {Allow spell checking} {
+    depends_lib-append      port:gtkspell2
+    configure.args-delete   --disable-gtkspell
+}
+
+livecheck.type      regex
+livecheck.url       http://sourceforge.net/projects/pidgin/files/Pidgin/
+livecheck.regex     "\/Pidgin\/(\\d+(?:\\.\\d+)*)\/"

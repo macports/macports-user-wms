@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem 1.0
+
+name		axel
+version		2.4
+categories	net www
+platforms	darwin
+maintainers	nomaintainer
+description	A light Unix download accelerator
+long_description Axel does the same thing any other accelerator does: \
+		it opens more than one HTTP/FTP connection per download and \
+		each connection transfers its own, separate, part of the file. \
+		It may sound weird, but it works very well in practice.
+
+master_sites	http://alioth.debian.org/frs/download.php/3015
+homepage	http://axel.alioth.debian.org/
+checksums	sha1 6d89a7ce797ddf4c23a210036d640d013fe843ca
+
+depends_lib	port:libiconv port:gettext
+
+configure.args	--i18n=1
+configure.universal_args-delete --disable-dependency-tracking
+if {[variant_isset universal]} {
+    build.args	CFLAGS="${configure.cflags} ${configure.universal_cflags} ${configure.cppflags}" \
+		LFLAGS="${configure.ldflags} ${configure.universal_ldflags} -lintl -liconv"
+} else {
+    build.args	CFLAGS="${configure.cflags} ${configure.cc_archflags} ${configure.cppflags}" \
+		LFLAGS="${configure.ldflags} -lintl -liconv"
+}

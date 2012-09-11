@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+PortGroup       perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup     Getopt-Long 2.38
+revision        3
+license         {Artistic GPL-2+}
+maintainers     nomaintainer
+platforms       darwin
+description     module implementing an extended getopt function
+
+categories-append \
+    devel
+
+long_description \
+    Module Getopt::Long implements an extended getopt function \
+    called GetOptions(). This function implements the POSIX \
+    standard for command line options, with GNU extensions, while \
+    still capable of handling the traditional one-letter options. \
+    In general, this means that command line options can have long \
+    names instead of single letters, and are introduced with a \
+    double dash `--'.
+
+checksums       md5     4d38c78300e79a7fde4700e88759c2b3 \
+                sha1    5daf0f2e539c0683c8400f277ba10618c893970b \
+                rmd160  0498ea35a5a6ee08a26f23bd5185a84c1feb3bf3
+
+supported_archs noarch

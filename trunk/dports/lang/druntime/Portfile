@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        D-Programming-Language druntime 2.060 v
+categories          lang
+platforms           darwin
+license             Boost-1
+maintainers         takeshi openmaintainer
+description         Low level runtime library for the D programming language
+long_description \
+    Druntime is the minimum library required to support the D programming \
+    language. It includes the system code required to support the garbage \
+    collector, associative arrays, exception handling, array vector operations, \
+    startup/shutdown, etc.
+homepage            http://dlang.org/
+
+checksums           rmd160  8ef088b1b7d5c3151962d01bf0005bb8e3b2db4a \
+                    sha256  e66c2908e9415e8ef882f63bfe525b8e1e88331e0ba16fc4b18e23c4d176cc95 \
+
+depends_lib         port:dmd
+
+use_configure       no
+
+if {${build_arch}=="x86_64"} {
+    set model 64
+} else {
+    set model 32
+}
+
+build.args          -f posix.mak \
+                    CC=${configure.cc} \
+                    DMD=${prefix}/bin/dmd \
+                    MODEL=${model} \
+                    CFLAGS=\"${configure.cflags}\"
+build.target
+
+destroot {
+    xinstall -m 644 ${worksrcpath}/lib/libdruntime-osx${model}.a \
+        ${destroot}${prefix}/lib/libdruntime.a
+    xinstall -m 755 -d ${destroot}${prefix}/include/${name}
+    system "cd ${worksrcpath};
+        cp -r import/* ${destroot}${prefix}/include/${name}
+    "
+}

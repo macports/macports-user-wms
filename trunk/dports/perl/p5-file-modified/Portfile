@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         File-Modified 0.07
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         checks intelligently if files have changed
+long_description    The Modified module is intended as a simple method for \
+                    programs to detect whether configuration files \
+                    (or modules they rely on) have changed.
+
+platforms           darwin
+
+checksums           md5 271a991b96ccbdaeb7098272c9f97d51
+
+supported_archs noarch

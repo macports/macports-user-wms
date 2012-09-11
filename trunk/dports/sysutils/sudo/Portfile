@@ -1,0 +1,86 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                sudo
+version             1.7.7
+epoch               1
+categories          sysutils security
+license             ISC
+maintainers         nomaintainer
+description         Allow users to run programs as other users, eg, root
+long_description \
+    Sudo is a program designed to allow a sysadmin to give limited root \
+    privileges to users and log root activity.  The basic philosophy is to \
+    give as few privileges as possible but still allow people to get their \
+    work done.
+
+platforms           darwin
+
+homepage            http://www.sudo.ws/sudo/
+master_sites        ${homepage}dist/ \
+                    ${homepage}dist/OLD/
+
+checksums           md5     bbd552a4150bf29b49048ec85cd2ea04 \
+                    sha1    cb0af05f4fa43920fff538687d4bd9a66ab3b251 \
+                    rmd160  bd2464dba8a986e6172dd305fc6a1adba78d9779
+
+patchfiles      patch-sudoers.in.diff
+
+configure.args  --infodir=${prefix}/share/info \
+                --mandir=${prefix}/share/man \
+                --sysconfdir=${prefix}/etc \
+                --with-env-editor \
+                --with-tty-tickets \
+                --with-ignore-dot \
+                --with-timedir=${prefix}/var/run/sudo \
+                --disable-log-wrap \
+                --with-password-timeout=0 \
+                --disable-setreuid \
+                --with-pam
+
+pre-destroot {
+    if { [getuid] != 0 } {
+        ui_msg "------------------------------------------------------------"
+        ui_msg "Installing sudo as non-root doesn't really do anything"
+        ui_msg "useful, so be sure to install sudo as root"
+        ui_msg "------------------------------------------------------------"
+    }
+}
+
+post-destroot {
+    if {[file exists ${prefix}/etc/sudoers]} {
+        file rename ${destroot}${prefix}/etc/sudoers ${destroot}${prefix}/etc/sudoers.dist
+    }
+    xinstall -d ${destroot}${prefix}/var/run/sudo
+}
+destroot.keepdirs ${destroot}${prefix}/var/run/sudo
+
+post-install {
+    ui_msg "------------------------------------------------------------"
+    ui_msg "To complete installation run:"
+    ui_msg "    ${prefix}/bin/sudo ${prefix}/sbin/visudo"
+    ui_msg "Edit as necessary (see the"
+    ui_msg "sudoers manpage for additional information)."
+    ui_msg "------------------------------------------------------------"
+}
+
+variant insults description { It can only be attributed to human error. } {
+    configure.args-append   --with-insults --with-all-insults
+}
+
+variant openldap description { Add ldap support via OpenLDAP. } {
+	depends_lib-append		port:openldap
+    configure.args-append   --with-ldap
+							
+	post-destroot {
+		xinstall -d ${destroot}${prefix}/etc/openldap/schema
+		xinstall -m 0644 ${worksrcpath}/schema.OpenLDAP \
+			${destroot}${prefix}/etc/openldap/schema/sudo.schema
+	}
+}
+
+livecheck.type  regex
+livecheck.url   [lindex ${master_sites} 0]
+livecheck.regex >${name}-(\[0-9.p\]+)${extract.suffix}<

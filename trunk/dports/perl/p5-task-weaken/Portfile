@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Task-Weaken 1.03
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Ensure that a platform has weaken support
+long_description    ${description}
+
+platforms           darwin
+
+checksums           md5 056ce36c576450d22e6b23b4dbfacd02 \
+                    sha1 1a958220f92ac11dd4548c9fe405ca9c9a0ffdc9 \
+                    rmd160 5b1298166ba38715e0f9f43f8ce8bfb29b8706da
+
+supported_archs noarch

@@ -1,0 +1,105 @@
+# $Id$
+
+PortSystem      1.0
+
+name                    scotty
+version                 3.0.0
+revision		5
+categories              net
+maintainers             markd
+description             Network management extensions to Tcl that enables \
+			TCP/UDP connections, DNS queries, and SNMP.  The graphical \
+			network mapper tkined is also included.
+long_description        ${description}
+homepage                http://wiki.tcl.tk/220
+platforms               darwin
+worksrcdir              ${name}/trunk
+
+master_sites            macports
+checksums               md5 40e1aeeee79767b882a78910ad177f78
+distfiles		${name}-${version}-rev2813.tar.bz2
+use_bzip2		yes
+
+#fetch.type             svn
+#svn.url                https://subversion.eecs.iu-bremen.de/svn/schoenw/src/scotty
+
+depends_lib             port:tcl \
+			port:tk
+
+patchfiles		patch-Makefile.in \
+			patch-tnm-library-init.tcl
+
+startupitem.create      yes
+startupitem.name        nmicmpd
+startupitem.executable  "${prefix}/bin/nmicmpd"
+
+configure.dir		${worksrcpath}/unix
+build.dir		${worksrcpath}/unix
+destroot.dir		${worksrcpath}/unix
+
+configure.args		--exec_prefix=${prefix} \
+			--with-tcl=${prefix} \
+			--with-tk=${prefix}
+
+destroot.target		install sinstall
+
+post-patch {
+        reinplace "s|\$(INSTALL_ROOT)|${destroot}|g" \
+                ${worksrcpath}/unix/Makefile.in
+
+        reinplace "s|\$(BIN_INSTALL_DIR)/nmicmpd|${prefix}/bin/nmicmpd|g" \
+                ${worksrcpath}/unix/Makefile.in
+
+        reinplace "s|\$(BIN_INSTALL_DIR)/nmtrapd|${prefix}/bin/nmtrapd|g" \
+                ${worksrcpath}/unix/Makefile.in
+}
+
+post-destroot {
+	system "cd ${destroot}${prefix}/bin && ln -sf scotty3.0.0 scotty"
+	system "cd ${destroot}${prefix}/bin && ln -sf tkined1.5.0 tkined"
+}
+
+platform darwin 8 {
+pre-install {
+# Replace the LaunchD item with one supporting inetdCompatibility
+        file copy -force ${filespath}/org.macports.nmicmpd.plist \
+                ${destroot}${prefix}/etc/LaunchDaemons/org.macports.nmicmpd/
+        reinplace "s|__PREFIX__|${prefix}|g" \
+                "${destroot}${prefix}/etc/LaunchDaemons/org.macports.nmicmpd/org.macports.nmicmpd.plist"
+}
+}
+
+post-activate {
+ui_msg "\n
+To enable the ${prefix}/bin/nmicmpd daemon:
+
+   1) Add the following line to the /etc/services 'nmicmp 57777/tcp'.
+        Note: You may use another port if necessary.
+
+   2) OS X 10.4 (see below for 10.3) - Load the LaunchD script installed by MacPorts:
+        sudo launchctl load -w /Library/LaunchDaemons/org.macports.nmicmpd.plist
+
+   3) Reboot and test the nmicmpd daemon:
+	telnet localhost nmicmp
+	ps -ax |grep nmicmpd (The daemon loads only when requested and unloads afterwards)
+
+   Additional instructions for OS X 10.3:
+    a) A startup item was created in /Library/StartupItems
+        Add \"NMICMPD=-YES-\" to the /etc/hostconfig file to run nmicmpd at system boot.
+
+    b) Add an xinetd entry:
+
+	service nmicmp
+	\{
+	socket_type = stream
+	protocol    = tcp
+	wait        = no
+	user        = root
+	server      = ${prefix}/bin/nmicmpd
+	disable     = no
+	\}
+
+    c) Reboot and test as shown in step 3 above.
+\n"
+}
+

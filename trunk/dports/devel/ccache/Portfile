@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                ccache
+version             3.1.5
+categories          devel
+platforms           darwin freebsd
+license             GPL-3+
+
+maintainers         landonf openmaintainer
+
+description         object-file caching compiler wrapper
+
+long_description \
+    ccache is a compiler cache.  It acts as a caching pre-processor to C/C++ \
+    compilers, using the -E compiler switch and a hash to detect when a \
+    compilation can be satisfied from cache.  This often results in a 5 to 10 \
+    times speedup in common compilations.
+
+homepage            http://ccache.samba.org/
+master_sites        http://samba.org/ftp/ccache/
+
+checksums           sha1    fd20d68ebb0725e9bd70a9330b42491d040b94cb \
+                    rmd160  cda826e53c75c1cd2068d3cdd19dfa67511fee99
+
+configure.args      --mandir=${prefix}/share/man
+
+set symlinks_dir    ${prefix}/libexec/ccache
+
+depends_lib         port:zlib
+
+post-destroot {
+    file mkdir ${destroot}${symlinks_dir}
+
+    foreach {bin} {
+        cc
+        gcc gcc2    gcc3    gcc-3.3 gcc-4.0 gcc-4.2
+        c++ c++3    c++-3.3 c++-4.0 c++-4.2
+        g++ g++2    g++3    g++-3.3 g++-4.0 g++-4.2
+    } {
+        ln -sf ${prefix}/bin/ccache ${destroot}${symlinks_dir}/${bin}
+    }
+}
+
+notes "The ccache symlinks are installed in ${symlinks_dir}"

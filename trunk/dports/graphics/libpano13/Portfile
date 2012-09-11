@@ -1,0 +1,38 @@
+# $Id$
+
+PortSystem      1.0
+
+name            libpano13
+version         2.9.18
+revision	1
+categories      graphics
+
+maintainers     freespace+macforge@gmail.com
+
+description     The cross-platform library behind Panorama Tools
+
+long_description The panorama tools are mainly used to build panoramic images from a set of overlapping images. The usability extends beyond "just" building panoramas by far though. You can, for instance, use them to render an average of multiple images to broaden the dynamic range of the images or average out noise. You can also build object movies with them, morph between images and much more.
+
+homepage        http://panotools.sourceforge.net/
+platforms       darwin
+
+master_sites    sourceforge:panotools
+
+checksums       sha1    23849bdbdfc9176a2b53d157e58bd24aa0e7276e \
+                rmd160  2309dc8d932a5ea80cb4b22bffa3e9d39539aa58
+
+depends_lib     port:jpeg \
+                port:tiff \
+                port:libpng \
+                port:zlib
+
+configure.args  --with-jpeg=${prefix} \
+                --with-tiff=${prefix} \
+                --with-png=${prefix} \
+                --with-zlib=${prefix} \
+                --without-java \
+                --mandir=${prefix}/share/man
+
+configure.cflags-append         -flat_namespace -undefined suppress
+configure.cxxflags-append       -flat_namespace -undefined suppress
+configure.ldflags-append        -prebind

@@ -1,0 +1,39 @@
+# $Id$
+
+PortSystem          1.0
+
+name                isync
+version             1.0.4
+revision        1
+categories          mail
+platforms           darwin
+license             GPL-2
+maintainers         nomaintainer
+description         Synchronize a maildir with an imap server
+homepage            http://isync.sourceforge.net/
+
+long_description    isync is a command line utility for synchronizing a \
+                    remote IMAP mailbox with a local maildir-style mailbox. \
+                    This is useful for working in disconnected mode, such as \
+                    on a laptop. Modifications made locally and remotely are \
+                    synchronized so that no message status flags are lost.
+
+master_sites        sourceforge
+
+checksums           md5     8a836a6f4b43cd38a8b8153048417616 \
+                    sha1    a327cc5b81946c7ccb3a26ddd971933e2e006ed3 \
+                    rmd160  23475533ff9848c38b95911eae6191ca03132185
+
+depends_lib         port:db46 port:openssl port:zlib
+
+post-patch {
+    reinplace "s|ldb|ldb-4|g" \
+        ${worksrcpath}/src/compat/Makefile.in \
+        ${worksrcpath}/src/compat/Makefile.am \
+        ${worksrcpath}/src/Makefile.in \
+        ${worksrcpath}/src/Makefile.am
+}
+
+configure.args      --mandir=${prefix}/share/man
+configure.cppflags-append   -I${prefix}/include/db46
+configure.ldflags-append    -L${prefix}/lib/db46 -ldb-4

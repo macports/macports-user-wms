@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                solfege
+version             3.19.2
+categories          audio education python
+maintainers         gmail.com:allencmcbride
+description         Ear training software
+homepage            http://www.solfege.org/
+long_description    Solfege is a free eartraining program. The program is part \
+                    of the GNU Project. One of the ideas of this program is \
+                    that you can extend the program without having to dig into \
+                    the source code. If you want to practise some special \
+                    chords or want to practise dictation with some music not \
+                    included, you can write lesson files and put them into a \
+                    lessonfiles subdirectory in your home directory.
+
+platforms           darwin
+supported_archs     noarch
+
+depends_lib         port:py27-gtk
+depends_build       port:texinfo \
+                    port:pkgconfig
+depends_run         port:qtplay
+
+master_sites        sourceforge \
+                    gnu
+
+checksums           md5     0254493d165041e843b3eba6290605fc \
+                    sha1    c78a407aa6dc5c3daafbcc3904fa77158f7b85fb \
+                    rmd160  ef06a2691d1dac04e3c4c344806dd7ca0cb78335
+
+patchfiles          patch-default-config.diff
+
+post-patch {
+    reinplace "s|@PREFIX@|${prefix}|g" ${worksrcpath}/default.config
+}
+
+configure.python    ${prefix}/bin/python2.7
+configure.pkg_config_path   ${frameworks_dir}/Python.framework/Versions/2.7/lib/pkgconfig/

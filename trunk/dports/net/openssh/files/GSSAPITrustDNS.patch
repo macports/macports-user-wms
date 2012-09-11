@@ -1,0 +1,104 @@
+--- readconf.c.orig	2012-07-14 14:37:12.000000000 +0300
++++ readconf.c	2012-07-14 14:46:48.000000000 +0300
+@@ -129,6 +129,7 @@
+ 	oClearAllForwardings, oNoHostAuthenticationForLocalhost,
+ 	oEnableSSHKeysign, oRekeyLimit, oVerifyHostKeyDNS, oConnectTimeout,
+ 	oAddressFamily, oGssAuthentication, oGssDelegateCreds,
++	oGssTrustDns, 
+ 	oServerAliveInterval, oServerAliveCountMax, oIdentitiesOnly,
+ 	oSendEnv, oControlPath, oControlMaster, oControlPersist,
+ 	oHashKnownHosts,
+@@ -170,9 +171,11 @@
+ #if defined(GSSAPI)
+ 	{ "gssapiauthentication", oGssAuthentication },
+ 	{ "gssapidelegatecredentials", oGssDelegateCreds },
++	{ "gssapitrustdns", oGssTrustDns },
+ #else
+ 	{ "gssapiauthentication", oUnsupported },
+ 	{ "gssapidelegatecredentials", oUnsupported },
++	{ "gssapitrustdns", oUnsupported },
+ #endif
+ 	{ "fallbacktorsh", oDeprecated },
+ 	{ "usersh", oDeprecated },
+@@ -487,6 +490,10 @@
+ 		intptr = &options->gss_deleg_creds;
+ 		goto parse_flag;
+ 
++	case oGssTrustDns:
++		intptr = &options->gss_trust_dns;
++		goto parse_flag;
++
+ 	case oBatchMode:
+ 		intptr = &options->batch_mode;
+ 		goto parse_flag;
+@@ -1140,6 +1147,7 @@
+ 	options->challenge_response_authentication = -1;
+ 	options->gss_authentication = -1;
+ 	options->gss_deleg_creds = -1;
++	options->gss_trust_dns = -1;
+ 	options->password_authentication = -1;
+ 	options->kbd_interactive_authentication = -1;
+ 	options->kbd_interactive_devices = NULL;
+@@ -1241,6 +1249,8 @@
+ 		options->gss_authentication = 0;
+ 	if (options->gss_deleg_creds == -1)
+ 		options->gss_deleg_creds = 0;
++	if (options->gss_trust_dns == -1)
++		options->gss_trust_dns = 0;
+ 	if (options->password_authentication == -1)
+ 		options->password_authentication = 1;
+ 	if (options->kbd_interactive_authentication == -1)
+--- readconf.h.orig	2012-07-14 14:37:12.000000000 +0300
++++ readconf.h	2012-07-14 14:47:18.000000000 +0300
+@@ -49,6 +49,7 @@
+ 					/* Try S/Key or TIS, authentication. */
+ 	int     gss_authentication;	/* Try GSS authentication */
+ 	int     gss_deleg_creds;	/* Delegate GSS credentials */
++	int	gss_trust_dns;		/* Trust DNS for GSS canonicalization */
+ 	int     password_authentication;	/* Try password
+ 						 * authentication. */
+ 	int     kbd_interactive_authentication; /* Try keyboard-interactive auth. */
+--- ssh_config.5.orig	2012-07-14 14:37:39.000000000 +0300
++++ ssh_config.5	2012-07-14 14:48:57.000000000 +0300
+@@ -531,7 +531,16 @@
+ Forward (delegate) credentials to the server.
+ The default is
+ .Dq no .
+-Note that this option applies to protocol version 2 only.
++Note that this option applies to protocol version 2 connections using GSSAPI.
++.It Cm GSSAPITrustDns
++Set to 
++.Dq yes to indicate that the DNS is trusted to securely canonicalize
++the name of the host being connected to. If 
++.Dq no, the hostname entered on the
++command line will be passed untouched to the GSSAPI library.
++The default is
++.Dq no .
++This option only applies to protocol version 2 connections using GSSAPI.
+ .It Cm HashKnownHosts
+ Indicates that
+ .Xr ssh 1
+--- sshconnect2.c.orig	2012-07-14 14:38:04.000000000 +0300
++++ sshconnect2.c	2012-07-14 14:51:41.000000000 +0300
+@@ -626,6 +626,12 @@
+ 	static u_int mech = 0;
+ 	OM_uint32 min;
+ 	int ok = 0;
++	const char *gss_host;
++
++	if (options.gss_trust_dns)
++		gss_host = get_canonical_hostname(1);
++	else
++		gss_host = authctxt->host;
+ 
+ 	/* Try one GSSAPI method at a time, rather than sending them all at
+ 	 * once. */
+@@ -638,7 +644,7 @@
+ 		/* My DER encoding requires length<128 */
+ 		if (gss_supported->elements[mech].length < 128 &&
+ 		    ssh_gssapi_check_mechanism(&gssctxt, 
+-		    &gss_supported->elements[mech], authctxt->host)) {
++		    &gss_supported->elements[mech], gss_host)) {
+ 			ok = 1; /* Mechanism works */
+ 		} else {
+ 			mech++;

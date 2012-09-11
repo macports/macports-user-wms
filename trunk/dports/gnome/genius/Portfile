@@ -1,0 +1,55 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name		genius
+version		1.0.9
+set branch      [join [lrange [split ${version} .] 0 1] .]
+description	Genius is a calculator program.
+long_description        Genius is a calculator program similiar in some aspects to \
+			BC, Matlab or Maple. GEL is the name of its extention language \
+			(stands for \"Genius Extension Language\", clever huh?), in \
+			fact, a large part of the standard genius functions are \
+			written in GEL itself.
+maintainers	nomaintainer
+categories	gnome math
+platforms	darwin
+homepage	http://www.jirka.org/genius.html
+master_sites    gnome:sources/${name}/${branch} \
+                http://ftp.5z.com/pub/genius/
+
+checksums       md5     4a40f1eb45044101e563385a132cb29d \
+                sha1    04cc07365418f2f4c428cd40bd7fea85a83a151a \
+                rmd160  d2765d07aa790ff3aeb88b4ad71d882e711d49a1
+
+depends_build   port:pkgconfig \
+                port:intltool \
+                port:rarian
+
+depends_lib	port:gnome-vfs \
+                port:gtksourceview2 \
+                port:vte \
+                port:mpfr
+
+configure.args	--enable-gnome \
+                --enable-gtksourceview \
+                --disable-update-mimedb \
+                --disable-scrollkeeper
+
+variant without_gnome description {Compile without the GNOME frontend (no GUI, no plotting} {
+   depends_lib path:lib/pkgconfig/glib-2.0.pc:glib2
+   configure.args-delete --enable-gnome \
+                         --enable-gtksourceview
+   configure.args-append --disable-gnome \
+                         --disable-gtksourceview
+}
+
+post-activate {
+   system "scrollkeeper-update"
+   system "${prefix}/bin/update-mime-database ${prefix}/share/mime; true"
+}
+
+livecheck.type  regex
+livecheck.url   http://ftp.5z.com/pub/genius/
+livecheck.regex "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

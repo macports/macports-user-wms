@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                tnftpd
+version             20100324
+categories          net
+license             BSD
+maintainers         snc openmaintainer
+description         Internet File Transfer Protocol server
+long_description    ${name} is the Internet File Transfer Protocol server \
+                    process.  The server uses the TCP protocol and listens at \
+                    the port specified in the ``ftp'' service specification\; \
+                    see services(5).
+    
+homepage            ftp://ftp.netbsd.org/pub/NetBSD/misc/tnftp/
+platforms           darwin
+
+master_sites        ${homepage}
+checksums           rmd160  8bad2791e14868f037305e7ca1e2943f8120caf8 \
+                    sha256  ff6b7c39f1bbdb9686a2c92652a59e8c81f1268dd329ff582db91a8ed76c599c
+
+use_autoconf        yes
+
+configure.args-append   --with-pam
+
+destroot {
+    xinstall -m 555 ${worksrcpath}/src/${name} ${destroot}${prefix}/sbin/
+
+    xinstall -m 444 ${worksrcpath}/src/ftpd.conf.man ${destroot}${prefix}/share/man/man5/ftpd.conf.5
+    xinstall -m 444 ${worksrcpath}/src/ftpusers.man ${destroot}${prefix}/share/man/man5/ftpdusers.5
+    xinstall -m 444 ${worksrcpath}/src/${name}.man ${destroot}${prefix}/share/man/man8/${name}.8
+
+    xinstall -d 555 ${destroot}${prefix}/share/${name}/examples/
+    xinstall -m 444 ${worksrcpath}/examples/ftpd.conf ${destroot}${prefix}/share/${name}/ftpd.conf.default
+    xinstall -m 444 ${worksrcpath}/examples/ftpusers ${destroot}${prefix}/share/${name}/ftpusers
+
+    xinstall -m 444 ${worksrcpath}/COPYING ${destroot}${prefix}/share/${name}/
+    xinstall -m 444 ${worksrcpath}/NEWS ${destroot}${prefix}/share/${name}/
+    xinstall -m 444 ${worksrcpath}/README ${destroot}${prefix}/share/${name}/
+    xinstall -m 444 ${worksrcpath}/THANKS ${destroot}${prefix}/share/${name}/
+}
+

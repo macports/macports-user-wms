@@ -1,0 +1,60 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                crfpp
+version             0.57
+epoch               1
+categories          math textproc
+maintainers         hum openmaintainer
+
+description         Yet Another CRF toolkit
+long_description    CRF++ is a simple, customizable, and open source implementation \
+                    of Conditional Random Fields (CRFs) for segmenting/labeling \
+                    sequential data. \
+                    CRF++ is designed for generic purpose and will be applied to \
+                    a variety of NLP tasks, such as Named Entity Recognition, \
+                    Information Extraction and Text Chunking.
+
+homepage            http://code.google.com/p/crfpp/
+platforms           darwin
+license             LGPL-3+ BSD
+
+master_sites        googlecode:crfpp
+distname            CRF++-${version}
+checksums           rmd160  aa9adbccb7a0ae4545c96e9046a8a5e154c677cb \
+                    sha256  cd0e6037e8746221cf551b12f37e340fd47ed60642e8969bb8d4cdd276dd1fde
+
+patchfiles          patch-configure.diff
+
+conflicts           crfpp-devel
+
+depends_build       port:nkf
+
+post-destroot {
+    set sharedir ${prefix}/share/${name}
+    xinstall -d ${destroot}${sharedir}
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS COPYING ChangeLog NEWS README ${destroot}${sharedir}
+    foreach dir {doc example sdk} {
+        copy $dir ${destroot}${sharedir}
+    }
+    # fix file pathes in exec.sh
+    set modeldir /tmp
+    foreach ex {JapaneseNE basenp chunking seg} {
+        set dir ${sharedir}/example/${ex}
+        reinplace "s|\\.\\./\\.\\./|${prefix}/bin/|g"     ${destroot}${dir}/exec.sh
+        foreach file {template train.data test.data} {
+            reinplace "s| ${file}| ${dir}/${file}|g"      ${destroot}${dir}/exec.sh
+        }
+        reinplace "s| model| ${modeldir}/${name}.model|g" ${destroot}${dir}/exec.sh
+    }
+    # convert to UTF-8
+    foreach file {train.data test.data} {
+        set subdir example/JapaneseNE/${file}
+        system "nkf -w ${worksrcpath}/${subdir} > ${destroot}${sharedir}/${subdir}"
+    }
+}
+
+livecheck.regex     CRF\\+\\+-(\[0-9.\]+)\\.

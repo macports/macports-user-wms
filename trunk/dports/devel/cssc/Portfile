@@ -1,0 +1,24 @@
+# $Id$
+
+PortSystem 1.0
+name             cssc
+version          1.0.1
+categories       devel
+maintainers      nomaintainer
+description      SCCS replacement
+long_description \
+	 CSSC is the GNU Project's replacement for SCCS. \
+	 SCCS is a proprietary suite of tools which is \
+	 provided with most commercial versions of Unix.
+homepage         http://cssc.sourceforge.net/
+platforms        darwin
+
+master_sites     gnu sourceforge
+distname         CSSC-${version}
+checksums        md5 5e1ebff620aea1295ac5de906d0dc279
+
+configure.args   --infodir=${prefix}/share/info \
+                 --mandir=${prefix}/share/man \
+                 --enable-binary
+
+livecheck.distname  CSSC

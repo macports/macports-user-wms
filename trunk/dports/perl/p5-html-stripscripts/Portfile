@@ -1,0 +1,19 @@
+# $Id$
+
+PortSystem		1.0
+
+PortGroup		perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		HTML-StripScripts 1.04
+revision        3
+license			{Artistic-1 GPL}
+maintainers		nomaintainer
+description		Strip scripting constructs out of HTML
+
+long_description	${description}
+
+checksums		md5 aecd01e273bddbf60dca2a923163826d
+platforms		darwin
+
+supported_archs noarch

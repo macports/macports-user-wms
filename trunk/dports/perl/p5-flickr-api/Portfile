@@ -1,0 +1,27 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Flickr-API 1.04
+revision            3
+platforms           darwin
+maintainers         l2g
+license             Artistic-2
+supported_archs     noarch
+
+description         Perl interface to the Flickr API
+
+long_description    ${description}
+
+checksums           sha1    40f413aa9e7018035e5cde156b503743fb988272 \
+                    rmd160  e9c39041f23869afc8a285fc7e493c42d160899f
+
+if {${perl5.major} != ""} {
+depends_lib-append  port:p${perl5.major}-digest-md5 \
+                    port:p${perl5.major}-libwww-perl \
+                    port:p${perl5.major}-uri \
+                    port:p${perl5.major}-xml-parser-lite-tree
+}

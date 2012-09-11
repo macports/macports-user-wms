@@ -1,0 +1,93 @@
+# $Id$
+
+PortSystem 1.0
+
+name			subversion-rubybindings
+version			1.7.6
+categories		devel ruby
+platforms		darwin
+maintainers		geeklair.net:dluke blair
+description		Ruby bindings for the subversion version control system (svn)
+license			Apache-2
+
+long_description	Subversion (svn) is a version control system designed to be \
+			as similar to cvs(1) as possible, while fixing many \
+			outstanding problems with cvs(1). The ruby bindings \
+			provide access to subversion API from ruby.
+
+homepage		http://subversion.apache.org/
+master_sites		apache:subversion
+use_bzip2		yes
+checksums	md5	4baa434db7709bb059b05d02a2547663 \
+		sha1	5b76a9f49e2c4bf064041a7d6b1bfcc3aa4ed068 \
+		rmd160	bbf9fb7eeb719745bbc67b9456164ab33b213088
+
+distname		subversion-${version}
+dist_subdir		subversion
+
+test.run		yes
+test.target		check-swig-rb
+
+# mod_dontdothat patch from
+# http://mail-archives.apache.org/mod_mbox/subversion-users/201208.mbox/%3calpine.DEB.2.02.1208160926320.7801@ratryoret.brgvxre.pu%3e
+patchfiles		mod_dontdothat_build.patch.diff
+
+
+depends_lib		port:expat port:neon \
+			port:apr port:apr-util \
+			port:db46 port:subversion \
+			port:ruby port:sqlite3 \
+			port:gettext port:libiconv \
+			port:serf1 port:cyrus-sasl2
+
+configure.env		RUBY=${prefix}/bin/ruby
+configure.args		--with-berkeley-db=:${prefix}/include/db46:${prefix}/lib/db46:db-4.6 \
+			--with-neon=${prefix} --with-apr=${prefix}/bin/apr-1-config \
+			--with-apr-util=${prefix}/bin/apu-1-config --without-apxs \
+			--mandir=\\\${prefix}/share/man \
+			--disable-neon-version-check --with-serf=${prefix} \
+			--with-sasl=${prefix}
+
+build.target		swig-rb
+destroot.target		install-swig-rb
+
+pre-test {
+			set x {}
+			fs-traverse dir ${worksrcpath}/subversion {
+				if {[file tail ${dir}] == ".libs" && [file isdirectory ${dir}]} {
+				lappend x ${dir}
+				continue
+				}
+			}
+
+			test.env-append DYLD_LIBRARY_PATH=[join ${x} ":"]
+			}
+
+pre-configure {		reinplace "s|hardcode_direct=yes|hardcode_direct=no|g" \
+				${worksrcpath}/configure
+			}
+
+post-configure {	reinplace "s|need_relink=yes|need_relink=no|g" \
+				${worksrcpath}/libtool
+			}
+
+variant no_bdb description {Build without support for BerkeleyDB repositories} {
+		        depends_lib-delete      port:db46 port:py-bsddb
+                        configure.args-delete   --with-berkeley-db=:${prefix}/include/db46:${prefix}/lib/db46:db-4.6
+                        configure.args-append   --without-berkeley-db
+                        }
+
+variant no_neon description {Build without neon (http/https support)} {
+			depends_lib-delete      port:neon
+                        configure.args-append   --without-neon
+                        configure.args-delete   --with-neon=${prefix}
+                        }
+
+# CarbonCore/MacTypes.h: No such file or directory
+platform puredarwin {		configure.args-append \
+					--disable-keychain
+				}
+
+livecheck.type  regex
+livecheck.url   http://subversion.tigris.org/servlets/ProjectDocumentList?folderID=260&expandFolder=74
+livecheck.regex "subversion-(\\d+(?:\\.\\d+)*)${extract.suffix}"

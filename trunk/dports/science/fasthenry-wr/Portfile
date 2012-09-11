@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name             fasthenry-wr
+version          3.0
+revision         1
+
+categories       science electronics
+platforms        darwin
+maintainers      macsforever2000
+license          LGPL
+
+description      A multipole-accelerated inductance analysis program
+long_description A multipole-accelerated inductance analysis program. This version of fasthenry has been modified by Whiteley Research to support superconducting segments and ground planes.
+
+homepage         http://www.wrcad.com/freestuff.html
+distname         fasthenry-${version}wr-011109
+worksrcdir       fasthenry-${version}wr
+
+master_sites     ftp://ftp.srware.com/pub/ \
+                 http://www.wrcad.com/ftp/pub/
+
+checksums        md5     66f0c7366c56ef82e5bbc29cd9ed0cef \
+                 sha1    bd9db6b362cee22ebf24e6728a32a942d3f5200f \
+                 rmd160  9845c60c3b9955e28b2e06944c01d2d5497c1ae1
+
+use_configure    no
+
+# https://trac.macports.org/ticket/33915
+if {${configure.compiler} == "clang"} {
+    configure.compiler llvm-gcc-4.2
+}
+
+build.args-append       CC=${configure.cc} \
+                        CXX=${configure.cxx} \
+                        CPP=${configure.cpp}
+
+destroot {
+    xinstall -m 755 -W ${worksrcpath}/bin fasthenry zbuf ${destroot}${prefix}/bin
+    set docdir ${prefix}/share/doc/fasthenry-wr
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath}/doc manual_001.ps manual_002.ps manual_003.ps ms_thesis.ps nonuniform_manual_1.ps nonuniform_manual_2.ps README ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} README ${destroot}${docdir}/README.wr
+    file copy ${worksrcpath}/examples ${destroot}${prefix}/share/doc/${name}/
+}

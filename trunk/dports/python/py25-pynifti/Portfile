@@ -1,0 +1,65 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               python25 1.0
+
+name                    py25-pynifti
+version                 0.20090303.1
+categories              python
+platforms               darwin
+maintainers             jameskyle
+description             PyNIfTI aims to provide easy access to NIfTI images from within Python.
+long_description        ${description}. It uses SWIG-generated wrappers for the NIfTI reference library and provides the NiftiImage class for Python-style access to the image data.
+
+homepage                http://sourceforge.net/projects/niftilib
+master_sites            sourceforge:niftilib
+
+checksums           md5     6625c0db0ba4776c14327affa5c0098a \
+                    sha1    96072c1b79c882a7a14461c9b48366a34f211e05 \
+                    rmd160  b6e10b401f8e6585126426d207c9d6e9e393f382
+
+depends_lib             port:py25-numpy \
+                        port:nifticlib \
+                        port:swig-python
+
+build.env               CCFLAGS="-I${prefix}/include -L${prefix}/lib -I${prefix}/include/nifti"
+
+distfiles               pynifti_${version}${extract.suffix}
+worksrcdir              pynifti-${version}
+patchfiles              patch-setup-py.diff
+post-patch {
+  reinplace "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/setup.py
+}
+
+pre-fetch {
+  if {![llength [glob -nocomplain ${prefix}/share/swig/*/python/python.swg]]} {
+    ui_error "The python variant of swig is not installed. Please run"
+    ui_error "the following commands:"
+    ui_error "$ sudo port uninstall swig"
+    ui_error "$ sudo port install swig +python"
+    error "python variant of swig required"
+  }
+}
+
+variant gcc43 conflicts gcc44 gcc45 description {build with gcc 4.3} {
+    depends_build-append port:gcc43
+    configure.compiler   macports-gcc-4.3
+}
+
+variant gcc44 conflicts gcc43 gcc45 description {build with gcc 4.4} {
+    depends_build-append port:gcc44
+    configure.compiler   macports-gcc-4.4
+}
+
+variant gcc45 conflicts gcc43 gcc44 description {build with gcc 4.5} {
+    depends_build-append port:gcc45
+    configure.compiler   macports-gcc-4.5
+}
+
+if {![variant_isset gcc43] && ![variant_isset gcc44]} {
+    default_variants +gcc45
+}
+
+livecheck.url http://sourceforge.net/export/rss2_projfiles.php?project=niftilib
+livecheck.regex {pynifti_([0-9.]+).tar.gz}

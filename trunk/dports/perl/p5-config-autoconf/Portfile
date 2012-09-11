@@ -1,0 +1,20 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Config-AutoConf 0.19
+revision        1
+platforms           darwin
+maintainers         nomaintainer
+supported_archs     noarch
+license             {Artistic GPL}
+
+description         A module to implement some AutoConf macros in pure perl.
+
+long_description    ${description}
+
+checksums           sha256  0db2ecbc73e5279bab6f741328a6a125c310cefcaf02faa73eda5b18921ed9cb \
+                    rmd160  b37edd63611c8838ea4c9760074f6316d1749ae5

@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup ruby 1.0
+
+ruby.setup		xmlresume2x 0.2.1 setup.rb {COPYING ChangeLog README TODO}
+name			xmlresume2x
+categories		textproc
+platforms		darwin
+maintainers		nomaintainer
+description		converts XML resume format to various output formats
+long_description	xmlresume2x is a converter which converts input files in \
+				XML resume format to various output formats including a \
+				good-looking LaTeX format.
+
+homepage		http://xmlresume2x.rubyforge.org/
+master_sites	http://rubyforge.org/frs/download.php/2575/
+extract.suffix	.tgz
+checksums		rmd160 8444c2e3c0f76b097a876c3e44481a347b06bfee \
+			sha256 ed689c4b8541d74febf35caa90da7b3edf6dbde8024d097de346f553cc3fdff0

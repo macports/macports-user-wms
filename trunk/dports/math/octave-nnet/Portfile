@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        nnet 0.1.10
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         A feed forward multi-layer neural network.
+long_description    ${description}
+
+checksums           md5     a9780d6310ab194423807a2e46b32585 \
+                    sha1    a3bdd6914268f70dbfc8d30d001014cb8783861a \
+                    rmd160  df59efda0597d2eace9112c19ec036d3e907f65a

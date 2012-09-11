@@ -1,0 +1,62 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup python 1.0
+
+set realname        tables
+name                py-${realname}
+version             2.4.0
+python.versions     25 26 27
+python.default_version 27
+categories          python science
+platforms           darwin
+maintainers         mmoll openmaintainer
+license             BSD
+description         Package for managing hierarchical datasets
+long_description    PyTables is a package for managing hierarchical datasets \
+                    and designed to efficiently and easily cope with \
+                    extremely large amounts of data
+
+homepage            http://www.pytables.org/
+master_sites        http://sourceforge.net/projects/pytables/files/pytables/${version}
+checksums           md5     ec20938fca8b579020c5a4cc567caf7c \
+                    sha1    3f96927a80f0bfb812206d5af0a08c988a733158 \
+                    rmd160  659e02e3cd08068005e98bb2dc637724d6ea9808
+distname            ${realname}-${version}
+
+if {$subport != $name} {
+    build.target        build_ext
+    build.args          --inplace \
+                        --hdf5=${prefix} \
+                        --bzip2=${prefix} \
+                        --lzo=${prefix}
+
+    compiler.cpath-append \
+			${prefix}/include/openmpi
+
+    destroot.args       --hdf5=${prefix} \
+                        --bzip2=${prefix} \
+                        --lzo=${prefix}
+    depends_lib-append  port:hdf5-18 \
+                        port:py${python.version}-numpy \
+                        port:py${python.version}-numexpr \
+                        port:zlib \
+                        port:bzip2 \
+                        port:lzo2 \
+                        port:py${python.version}-scientific \
+                        port:py${python.version}-cython
+    post-destroot    {
+        xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+        xinstall -m 644 -W ${worksrcpath} ANNOUNCE.txt LICENSE.txt README.txt \
+            RELEASE_NOTES.txt THANKS VERSION \
+            ${destroot}${prefix}/share/doc/${name}
+    }
+}
+
+if {${name} == ${subport}} { 
+    livecheck.type     regex
+    livecheck.url      ${homepage}
+    livecheck.regex    {PyTables ([0-9]+\.[0-9]+\.[0-9]+) \(final\) released}
+} else {
+    livecheck.type      none
+}

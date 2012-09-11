@@ -1,0 +1,37 @@
+# $Id$
+
+PortSystem          1.0
+
+name                fox
+version             1.6.36
+revision            4
+description         The FOX GUI toolkit
+long_description    FOX is a C++ based Toolkit for developing Graphical \
+                    User Interfaces easily and effectively.
+maintainers         lylejohnson.name:lyle
+categories          x11
+platforms           darwin
+distname            fox-${version}
+homepage            http://www.fox-toolkit.org/
+master_sites        http://www.fox-toolkit.org/ftp/
+checksums           md5 5fdc89446185fbbf024cec44eb50a239 \
+                    sha1 28ad1823033027fb05887cb625301c2eae56c08e \
+                    rmd160 da615f1c036272294510e981b2d73037969f2570
+
+depends_build \
+	port:pkgconfig
+
+depends_lib \
+	port:tiff \
+	port:libpng \
+	port:jpeg \
+	port:xorg-libXcursor \
+	port:Xft2 \
+	port:xorg-libXrandr \
+	port:freetype \
+	port:mesa
+
+configure.pre_args  --prefix=${prefix} --mandir=${prefix}/share/man
+configure.args      --with-x --with-xft --with-opengl --enable-cups
+
+use_parallel_build	yes

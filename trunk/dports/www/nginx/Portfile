@@ -1,0 +1,215 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                nginx
+version             1.2.3
+categories          www mail
+platforms           darwin
+license             BSD
+maintainers         cal openmaintainer
+
+description         High-performance HTTP(S) server, HTTP(S) reverse proxy and IMAP/POP3 proxy server
+long_description    \
+    Nginx ("engine x") is a high-performance HTTP(S) server and reverse proxy, \
+    as well as an IMAP/POP3 proxy server. Nginx was written by Igor Sysoev for \
+    Rambler.ru, Russia's second-most visited website, where it has been running \
+    in production for over two and a half years. Igor has released the source \
+    code under a BSD-like license. Although still in beta, Nginx is known for \
+    its stability, rich feature set, simple configuration, and low resource \
+    consumption.
+
+homepage            http://nginx.org/
+master_sites        http://nginx.org/download:nginx \
+                    http://www.grid.net.ru/nginx/download/:upload_module \
+                    googlecode:mod-zip:zip_module \
+                    http://people.freebsd.org/~osa/:redis_module \
+                    https://github.com/downloads/masterzen/nginx-upload-progress-module:uploadprogress_module
+
+distfiles           ${name}-${version}${extract.suffix}:nginx
+checksums           ${name}-${version}${extract.suffix} \
+                    rmd160  49f9a8ede7ab68a067ba562b9917f84db427b2a1 \
+                    sha256  06a1153b32b43f100ee9147fe230917deea648f0155111c749e35da120646bf5
+
+depends_lib         port:pcre \
+                    port:zlib
+
+patchfiles          patch-auto__install.diff \
+                    patch-conf__nginx.conf.diff
+
+set nginx_confdir   ${prefix}/etc/${name}
+set nginx_logdir    ${prefix}/var/log/${name}
+set nginx_rundir    ${prefix}/var/run/${name}
+set nginx_pidfile   ${nginx_rundir}/${name}.pid
+set nginx_all_confs {fastcgi.conf fastcgi_params mime.types nginx.conf scgi_params uwsgi_params}
+
+configure.args-append \
+                    --with-cc-opt=\"${configure.cppflags} ${configure.cflags}\" \
+                    --with-ld-opt=\"${configure.ldflags}\" \
+                    --conf-path=${nginx_confdir}/${name}.conf \
+                    --error-log-path=${nginx_logdir}/error.log \
+                    --http-log-path=${nginx_logdir}/access.log \
+                    --pid-path=${nginx_pidfile} \
+                    --lock-path=${nginx_rundir}/${name}.lock \
+                    --http-client-body-temp-path=${nginx_rundir}/client_body_temp \
+                    --http-proxy-temp-path=${nginx_rundir}/proxy_temp \
+                    --http-fastcgi-temp-path=${nginx_rundir}/fastcgi_temp \
+                    --http-uwsgi-temp-path=${nginx_rundir}/uwsgi_temp \
+                    --with-ipv6
+
+# remove --disable-dependency-tracking
+configure.universal_args
+
+build.target        build
+destroot.keepdirs   ${destroot}${nginx_logdir} \
+                    ${destroot}${nginx_rundir}
+
+post-destroot {
+    foreach conf ${nginx_all_confs} {
+        set conf_target "${destroot}${nginx_confdir}/${conf}.example"
+        if {![file exists "${conf_target}"]} {
+            file rename "${destroot}${nginx_confdir}/${conf}" "${destroot}${nginx_confdir}/${conf}.example"
+        } else {
+            file delete "${destroot}${nginx_confdir}/${conf}"
+        }
+    }
+    file mkdir ${destroot}${prefix}/share/nginx
+    file rename ${destroot}${prefix}/html ${destroot}${prefix}/share/nginx
+}
+
+startupitem.create      yes
+startupitem.pidfile     auto ${nginx_pidfile}
+startupitem.executable  ${prefix}/sbin/nginx
+
+variant addition description {Append text to pages} {
+    configure.args-append   --with-http_addition_module
+}
+
+variant dav description {Add WebDAV support to server} {
+    configure.args-append   --with-http_dav_module
+}
+
+variant degradation description {Allow to return 204 or 444 code for some locations on low memory condition} {
+    configure.args-append   --with-http_degradation_module
+}
+
+variant flv description {Add FLV (Flash Video) streaming support to server} {
+    configure.args-append   --with-http_flv_module
+}
+
+variant geoip description {Enable Ngx http GeoIP module (http://wiki.nginx.org/HttpGeoIPModule)} {
+    configure.args-append   --with-http_geoip_module
+    depends_lib-append      port:libgeoip
+}
+
+variant google_perftools description {Enable Google Performance Tools profiling for workers} {
+    configure.args-append   --with-google_perftools_module
+    depends_lib-append      port:google-perftools
+}
+
+variant gzip_static description {Avoids compressing the same file each time it is requested} {
+    configure.args-append   --with-http_gzip_static_module
+}
+
+variant image_filter description {Transform images with libgd} {
+    configure.args-append   --with-http_image_filter_module
+    depends_lib-append      port:gd2
+}
+
+variant mail description {Add IMAP4/POP3 mail proxy support} {
+    configure.args-append   --with-mail
+    if {[variant_isset ssl]} {
+        configure.args-append   --with-mail_ssl_module
+    }
+}
+
+variant mp4 description {Enables mp4 streaming with seeking ability} {
+    configure.args-append   --with-http_mp4_module
+}
+
+variant perl5 description {Add perl support to the server directly within nginx and call perl via SSI} {
+    depends_run-append      path:bin/perl:perl5
+    configure.args-append   --with-http_perl_module \
+                            --with-perl=${prefix}/bin/perl
+}
+
+variant random_index description {Randomize directory indexes} {
+    configure.args-append   --with-http_random_index_module
+}
+
+variant realip description {For using nginx as backend} {
+    configure.args-append   --with-http_realip_module
+}
+
+variant secure_link description {Protect pages with a secret key} {
+    configure.args-append   --with-http_secure_link_module
+}
+
+variant ssl description {Add SSL (HTTPS) support to the server, and also to the mail proxy if that is enabled} {
+    configure.args-append   --with-http_ssl_module
+    depends_lib-append      port:openssl
+}
+
+variant status description {Add /nginx_status support to the server} {
+    configure.args-append   --with-http_stub_status_module
+}
+
+variant substitution description {Replace text in pages} {
+    configure.args-append   --with-http_sub_module
+}
+
+variant upload description {Enable Valery Kholodkov's upload module (http://grid.net.ru/nginx/upload.en.html)} {
+    set upload_filename     nginx_upload_module
+    set upload_version      2.2.0
+    set upload_distname     ${upload_filename}-${upload_version}
+    distfiles-append        ${upload_distname}.tar.gz:upload_module
+    checksums-append        ${upload_distname}.tar.gz \
+                            rmd160  5734af837be3fe8ec444a7e5e7f6707118594098 \
+                            sha256  b1c26abe0427180602e257627b4ed21848c93cc20cefc33af084983767d65805
+    configure.args-append   --add-module=${workpath}/${upload_distname}
+}
+
+variant upload_progress description {Enable Brice Figureau's upload progress module (https://github.com/masterzen/nginx-upload-progress-module)} {
+    set uploadprg_filename  nginx_uploadprogress_module
+    set uploadprg_version   0.9.0
+    set uploadprg_distname  ${uploadprg_filename}-${uploadprg_version}
+    distfiles-append        ${uploadprg_distname}.tar.gz:uploadprogress_module
+    post-extract {
+        move [glob ${workpath}/masterzen-nginx-upload-progress-module-a788dea] ${workpath}/nginx_uploadprogress_module-0.9.0
+    }
+    checksums-append        ${uploadprg_distname}.tar.gz \
+                            rmd160  10ff91748a06afd81abb9fdb203f164ea369463a \
+                            sha256  3fb903dab595cf6656fa0fc5743a48daffbba2f6b5c554836be630800eaad4e2
+    configure.args-append   --add-module=${workpath}/${uploadprg_distname}
+}
+
+variant xslt description {Post-process pages with XSLT} {
+    configure.args-append   --with-http_xslt_module
+}
+
+variant zip description {Enable Ngx zip download module \
+        (http://code.google.com/p/mod-zip/)} {
+
+    set zip_distname        mod_zip-1.1.6
+    distfiles-append        ${zip_distname}.tar.gz:zip_module
+    checksums-append        ${zip_distname}.tar.gz \
+                            rmd160  17a465d87b8e1ba71bdd6ad40e20d21cc7dcd434 \
+                            sha256  d30546b4be8308c721df0240ebc38c474c6b577381a110321eded6dbed5104b1
+    configure.args-append   --add-module=${workpath}/${zip_distname}
+}
+
+variant redis description {Enable Ngx HTTP Redis module} {
+    set redis_filename      ngx_http_redis
+    set redis_version       0.3.6
+    set redis_distname      ${redis_filename}-${redis_version}
+    distfiles-append        ${redis_distname}.tar.gz:redis_module
+    checksums-append        ${redis_distname}.tar.gz \
+                            rmd160  0d1de19ce1ae8b9b7fcd9693908403e613f5391d \
+                            sha256  9e5d8c0f1317a6910710c94d27f9aca4968c48ee1de271e5034525a1e9b6c70e
+    configure.args-append   --add-module=${workpath}/${redis_distname}
+}
+
+livecheck.type      regex
+livecheck.url       http://trac.nginx.org/nginx/browser/nginx_org/xml/versions.xml?format=txt
+livecheck.regex     "<stable> *(\\d+(?:\\.\\d+)*)"

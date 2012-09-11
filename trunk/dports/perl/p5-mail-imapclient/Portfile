@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup     Mail-IMAPClient 3.28
+revision        1
+license         {Artistic-1 GPL}
+maintainers     nomaintainer
+description     Perl 5 module to talk to an IMAP server.
+long_description \
+    This module provides perl routines that simplify a sockets \
+    connection to and an IMAP conversation with an IMAP server.
+checksums       md5 32cad582491bff59817e45fb39736a9d \
+                sha1 48bf67c597f749081bde53e9e9a82d5f9d226f53 \
+                rmd160 132595008e60da34feeecd7a00ef2c76257d9da3
+platforms       darwin
+
+supported_archs noarch

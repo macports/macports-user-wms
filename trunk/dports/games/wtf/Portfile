@@ -1,0 +1,35 @@
+# $Id$
+
+PortSystem 1.0
+name        wtf
+version     20080926
+categories  games
+license     public-domain
+maintainers nomaintainer
+description translates common Internet acronyms
+long_description    "${description}"
+platforms   darwin freebsd
+supported_archs noarch
+
+homepage    http://cvsweb.netbsd.org/bsdweb.cgi/src/games/wtf/
+master_sites     freebsd
+checksums       md5 5f3ad46d90a71d30ecf281dbd58e9d20 \
+    sha1 b03ac88243052bc2e3bd6449282adf80cd02b3c7 \
+    rmd160 2bf3985152e7d112d1d1a248581daec9703a37c8
+
+
+use_configure	no
+
+build {
+    reinplace "s|/usr|${prefix}|g" ${worksrcpath}/wtf ${worksrcpath}/wtf.6
+}
+
+destroot {
+    xinstall -m 555 -W ${worksrcpath} wtf ${destroot}${prefix}/bin
+    xinstall -m 444 -W ${worksrcpath} wtf.6 ${destroot}${prefix}/share/man/man6
+
+    xinstall -d ${destroot}${prefix}/share/misc
+    xinstall -m 444 -W ${worksrcpath} acronyms acronyms.comp ${destroot}${prefix}/share/misc
+}
+
+livecheck.type  none

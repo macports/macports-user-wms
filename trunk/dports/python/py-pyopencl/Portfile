@@ -1,0 +1,56 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-pyopencl
+version             2011.2
+revision            2
+python.versions     26 27
+python.default_version  27
+categories-append   science
+
+maintainers         gmail.com:larry.velazquez openmaintainer
+license             MIT
+
+description         Python wrapper for OpenCL.
+
+long_description    PyOpenCL lets you access GPUs and \
+                    other massively parallel compute \
+                    devices from Python.
+
+platforms           darwin
+
+if {${configure.compiler} == "clang"} {
+    configure.compiler llvm-gcc-4.2
+}
+
+homepage            http://mathema.tician.de/software/pyopencl
+master_sites        http://cheeseshop.python.org/packages/source/p/pyopencl/
+distname            pyopencl-${version}
+
+checksums           rmd160  78ec633e9e14b4df484051a728119f47a14f29a0 \
+                    sha256  44e63472cfd3783e60c4c5a7f0ae3537fb95ffd6034ca3db226f5ca5a726d9b9
+
+patchfiles          patch-setup.py.diff
+
+if {${subport} != ${name}} {
+    depends_build-append \
+                        port:py${python.version}-distribute \
+                        port:py${python.version}-numpy \
+                        port:py${python.version}-mako
+
+    depends_run-append  port:py${python.version}-decorator \
+                        port:py${python.version}-pytools
+
+    use_configure       yes
+    configure.cmd       ${python.bin} configure.py
+    configure.args      --cl-enable-gl
+    configure.universal_args-delete --disable-dependency-tracking
+    livecheck.type      none
+} else {
+    livecheck.type      regex
+    livecheck.url       ${master_sites}
+    livecheck.regex     "pyopencl-(\\d+(?:\\.\\d+)*)${extract.suffix}"
+}

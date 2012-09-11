@@ -1,0 +1,64 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name                mc
+version             4.8.1.4
+categories          sysutils
+maintainers         nomaintainer
+license             GPL-3+
+
+description         GNU Midnight Commander
+long_description    \
+                    GNU Midnight Commander is a user-friendly yet powerful file \
+                    manager and visual shell, useful to novice and guru alike. \
+                    It provides a clear, user-friendly, and somewhat protected \
+                    interface to a Unix system while making many frequent file \
+                    operations more efficient and preserving the full power of \
+                    the command prompt. After some practice, you will wonder how \
+                    you could ever live without it.
+homepage            http://www.midnight-commander.org/
+platforms           darwin
+master_sites        ${homepage}downloads
+
+use_xz              yes
+
+checksums           rmd160  c78dd49fd970e55fd969379b98d228c8d82f9694 \
+                    sha256  dd2f344fd3d508c5f46d8e661567574ff9b059c5df70fd51b4be76cfe4c35dd8
+
+depends_build       path:bin/pkg-config:pkgconfig
+depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2
+
+configure.args      --without-x
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS \
+        COPYING \
+        NEWS \
+        README \
+        ${docdir}
+}
+
+variant slang2 conflicts ncurses description {use slang2 screen library} {
+    depends_lib-append      port:slang2
+    configure.args-append   --with-screen=slang \
+                            --with-slang-includes=${prefix} \
+                            --with-slang-libs=${prefix}
+}
+
+variant ncurses conflicts slang2 description {use ncurses screen library} {
+    depends_lib-append      port:ncurses
+    configure.args-append   --with-screen=ncurses
+}
+
+if { ![variant_isset ncurses] } {
+    default_variants        +slang2
+}
+
+livecheck.type  regex
+livecheck.url   ${homepage}
+livecheck.regex {Latest stable released version: ([0-9.]+)}

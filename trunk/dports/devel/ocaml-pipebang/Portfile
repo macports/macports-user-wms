@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup ocaml 1.0
+
+name                ocaml-pipebang
+version             108.00.02
+revision            1
+categories          devel ml
+platforms           darwin
+license             LGPL-2.1
+maintainers         mww openmaintainer
+description         Syntax extension to transform x |! f into f x
+long_description    ${description}
+
+homepage            https://ocaml.janestreet.com/code
+master_sites        https://ocaml.janestreet.com/ocaml-core/${version}/individual/
+distname            pipebang-${version}
+
+checksums           rmd160  e209ec62fe9e91a536532b0751e5e6bc1b9c83cf \
+                    sha256  146693bc5f4abb20e6b1cc306a6718479e2393668afed99a8baa0fe33c26aaea
+
+depends_lib         port:ocaml port:ocaml-findlib port:ocaml-type-conv
+
+use_oasis           yes
+
+livecheck.type      regex
+livecheck.url       https://ocaml.janestreet.com/ocaml-core/
+livecheck.regex     (\[0-9\]+\\\.\[0-9\\\.\]+)
+

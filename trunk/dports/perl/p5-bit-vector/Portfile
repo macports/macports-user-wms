@@ -1,0 +1,23 @@
+# $Id$
+
+PortSystem		1.0
+PortGroup		perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		Bit-Vector 7.1
+revision        4
+license			{Artistic-1 GPL}
+maintainers		nomaintainer
+description		Efficient bit vector, set of integers and "big int" math library
+long_description	Bit::Vector is an efficient C library which allows \
+					you to handle bit vectors, sets (of integers), "big \
+					integer arithmetic" and boolean matrices, all of \
+					arbitrary sizes.
+checksums		md5     164c8574b728f6171b2a6f564fcd2e50 \
+			sha1    de2ffdae784ea061689f424dca56b27a55b50cd5 \
+			rmd160  3d092f47596435b56400aa8c52da1291df4fe8a6
+platforms		darwin
+
+if {${perl5.major} != ""} {
+    depends_lib-append		port:p${perl5.major}-carp-clan
+}

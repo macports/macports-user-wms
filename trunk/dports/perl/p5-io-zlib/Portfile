@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           IO-Zlib 1.10
+revision              3
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+description           IO::-style interface to Compress::Zlib
+long_description      This modules provides an IO:: style interface to the \
+                      Compress::Zlib package. The main advantage is that you \
+                      can use an IO::Zlib object in much the same way as an \
+                      IO::File object so you can have common code that doesn't \
+                      know which sort of file it is using.
+
+platforms             darwin
+
+checksums             md5     078a9387009b928068f70759e61bd08f \
+                      sha1    8d530d2268e3c32f7644495287219361e6e262fb \
+                      rmd160  e7e021350568003f004a41aa9f08933836b37237
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-io-compress
+
+supported_archs noarch
+}

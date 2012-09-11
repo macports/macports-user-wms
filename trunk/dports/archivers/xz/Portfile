@@ -1,0 +1,38 @@
+# $Id$
+
+PortSystem      1.0
+
+name            xz
+version         5.0.4
+categories      archivers
+# some executables are GPL, libs and everything else are public domain
+license         {public-domain GPL-2+}
+platforms       darwin
+maintainers     afb openmaintainer
+description     XZ Utils
+
+long_description \
+XZ utils consist of a few relatively separate submodules: \
+* LZMA/XZ encoder/decoder command line tool similar to gzip/bzip2 \
+* Scripts to ease grepping, diffing and viewing (lz*grep, lzdiff/lzcmp, lzmore/lzless)
+
+homepage        http://tukaani.org/xz/
+master_sites    ${homepage}
+use_bzip2       yes
+
+checksums       sha1    7dd986aa42e0181cad3af236826f65514d2f7c19 \
+                rmd160  25463b22fb24156a5d6c62450265ebe1b29e670e
+
+depends_lib     port:libiconv port:gettext
+
+configure.args  --with-libiconv-prefix=${prefix} --with-libintl-prefix=${prefix}
+
+# document that we always need legacy symlinks now that "lzmautils" refers here
+configure.args-append --enable-lzma-links
+
+# the internal "check.h" header conflicts with port check's <check.h>
+configure.cppflags -I${worksrcpath}/src/liblzma/check -I${prefix}/include
+
+livecheck.url   ${homepage}
+livecheck.regex xz-(\[0-9.a-z\]*)\.tar\.gz
+livecheck.type  regexm

@@ -1,0 +1,24 @@
+# $Id$
+
+PortSystem                1.0
+PortGroup                 perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup               Pod-Coverage 0.21
+revision                  3
+license                   {Artistic-1 GPL}
+maintainers               nomaintainer
+description               Checks if the documentation of a module is comprehensive
+long_description          ${description}
+
+platforms                 darwin
+
+checksums                 md5 3d8acba0817cc01b03d63bb05e4cef52 \
+                          sha1 d94cbb21f948a3660379edf73fb6b6ced8b98a0e \
+                          rmd160 ce2d8399f2819fc9711b9da1cef990bff6662491
+
+if {${perl5.major} != ""} {
+depends_lib-append        port:p${perl5.major}-devel-symdump
+
+perl5.use_module_build
+}

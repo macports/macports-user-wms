@@ -1,0 +1,50 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem  1.0
+PortGroup       kde4 1.1
+
+name		strigi
+version		0.7.5
+revision        4
+categories	devel
+maintainers	gmail.com:clubjuggler openmaintainer
+license     LGPL-2+
+description	Fastest and smallest desktop searching program
+long_description Strigi is a daemon which uses a very fast and efficient crawler that can index data on your harddrive. Indexing operations are performed without hammering your system, this makes Strigi the fastest and smallest desktop searching program. Strigi can index different file formats, including the contents of the archive files.
+platforms	darwin
+homepage	http://strigi.sourceforge.net/
+master_sites	sourceforge:project/strigi/strigi
+use_bzip2	yes
+
+depends_lib     port:bzip2 \
+                port:clucene \
+                path:bin/dbus-daemon:dbus \
+                port:exiv2 \
+                port:libxml2 \
+                path:lib/libavcodec.dylib:ffmpeg \
+                port:zlib
+
+checksums           sha1    0aa3632e07c58f2ab5c515004b790bda6cfefbf5 \
+                    rmd160  2cf9fa372de2bc06abcee25d0f41fa5f4916fa3c
+
+patchfiles          patch-xmlindexer_CMakeLists.txt.diff
+
+configure.args-append   -DICONV_INCLUDE_DIR:PATH=${prefix}/include \
+                        -DLOG4CXX_INCLUDE_DIR=${prefix}/include/log4cxx \
+                        -DICONV_LIBRARIES:FILEPATH=${prefix}/lib/libiconv.dylib
+
+# Best practice for CMake dictates that builds should be out of source.
+# However, it appears that strigi uses java to create source files and
+# they don't get put in the right place if you're doing an out of source
+# build, so for now this is an in-source build. That does, however, simplify
+# things because the build and destroot phases can be left at the default
+# values.
+
+post-destroot	{
+		xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+		xinstall -m 644 -W ${worksrcpath} COPYING AUTHORS ChangeLog ${destroot}${prefix}/share/doc/${name}
+}
+
+livecheck.url http://sourceforge.net/projects/strigi/files/
+livecheck.regex "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

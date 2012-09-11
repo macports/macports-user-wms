@@ -1,0 +1,13 @@
+--- configure.orig	2012-02-22 15:08:12.000000000 +0900
++++ configure	2012-03-08 01:07:49.000000000 +0900
+@@ -17559,8 +17559,8 @@
+ 
+ 
+ if test -n "$GCC"; then
+-   CFLAGS="-O3  -Wno-deprecated -Wall"
+-   CXXFLAGS="-O3 -Wno-deprecated -Wall"
++   CFLAGS="$CFLAGS -O3  -Wno-deprecated -Wall"
++   CXXFLAGS="$CXXFLAGS -O3 -Wno-deprecated -Wall"
+ fi
+ 
+ 

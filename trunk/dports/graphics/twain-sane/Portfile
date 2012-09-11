@@ -1,0 +1,55 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               xcode 1.0
+
+name                    twain-sane
+version                 3.0
+categories              graphics
+maintainers             nomaintainer
+supported_archs         i386 ppc
+
+description             TWAIN datasource for SANE
+
+long_description        This is a TWAIN datasource for Mac OS X that aquires images \
+                        using the SANE backend libraries. The SANE backend libraries \
+                        provide access to a large range of scanners connected through \
+                        SCSI or USB. For a complete list see the documentation on the \
+                        SANE project homepage. It works with my HP SCSI scanner, and \
+                        many people have reported success with a large number of \
+                        different scanners. The feedback from users have helped the \
+                        SANE developers to fix problems with various backends, so with \
+                        each release of the SANE backends more of the Mac OS X specific \
+                        problems have been solved.
+
+distname                TWAIN-SANE-Interface-${version}
+homepage                http://www.ellert.se/twain-sane/
+master_sites            http://www.ellert.se/PKGS/${distname}/src/
+
+checksums               rmd160 42458dfd447c4ee033d27b7697ebee61dc4c7bfa \
+                        sha256 62a1b899ab4980f4b121af78fdb13c2fadb8ab2dc0ef55e5eb86e5a09c8b7301
+
+depends_lib             port:libiconv \
+                        port:gettext \
+                        port:libusb-compat \
+                        port:sane-backends
+
+xcode.project           SANE.ds.xcodeproj
+xcode.destroot.path     /Library/Image Capture/TWAIN Data Sources
+xcode.build.settings    LIBRARY_SEARCH_PATHS=${prefix}/lib \
+                        HEADER_SEARCH_PATHS=${prefix}/include
+xcode.destroot.settings LIBRARY_SEARCH_PATHS=${prefix}/lib \
+                        HEADER_SEARCH_PATHS=${prefix}/include
+
+build.dir               ${worksrcpath}/src
+
+pre-build {
+    # Generate Info.plist
+    system "cd ${build.dir} && ./Info.sh > Info.plist"
+}
+
+destroot.violate_mtree  yes
+
+livecheck.type          regex
+livecheck.regex         TWAIN-SANE-Interface-(\[0-9.\]+)${extract.suffix}

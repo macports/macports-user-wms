@@ -1,0 +1,18 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Sub-Identify 0.04
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Retrieve names of code references
+long_description    ${description}
+
+platforms           darwin
+
+checksums           md5 cfa7c0d73090a2b4fb75d8a581a3ca81 \
+                    sha1 08a1de8fc1dedf41d89f6b504d82e520c2018eff \
+                    rmd160 e6351b5c2ef39d7136e239adc444661e3122d148

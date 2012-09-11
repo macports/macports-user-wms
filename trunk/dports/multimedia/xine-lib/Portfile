@@ -1,0 +1,69 @@
+# $Id$
+
+PortSystem 1.0
+
+name		xine-lib
+version         1.2.2
+description	xine-lib is a free multimedia engine, released under the GPL.
+long_description        ${description}
+maintainers	ryandesign openmaintainer
+categories	multimedia
+# included libdvdnav is GPL-2 only, rest is GPL-2+
+license		GPL-2
+platforms	darwin
+homepage	http://www.xine-project.org
+master_sites    sourceforge:project/xine/xine-lib/${version}
+use_xz      yes
+
+checksums       rmd160  3f11df3fa8a8946bdcc9cdecd6952dc76b834d14 \
+                sha256  e1656451be64005ef296ffafcf5085d63ef7d4ee4477024391f8e3000d3253d6
+
+depends_build port:libtool \
+            port:pkgconfig
+depends_lib port:aalib	\
+            port:esound \
+            port:faad2 \
+            path:lib/libavcodec.dylib:ffmpeg \
+            port:flac \
+            port:fontconfig \
+            port:libcdio \
+            port:libmpcdec \
+            port:libogg \
+            port:libvorbis \
+            port:vcdimager \
+            port:xorg-libXinerama \
+            port:xorg-libXt \
+            port:xorg-libXvMC \
+            port:xorg-xcb-util
+
+# fix "error: empty character constant" and
+# "error: initializer element is not a compile-time constant"
+patchfiles  src_demuxers_demux_qt.c.diff patch-include-xine-post.h
+
+if {${configure.compiler} == "clang"} {
+    # disable use of MMX in this file; workaround for
+    # "error: clobbers must be last on the x87 stack"
+    patchfiles-append   src_post_goom_ifs.c.diff
+}
+
+# bad register name `%rax'
+universal_variant       no
+
+configure.args  --disable-silent-rules
+if {${os.platform} == "darwin" && [string match *64 $build_arch]} {
+    configure.args-append --build=${build_arch}-apple-${os.platform}${os.version}
+}
+build.args  V=1
+
+platform darwin {
+    # fix "ar: no archive members specified"
+    patchfiles-append src_xine-engine_Makefile.in.diff
+}
+
+platform macosx {
+    patchfiles-append       audio_coreaudio_out.c.diff
+    configure.args-append   --enable-macosx-video \
+                            --enable-coreaudio
+}
+
+livecheck.regex     /${name}-(\[0-9.\]+)${extract.suffix}

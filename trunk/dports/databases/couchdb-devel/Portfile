@@ -1,0 +1,77 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name                couchdb-devel
+svn.revision        1177555
+version             1.3.0a${svn.revision}
+
+categories          databases
+platforms           darwin
+
+description         CouchDB is a document database server
+maintainers			nomaintainer
+long_description  ${description} with a restful HTTP API, capable of \
+	storing arbitrary JSON documents, building powerful data views, \
+	defined in JavaScript, and processed in parallel using Map/Reduce. \
+	It leaves out SQL and transactions for simplicity's sake, to \
+	improve scalability and to relax users' lives.
+
+homepage            http://couchdb.apache.org/
+master_sites        ${homepage}
+
+distname            couchdb-${version}
+fetch.type          svn
+svn.url             http://svn.apache.org/repos/asf/couchdb/trunk
+worksrcdir          trunk
+
+depends_lib	port:automake \
+    port:autoconf \
+    port:libtool \
+    port:help2man \
+    port:icu \
+    port:spidermonkey \
+    port:erlang
+
+pre-configure {
+    system "cd ${worksrcpath}; ./bootstrap"
+}
+
+set dbgroup couchdb
+set dbuser couchdb
+set logdir ${prefix}/var/log/couchdb
+set dbdir ${prefix}/var/lib/couchdb
+set plistdir /Library/LaunchDaemons
+startupitem.uniquename org.apache.couchdb
+set plist ${startupitem.uniquename}.plist
+
+post-destroot {
+    addgroup ${dbgroup}
+    adduser ${dbuser} gid=[existsgroup ${dbgroup}]
+    xinstall -m 755 -o ${dbuser} -g ${dbgroup} -d \
+	${destroot}${dbdir} \
+	${destroot}${logdir} \
+	${destroot}${plistdir}
+    destroot.keepdirs-append \
+        ${destroot}${dbdir} \
+        ${destroot}${logdir}
+    system "cd ${destroot}${plistdir} && ln -sf ${prefix}${plistdir}/${plist}"
+}
+
+post-activate {
+    ui_msg "########################################################################"
+    ui_msg "# Changes in CouchDB r753448 make older database files incompatible."
+    ui_msg "# See http://wiki.apache.org/couchdb/BreakingChanges for details"
+    ui_msg "#"
+    ui_msg "# Run the following command to install the CouchDB launchd"
+    ui_msg "# startup item in order to start and re-start service automatically:"
+    ui_msg "#"
+    ui_msg "# sudo launchctl load -w ${plistdir}/${plist}"
+    ui_msg "########################################################################"
+}
+
+livecheck.type	regex
+livecheck.url	http://svn.apache.org/viewvc/couchdb/trunk/src/couchdb/
+livecheck.version	${svn.revision}
+livecheck.regex	 (\[0-9\]+)

@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    xgalaga
+version                 2.1.1.0
+revision                1
+categories              games x11
+platforms               darwin
+maintainers             nomaintainer
+description             xgalaga is a rework of the Galaga shooting game.
+long_description        ${description}
+
+homepage                http://sourceforge.net/projects/xgalaga/
+master_sites            sourceforge
+checksums               md5     f37c3377b245d2d53b33eb489966bf28 \
+                        sha1    ef40ad833d2434b0643d4c00202bd75ec14b94ac \
+                        rmd160  b55a97187b61ffe7c072ecd784cf9a16fe568c26
+
+patchfiles              patch-main.c.diff
+
+depends_lib             port:xorg-libX11 \
+                        port:xorg-libXext \
+                        port:xorg-libXmu \
+                        port:xorg-libXt \
+                        port:xpm
+
+use_autoconf            yes
+
+configure.pre_args      --prefix=${prefix}/share/${name} \
+                        --exec-prefix=${prefix}/bin \
+                        --with-xpm-lib=${prefix}/lib
+
+platform darwin {
+    pre-configure {
+        if {[file exists ${prefix}/share/libtool/config/config.guess]} {
+            copy -force ${prefix}/share/libtool/config/config.guess ${prefix}/share/libtool/config/config.sub ${worksrcpath}
+        } else {
+            copy -force ${prefix}/share/libtool/config.guess ${prefix}/share/libtool/config.sub ${worksrcpath}
+        }
+    }
+}

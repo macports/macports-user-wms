@@ -1,0 +1,27 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               php 1.1
+
+name                    php-yaz
+version                 1.1.4
+categories-append       net databases devel
+platforms               darwin
+maintainers             ryandesign openmaintainer
+license                 PHP
+
+php.branches            5.3 5.4
+php.pecl                yes
+
+description             PHP/PECL extension for the Z39.50 protocol
+
+long_description        This extension implements a Z39.50 client \
+                        for PHP using the YAZ toolkit.
+
+checksums               rmd160  3d75cc120f989cbe8b47377f0c728535ff8a416c \
+                        sha256  8ebd0657db16d59f1abe55001439fd338e1282dffec868ac26a4eeb30b0bfc70
+
+if {${name} != ${subport}} {
+    depends_lib-append  port:re2c port:yaz
+}

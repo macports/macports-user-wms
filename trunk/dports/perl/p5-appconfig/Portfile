@@ -1,0 +1,22 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         AppConfig 1.66
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Module for manage application configuration information
+long_description    AppConfig is a bundle of Perl5 modules for reading \
+                    configuration files and parsing command line arguments. \
+                    It maintains the state of any number of variables and \
+                    provides methods for parsing configuration files, \
+                    command line arguments and CGI script parameters.
+
+platforms           darwin
+
+checksums           md5 21aa4d1bf70a49a94c2dc9293389b3a0
+
+supported_archs noarch

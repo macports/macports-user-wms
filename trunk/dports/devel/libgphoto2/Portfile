@@ -1,0 +1,59 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+name                libgphoto2
+version             2.5.0
+revision            1
+categories          devel
+license             LGPL-2+
+maintainers         nomaintainer
+description         The gphoto2 digital camera library
+long_description \
+   The gphoto2 library can be used by applications to access various digital \
+   camera models.
+
+platforms           darwin
+
+homepage            http://www.gphoto.org/proj/libgphoto2/
+master_sites        sourceforge:project/gphoto/libgphoto/${version}
+use_bzip2           yes
+
+checksums           sha1    b8383933525b71308b3b24ba43c88a4c5d999cf8 \
+                    rmd160  3d9ec631e8dd0e782eebd4b3bb3ed73954bb580c
+
+depends_build       port:pkgconfig
+depends_lib         path:bin/dbus-daemon:dbus \
+                    port:gettext \
+                    port:jpeg \
+                    port:libexif \
+                    port:libiconv \
+                    port:libpng \
+                    port:libusb-compat \
+                    port:libtool \
+                    port:gd2
+
+patchfiles          patch-configure.diff patch-configure-nodoxygen.diff \
+                    patch-camlibs_Makefile.in.diff
+
+# Use CPATH and LIBRARY_PATH for ${prefix}/include and ${prefix}/lib
+configure.ldflags-delete  -L${prefix}/lib
+configure.cppflags-delete -I${prefix}/include
+
+configure.args      --mandir=${prefix}/share/man \
+                    --with-drivers=all --with-libexif=auto
+
+variant without_libexif description {Disable libexif support} {
+   depends_lib-delete      port:libexif
+   configure.args-delete   --with-libexif=auto
+   configure.args-append   --with-libexif=no
+}
+
+variant doxygen description {Use doxygen to generate API docs} {
+   depends_build-append   port:doxygen
+   patchfiles-delete      patch-configure-nodoxygen.diff
+}
+
+livecheck.type      regex
+livecheck.url       http://sourceforge.net/projects/gphoto/files/
+livecheck.regex     /${name}-(\[0-9.\]+)\\.tar

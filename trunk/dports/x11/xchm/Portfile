@@ -1,0 +1,25 @@
+# $Id$
+
+PortSystem	1.0
+
+name			xchm
+version			1.14
+categories		x11
+maintainers		markd
+platforms		darwin
+
+description		A cross-platform GUI front-end to chmlib.
+long_description	A cross-platform GUI front-end to chmlib, xCHM can \
+			show the content tree if one is available, print pages, \
+			change font face and size, remember bookmarks, display \
+			a searchable index, and search for words in the current \
+			page and the whole book.
+
+homepage		http://xchm.sourceforge.net/
+master_sites		sourceforge
+checksums		md5 0f398af788a9e1a7c6f4e65b5ca31cf3
+
+depends_lib		path:bin/wx-config:wxgtk port:chmlib
+
+# wxgtk is not universal
+universal_variant	no

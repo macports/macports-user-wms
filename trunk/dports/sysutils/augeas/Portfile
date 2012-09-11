@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    augeas
+version                 0.10.0
+categories              sysutils
+license                 LGPL-2.1+
+platforms               darwin
+maintainers             nomaintainer
+
+description             configuration editing tool
+
+long_description        ${name} is a ${description}. It parses configuration \
+                        files in their native formats and transforms them \
+                        into a tree. Configuration changes are made by \
+                        manipulating this tree and saving it back into native \
+                        config files
+
+homepage                http://www.augeas.net/
+master_sites            ${homepage}download/
+
+checksums               rmd160 a851d643a8589f36468bfbcbb1c8daeef40b4cf5 \
+                        sha256 ec111af06186216930176ebe5ecccdf7bf528528aee9acde1d5d70088484afca
+
+depends_build           port:pkgconfig
+depends_lib             port:readline port:libxml2
+
+configure.args          --disable-silent-rules
+
+livecheck.type          regex
+livecheck.url           [lindex ${master_sites} 0]
+livecheck.regex         ${name}-(\[0-9.\]+)${extract.suffix}

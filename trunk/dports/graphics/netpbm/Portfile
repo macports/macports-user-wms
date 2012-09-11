@@ -1,0 +1,140 @@
+# $Id$
+
+PortSystem 1.0
+
+name            netpbm
+version         10.59.00
+revision	1
+svn.revision    1705
+categories      graphics
+license         {BSD GPL-2 IJG Permissive}
+maintainers     nomaintainer
+description     Image manipulation
+long_description \
+    A whole bunch of utilities for primitive manipulation \
+    of graphic images.  Wide array of converters from one \
+    graphics format to another.  E.g. from g3 fax format to \
+    jpeg.  Many basic graphics editing tools such as \
+    magnifying and cropping.
+
+homepage        http://netpbm.sourceforge.net/
+platforms       darwin freebsd linux
+# Parallel building is not reliable in netpbm 10.26.x.
+# This has been fixed for the next major release of netpbm.
+# See http://trac.macports.org/ticket/17516#comment:7
+# If you're thinking about enabling parallel build in the Portfile,
+# please make sure to test it on OS X 10.4 as well!  Thanks!
+use_parallel_build  no
+
+depends_build   path:bin/perl:perl5
+
+depends_lib     port:zlib port:jpeg port:tiff \
+                port:libpng port:jasper \
+                port:jbigkit \
+                port:libxml2
+
+fetch.type      svn
+svn.url         https://${name}.svn.sourceforge.net/svnroot/${name}/advanced
+worksrcdir      advanced
+
+patchfiles      patch-pm_config.in.h.diff \
+                patch-lib-Makefile.diff \
+                patch-converter-other-giftopnm.c-strcaseeq.diff \
+                patch-clang-sse-workaround.diff
+
+post-patch {
+    reinplace "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/pm_config.in.h
+}
+
+configure.optflags -O3
+
+configure {
+    # netpbm uses a "configure" script that simply helps building
+    # config.mk manually.  During automated install using macports,
+    # we do that for our user.
+    file copy ${worksrcpath}/config.mk.in ${worksrcpath}/config.mk
+    reinplace "s|^CC =.*\$|CC = ${configure.cc}|" ${worksrcpath}/config.mk
+    reinplace "s|^#CFLAGS =.*\$|CFLAGS = ${configure.cppflags} ${configure.cflags} [get_canonical_archflags]|" ${worksrcpath}/config.mk
+    reinplace "s|^#LDFLAGS +=.*\$|LDFLAGS = ${configure.ldflags} [get_canonical_archflags]|g" ${worksrcpath}/config.mk
+    reinplace "s|^CFLAGS_SHLIB =.*\$|CFLAGS_SHLIB = -fno-common|" ${worksrcpath}/config.mk
+    reinplace "s|^TIFFLIB =.*\$|TIFFLIB = -ltiff|" ${worksrcpath}/config.mk
+    reinplace "s|^JPEGLIB =.*\$|JPEGLIB = -ljpeg|" ${worksrcpath}/config.mk
+    reinplace "s|^PNGLIB =.*\$|PNGLIB = -lpng|" ${worksrcpath}/config.mk
+    reinplace "s|^ZLIB =.*\$|ZLIB = -lz|" ${worksrcpath}/config.mk
+    reinplace "s|^JASPERHDR_DIR =.*\$|JASPERHDR_DIR = ${prefix}/include|" ${worksrcpath}/config.mk
+}
+
+platform darwin {
+    post-configure {
+        set ldshlib "${configure.ldflags} -dynamiclib -install_name ${prefix}/lib/libnetpbm.\$(MAJ).dylib -compatibility_version \$(MAJ) -current_version ${version} [get_canonical_archflags]"
+        reinplace "s|^NETPBMLIBTYPE =.*\$|NETPBMLIBTYPE = dylib|" ${worksrcpath}/config.mk
+        reinplace "s|^NETPBMLIBSUFFIX =.*\$|NETPBMLIBSUFFIX = dylib|" ${worksrcpath}/config.mk
+        reinplace "s|^LDSHLIB =.*\$|LDSHLIB = ${ldshlib}|" ${worksrcpath}/config.mk
+        reinplace "s|^JASPERLIB =.*\$|JASPERLIB = -ljasper|" ${worksrcpath}/config.mk
+    }
+}
+
+platform linux {
+    post-configure {
+        set ldshlib {-shared -Wl,-soname,$(SONAME)}
+        reinplace "s|^NETPBMLIBTYPE =.*\$|NETPBMLIBTYPE = unixshared|" ${worksrcpath}/config.mk
+        reinplace "s|^NETPBMLIBSUFFIX =.*\$|NETPBMLIBSUFFIX = so|" ${worksrcpath}/config.mk
+        reinplace "s|^LDSHLIB =.*\$|LDSHLIB = ${ldshlib}|" ${worksrcpath}/config.mk
+        reinplace "s|^JASPERLIB =.*\$|JASPERLIB = -ljasper|" ${worksrcpath}/config.mk
+        reinplace "s|^LDRELOC =.*\$|LDRELOC = ld --reloc|" ${worksrcpath}/config.mk
+        reinplace "s|^LINKER_CAN_DO_EXPLICIT_LIBRARY =.*\$|LINKER_CAN_DO_EXPLICIT_LIBRARY = Y|" ${worksrcpath}/config.mk
+    }
+}
+
+platform freebsd {
+    post-configure {
+        set ldshlib {glibtool --mode=link gcc}
+        reinplace "s|^NETPBMLIBTYPE =.*\$|NETPBMLIBTYPE = unixshared|" ${worksrcpath}/config.mk
+        reinplace "s|^NETPBMLIBSUFFIX =.*\$|NETPBMLIBSUFFIX = so|" ${worksrcpath}/config.mk
+        reinplace "s|^LDSHLIB =.*\$|LDSHLIB = ${ldshlib}|" ${worksrcpath}/config.mk
+        reinplace "s|^JASPERLIB =.*\$|JASPERLIB = ${prefix}/lib/libjasper.la|" ${worksrcpath}/config.mk
+    }
+    patchfiles-append patch-libopt.c.diff
+    depends_build port:libtool
+}
+
+build.args    "messages=yes"
+build.target  ""
+build.type    gnu
+
+destroot.target   package
+destroot.destdir  pkgdir=${destroot}${prefix}
+
+pre-destroot {
+    file delete -force ${destroot}${prefix}
+}
+
+post-destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/share/netpbm
+    eval move ${destroot}${prefix}/bin/doc.url [glob ${destroot}${prefix}/misc/*] ${destroot}${prefix}/share/netpbm
+    move ${destroot}${prefix}/man ${destroot}${prefix}/share/
+     move ${destroot}${prefix}/link/libnetpbm.a ${destroot}${prefix}/lib
+
+    eval delete [glob -type f -directory ${destroot}${prefix} *]
+
+    foreach old_library {pbm pgm pnm ppm} {
+        ln -s libnetpbm.dylib ${destroot}${prefix}/lib/lib${old_library}.dylib
+    }
+}
+
+# work around bug in Apple's gcc build 4061
+platform darwin 8 {
+    pre-configure {
+        set fl [open "| ${configure.cc} --version"]
+        set data [read $fl]
+        close $fl
+        if {[regexp "build 4061" ${data}]} {
+            ui_msg "On Mac OS X ${macosx_version}, ${name} ${version} does not work with gcc version \"${data}\"."
+            return -code error "incompatible gcc version"
+        }
+    }
+}
+
+livecheck.type  regex
+livecheck.url   http://${name}.svn.sourceforge.net/viewvc/${name}/stable/
+livecheck.regex {(?i)(?:release|version) ([0-9.]+)}

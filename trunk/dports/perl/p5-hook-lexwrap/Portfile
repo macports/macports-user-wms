@@ -1,0 +1,16 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		Hook-LexWrap 0.20
+revision        3
+license		{Artistic-1 GPL}
+maintainers		nomaintainer
+description		Lexically scoped subroutine wrappers
+long_description	${description}
+checksums		md5 e3aaeb59a3adddc80ed3867e4d16654e
+platforms		darwin
+
+supported_archs noarch

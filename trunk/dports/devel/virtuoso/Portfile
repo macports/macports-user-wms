@@ -1,0 +1,40 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                virtuoso
+version             6.1.6
+categories          devel
+maintainers         snc openmaintainer
+license             GPL
+description         a high-performance object-relational SQL database
+long_description    Virtuoso is an enterprise-grade server that delivers a platform \
+                    for Data Access, Integration and Management.
+platforms           darwin
+homepage            http://${name}.openlinksw.com/dataspace/dav/wiki/Main/
+master_sites        sourceforge:project/${name}/${name}/${version}
+distname            ${name}-opensource-${version}
+
+checksums           rmd160  0d8b4d0c319cc38b42777a05d19ae0769445716c \
+                    sha256  c6bfa6817b3dad5f87577b68f4cf554d1bfbff48178a734084ac3dcbcea5a037
+
+use_parallel_build  no
+
+depends_build       port:gawk
+
+depends_lib         port:libiodbc port:openssl
+
+configure.args-append   --disable-all-vads
+post-configure {
+    reinplace "s|\"gcc\"|\"${configure.cc}\"|" ${worksrcpath}/bin/libtool.macosx
+    foreach note $PortInfo(notes) {
+        ui_msg $note
+    }
+}
+
+livecheck.url       http://sourceforge.net/api/file/index/project-id/161622/mtime/desc/rss?path=/virtuoso
+livecheck.type      regex
+livecheck.regex     ${name}/(\\d+(\\.\\d+)+)/${name}-opensource-(\\d+(\\.\\d+)+)
+
+notes "Disable antivirus when building this port."

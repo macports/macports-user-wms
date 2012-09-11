@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                robodoc
+version             4.99.40
+categories          devel
+platforms           darwin
+maintainers         nomaintainer
+
+description         Bot used to document source code.
+
+long_description    ROBODoc can be used to document functions, methods, \
+                    classes, variables, makefile entries, system tests, and \
+                    anything else you can think of. ROBODoc works with any \
+                    language that supports reasonable comments, and uses a \
+                    syntax similar to that of the old Amiga \"Autodocs\" program.
+
+homepage            http://www.xs4all.nl/~rfsber/Robo/${name}.html
+master_sites        http://www.xs4all.nl/~rfsber/Robo/
+
+checksums           sha1    1bb3d4ace868b63a573b16fb5ac13bdbbf43e2ae \
+                    rmd160  14b0a6649bfe84fcf7f12df65b19c2bfb174c043
+
+configure.args      --mandir="${prefix}/share/man"
+
+destroot.destdir    prefix="${destroot}${prefix}" \
+                    docdir="${destroot}${prefix}/share/doc/${name}" \
+                    mandir="${destroot}${prefix}/share/man"
+
+post-destroot {
+    reinplace "s|/usr/share|${prefix}/share/doc|" \
+              "${destroot}${prefix}/share/man/man1/robodoc.1"
+}

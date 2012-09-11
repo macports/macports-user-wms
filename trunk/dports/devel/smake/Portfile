@@ -1,0 +1,48 @@
+# $Id$
+
+PortSystem 1.0
+
+name			smake
+version			1.2.1
+categories		devel
+platforms		darwin
+maintainers		mww
+license			CDDL
+description		highly portable make program with automake features
+long_description	Smake is a highly portable make program with automake \
+				features. It is currently mainly targeted to be used \
+				with the makefiles system. 
+
+homepage		http://cdrecord.berlios.de/old/private/smake.html
+master_sites	ftp://ftp.berlios.de/pub/smake/
+use_bzip2		yes
+
+checksums		md5     2fd7bd44b22da1640aaa6fbd31c727e4 \
+				sha1    e38ef6bd9023d8dbb28e009ca7776306bdb99e6a \
+				rmd160  01b3a5c6b966be7b56adba87ea9eca944124bd76
+
+use_configure	no
+
+# https://trac.macports.org/ticket/31616
+if {${configure.compiler} == "llvm-gcc-4.2"} {
+    configure.compiler  gcc-4.2
+} elseif {${configure.compiler} == "clang" && [vercmp $xcodeversion 4.3] < 0} {
+    depends_build-append port:apple-gcc42
+    configure.compiler  apple-gcc-4.2
+}
+
+build.type		gnu
+build.args      CC=${configure.cc}
+use_parallel_build  no
+
+destroot.destdir	INS_BASE=${destroot}${prefix} \
+					MANDIR=share/man \
+					INSUSR=`id -u` INSGRP=`id -g`
+post-destroot	{
+	file delete -force ${destroot}${prefix}/share/man/man5 \
+		${destroot}${prefix}/lib ${destroot}${prefix}/include
+}
+
+livecheck.type	regex
+livecheck.url	[lindex ${master_sites} 0]
+livecheck.regex	${name}-(\[0-9.]\+)\\.tar

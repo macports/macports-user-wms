@@ -1,0 +1,92 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               muniversal 1.0
+
+name                    wget
+version                 1.14
+categories              net www
+maintainers             ryandesign
+license                 GPL-3+
+homepage                http://www.gnu.org/software/wget/
+platforms               darwin freebsd
+use_parallel_build      yes
+master_sites            gnu
+use_xz                  yes
+
+description \
+    internet file retriever
+
+long_description \
+    GNU Wget is a free software package for retrieving files using HTTP, \
+    HTTPS and FTP, the most widely-used Internet protocols. It is a \
+    non-interactive commandline tool, so it may easily be called from \
+    scripts, cron jobs, terminals without Xsupport, etc.
+
+checksums               rmd160  ce1321a70c8d88a4ac9748896eb9a148c413f4c1 \
+                        sha256  1761d7f7c6a2ad6c8d494d239c53f0c17126efb6449ada16dee3a66d87a4147b
+
+configure.args \
+    --without-ssl
+
+depends_build \
+    bin:makeinfo:texinfo \
+    bin:pod2man:perl5
+
+depends_lib \
+    port:libidn \
+    port:gettext
+
+# So that +universal can use gettext and openssl on Tiger; see #18276.
+configure.ldflags-append        -liconv -lintl
+
+variant test description {Add dependencies needed to run tests} {
+    depends_build-append    port:p5-libwww-perl \
+                            port:p5-io-socket-ssl
+    test.run                yes
+    test.target             check
+}
+
+variant ssl description {Build with SSL support using GnuTLS} {
+    depends_build-append    port:pkgconfig
+    depends_lib-append      port:gnutls
+    configure.args-delete   --without-ssl
+}
+
+default_variants        +ssl
+
+patchfiles \
+    patch-prefix.diff
+
+post-patch {
+    reinplace "s|@PREFIX@|${prefix}|g" \
+        ${worksrcpath}/ChangeLog \
+        ${worksrcpath}/README \
+        ${worksrcpath}/NEWS \
+        ${worksrcpath}/doc/sample.wgetrc \
+        ${worksrcpath}/doc/wget.texi
+}
+
+post-destroot {
+    # Install documentation.
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    foreach docfile {AUTHORS COPYING MAILING-LIST NEWS README} {
+        xinstall -W ${worksrcpath} -m 0644 ${docfile} ${docdir}/${docfile}.txt
+    }
+    xinstall -W ${worksrcpath} -m 0644 ChangeLog ${docdir}/ChangeLog.txt
+    foreach changelog {doc src} {
+        xinstall -W ${worksrcpath} -m 0644 ${changelog}/ChangeLog ${docdir}/ChangeLog-${changelog}.txt
+    }
+    
+    # Rename sample wgetrc file so we don't clobber a user's real config file on upgrade.
+    move ${destroot}${prefix}/etc/wgetrc ${destroot}${prefix}/etc/wgetrc.sample
+}
+
+post-activate {
+    if {![file exists ${prefix}/etc/wgetrc]} {
+        ui_msg "To customize wget, you can copy wgetrc.sample to wgetrc"
+        ui_msg "in ${prefix}/etc and then make changes."
+    }
+}

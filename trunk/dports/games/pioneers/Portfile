@@ -1,0 +1,64 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           app 1.0
+
+name                pioneers
+version             14.1
+revision            1
+categories          games
+license             GPL
+maintainers         snc gmail.com:jweede
+description         Multiplayer strategy board game for GNOME
+long_description    A GNOME/GTK+2 clone of the board game Settlers of Catan. \
+                    Colonize the island, get all the resources, and frustrate \
+                    your opponents. \n\
+                    \nPioneers includes the standard game, the 5-6 player board,\
+                    Seafarers, many custom layouts, and a board layout editor.\
+                    The game can be played against an AI or with other humans\
+                    over a network or both.
+
+homepage            http://pio.sourceforge.net/
+platforms           freebsd darwin
+depends_build       port:gettext port:grep port:intltool port:p5.12-xml-parser \
+                    port:perl5 port:pkgconfig port:rarian
+depends_lib         port:atk port:expat port:fontconfig port:freetype \
+                    port:gettext port:gtk2 port:libiconv \
+                    port:libpng port:xorg-libX11 \
+                    port:xorg-libXau port:xorg-libXcomposite port:xorg-libXcursor \
+                    port:xorg-libXdamage port:xorg-libXdmcp port:xorg-libXext \
+                    port:xorg-libXfixes port:xorg-libXi port:xorg-libXinerama \
+                    port:xorg-libXrandr port:xorg-libxcb port:xrender port:zlib
+                    
+
+master_sites        sourceforge:pio
+
+checksums           rmd160  fcf024d2cd0db78c7c06665c7c0135378b0be0d4 \
+                    sha256  5196ad2f7d4ba128f2ae138e4af9d03d62c366f0342b88d871af04294385f781
+
+post-extract {
+    copy ${filespath}/launcher.sh ${worksrcpath}
+}
+
+if {{$configure.compiler} != "gcc-4.2"} {
+    patchfiles          patch-common-notifying-string.c.diff
+}
+post-patch {
+    reinplace s|@PREFIX@|${prefix}| ${worksrcpath}/launcher.sh
+}
+
+configure.env-append    with_avahi=no
+post-configure {
+    if {${configure.compiler} != "gcc-4.2"} {
+        reinplace {s| -Wl,-z,relro -Wl,-z,now||} ${worksrcpath}/Makefile
+        reinplace s|-Wl,--as-needed|| ${worksrcpath}/Makefile
+    }
+}
+
+app.name            Pioneers
+app.executable      ${worksrcpath}/launcher.sh
+app.icon            ${filespath}/logo.png
+
+livecheck.url       http://sourceforge.net/projects/pio/files/
+livecheck.regex     ${name}-(\\d+(\\.\\d+)+)

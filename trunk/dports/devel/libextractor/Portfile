@@ -1,0 +1,57 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                libextractor
+version             0.6.2
+categories          devel
+license             GPL-2+
+maintainers         nomaintainer
+description         A library for extraction af meta-data.
+long_description \
+   libextractor is a library used to extract meta-data from files of \
+   arbitrary type. It is designed to use helper-libraries to perform the \
+   actual extraction, and to be trivially extendable by linking against \
+   external extractors for additional file types.
+
+homepage            http://gnunet.org/libextractor/
+master_sites        http://gnunet.org/libextractor/download/ gnu
+platforms           darwin
+
+checksums           sha1    fd4fb6a1f24353be9cf7fd04b56b85f2680efe11 \
+                    rmd160  ff53d8b889651e730f28344900414f1971aca468
+
+depends_lib         port:bzip2 port:zlib port:gettext port:libiconv \
+                    port:libtool \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2
+
+configure.args      --mandir=${prefix}/share/man \
+                    --with-libiconv-prefix=${prefix} \
+                    --with-libintl-prefix=${prefix} \
+                    --disable-xpdf \
+                    --disable-gsf \
+                    --disable-gnome
+
+use_parallel_build  no
+
+# These variants are auto-detected by configure so no need to add
+# args; of course, that means that they'll be used when the port is
+# installed but the variant isn't selected...
+
+variant vorbis description {Include support for Ogg/Vorbis} {
+   depends_lib-append   port:libvorbis
+}
+
+variant flac description {Include support for FLAC} {
+   depends_lib-append   port:flac
+}
+
+variant mpeg2 description {Include support for MPEG2} {
+   depends_lib-append   port:libmpeg2
+}
+
+livecheck.type      regex
+livecheck.url       http://ftp.gnu.org/gnu/${name}/?C=M&O=D
+livecheck.regex     ${name}-(\\d+\\.\\d+\\.\\d+)
+

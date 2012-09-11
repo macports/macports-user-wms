@@ -1,0 +1,20 @@
+--- Makefile.orig	2012-02-27 11:50:49.000000000 +0100
++++ Makefile	2012-02-27 11:53:29.000000000 +0100
+@@ -1,7 +1,7 @@
+ # --- Change the settings below to suit your environment. See explanations in
+ # --- the build documentation for more details. ---
+ 
+-PREFIX=/usr/local
++PREFIX=%PREFIX%
+ MODDIR=$(PREFIX)/lib/lua/5.1
+ DOCDIR=$(PREFIX)/share/doc/luahpdf
+ LUALIB=-llua
+@@ -41,7 +41,7 @@
+ 	doc/html/license.html
+ 
+ $(TARGET) : hpdf.c
+-	cc -ansi -DHPDF_SHARED -pedantic -Wall -O2 $(CFLAGS) $(LDFLAGS) -o $@ $(LUAINC) $(HPDFINC) -shared $(LUALIB) $(HPDFLIB) $<
++	%COMPILER% -ansi -DHPDF_SHARED -pedantic -Wall $(CFLAGS) $(LDFLAGS) -o $@ $(LUAINC) $(HPDFINC) -shared $(LUALIB) $(HPDFLIB) $<
+ 
+ test : $(TARGET)
+ 	@lua -e "package.path=\"\" package.cpath=\"./?.so;./?.dll\" require \"hpdf\" print(hpdf.VERSION_TEXT)"

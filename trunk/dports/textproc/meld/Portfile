@@ -1,0 +1,40 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem		1.0
+
+name			meld
+version			1.5.3
+categories		textproc devel
+license			GPL-2+
+platforms		darwin
+supported_archs	noarch
+maintainers		landonf
+homepage		http://meld.sourceforge.net/
+description		Visual diff and merge tool.
+long_description	Meld is a visual diff and merge tool. You can compare \
+			two or three files and edit them in place (diffs \
+			update dynamically). You can compare two or three \
+			folders and launch file comparisons. You can browse \
+			and view a working copy from popular version control \
+			systems such such as CVS, Subversion, Bazaar-ng and \
+			Mercurial.
+
+master_sites		gnome:sources/${name}/[join [lrange [split $version .] 0 1] .]
+use_xz		yes
+
+checksums           rmd160 e5d6929e314853043d11ab98dd37b4ad6fc5b887 \
+                    sha256 a27890202584920db941f78c64ba79662b3cdcf5f90c0d2f140a4b52858229b9
+
+depends_lib		port:intltool \
+			port:py27-gnome \
+			port:rarian
+
+post-patch {
+	reinplace "s|/usr/local|${prefix}|g" ${worksrcpath}/INSTALL
+	reinplace "s|#! /usr/bin/env python|#! ${prefix}/bin/python2.7|" ${worksrcpath}/bin/meld
+}
+
+use_configure		no
+
+build.args	PYTHON=${prefix}/bin/python2.7

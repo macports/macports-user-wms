@@ -1,0 +1,18 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Sub-Name 0.05
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         (re)name a sub
+long_description    ${description}
+
+platforms           darwin
+
+checksums           md5 26077202597620e4a6068c8087f3e09f \
+                    sha1 4ebaeb44655acee749a7097ed038285502bb3c26 \
+                    rmd160 6c0f32be09a0c58455e7c87674a4ca796c27a492

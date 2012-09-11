@@ -1,0 +1,35 @@
+# $Id$
+
+PortSystem          1.0
+
+name                repo
+version             1.15
+epoch               20111024
+license             Apache-2
+categories          python
+platforms           darwin
+maintainers         and.damore openmaintainer
+supported_archs     noarch
+
+description         tool that helps to manage Android Git repositories 
+long_description    \
+            Repo is a tool that we built on top of Git. Repo helps us \
+            manage the many Git repositories, does the uploads to our \
+            revision control system , and automates parts of the Android \
+            development workflow. Repo is not meant to replace Git, only \
+            to make it easier to work with Git in the context of Android.
+
+homepage            http://source.android.com/source/git-repo.html
+master_sites        googlecode:git-repo
+
+checksums           sha1    4c06bc2d1466c638f4594d492fd18fd2da38bf5f \
+                    rmd160  429760467b3ea12ff88f5b261b2341ff9abf4e1d
+
+extract.suffix      
+extract.only
+use_configure       no
+build               { }
+destroot            {
+        xinstall -m 755 ${distpath}/${distname} ${destroot}${prefix}/bin/${name}
+}
+

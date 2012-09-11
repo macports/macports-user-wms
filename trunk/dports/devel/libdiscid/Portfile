@@ -1,0 +1,23 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                libdiscid
+version             0.2.2
+categories          devel
+license             LGPL-2.1+
+maintainers         nomaintainer
+description         libdiscid is a C library for creating MusicBrainz DiscIDs \
+                    from audio CDs.
+long_description    ${description}
+homepage            http://musicbrainz.org/doc/libdiscid
+platforms           darwin
+master_sites        http://users.musicbrainz.org/~matt/
+
+checksums           md5 ee21ddbe696a3c60e14827a75f3bcf5b \
+                    rmd160 200703a02cb47d19f478b9a9c83e01a22737f491 \
+                    sha1 103ead94eeb8bea04ad92ab15ed6832be9b3fad9
+livecheck.type  regex
+livecheck.url   http://users.musicbrainz.org/~matt/
+livecheck.regex "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

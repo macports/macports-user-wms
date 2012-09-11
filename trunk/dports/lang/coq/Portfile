@@ -1,0 +1,68 @@
+# $Id$
+
+PortSystem  1.0
+
+name        coq
+version     8.3pl4
+revision    1
+platforms   darwin
+categories  lang math
+license     LGPL-2.1
+maintainers loria.fr:reilles
+homepage    http://coq.inria.fr/
+master_sites ${homepage}V${version}/files/
+
+description Proof assistant for higher-order logic
+long_description  \
+  Coq is a proof assistant for higher-order logic,\
+  which allows the development of computer programs consistent with \
+  their formal specification. It is developed using Objective Caml and \
+  Camlp4.  For more information, see <${homepage}>.
+
+checksums           rmd160  ed6dc4516210667707b9206aeaef260ce6bef7ef \
+                    sha256  79f26cee0f9eb0bea376ff7eca4e9b9cbcacd179a264cb550e39e20a59a5a39d
+
+# coq 8.3pl4 is incompatible with OCaml 4.00 -- for now use ocaml3
+depends_lib        port:ocaml3 port:ocaml3-camlp5
+
+configure.env-append PATH=${prefix}/libexec/ocaml3:$env(PATH)
+configure.pre_args -prefix ${prefix}
+configure.args     -emacslib ${prefix}/share/emacs/site-lisp/ \
+                   -mandir ${prefix}/share/man \
+                   -coqdocdir ${prefix}/share/coq/latex \
+                   -coqide none \
+                   -with-doc no \
+                   -camldir ${prefix}/libexec/ocaml3 \
+                   -camlp5dir ${prefix}/lib/ocaml3/camlp5
+build.env-append    PATH=${prefix}/libexec/ocaml3:$env(PATH)
+build.target       world 
+
+destroot.target    install 
+destroot.destdir   COQINSTALLPREFIX=${destroot}
+
+# ocaml is not universal
+universal_variant  no
+
+livecheck.type	regex
+livecheck.url	${homepage}/download/
+livecheck.regex	"<a href=\"distrib/V(\\d+(?:\\.\\w+)*)/files/coq-\\1\\.tar\\.gz\">"
+
+notes "The style file for LaTeX documentation,\
+coqdoc.sty, is in ${prefix}/share/coq/latex.\
+Add this to your TEXINPUTS if you wish to\
+use it."
+
+variant doc description {Build documentation} {
+                  depends_build-append port:texlive \
+                                       port:hevea \
+                                       port:netpbm
+                  configure.args-delete -with-doc no
+                  configure.args-append -with-doc yes
+                  use_parallel_build no
+}
+
+variant coqide description {Install CoqIDE} {
+                  depends_lib-append port:lablgtk2
+                  configure.args-delete -coqide none
+                  configure.args-append -coqide opt
+}

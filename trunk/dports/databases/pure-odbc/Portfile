@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                      1.0
+PortGroup                       pure 1.0
+
+pure.setup                      odbc 0.9
+categories                      databases
+platforms                       darwin
+maintainers                     ryandesign
+license                         LGPL-3
+
+description                     a simple ODBC interface for the Pure \
+                                programming language
+
+long_description                ${name} provides ${description} which lets \
+                                you access a large variety of open source \
+                                and commercial database systems from Pure
+
+checksums                       rmd160  9f2a622f9e8acba55bdcc70d44e7450e3e81027d \
+                                sha256  bf3b64fbeba727ace6db95e2a3df96d451db7947d10eca8fde15d46efd76df95
+
+depends_lib-append              path:lib/libgmp.dylib:gmp \
+                                path:lib/libodbc.dylib:unixODBC

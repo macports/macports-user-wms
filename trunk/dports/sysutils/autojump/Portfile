@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        joelthelion autojump 20.9 "release-v"
+categories          sysutils
+platforms           darwin
+maintainers         gmail.com:johnny.kuan
+license             GPL-3+
+supported_archs     noarch
+
+description         a cd command that learns
+
+long_description    ${name} is ${description}.
+
+checksums           rmd160  e41e265a02a4469160cbdbc80431618ca54483b3 \
+                    sha256  4cf7593b3914082c2830df66657192b8136076b103e5521dc44fc8f4ec20d78d
+
+depends_run         port:python27
+
+post-patch {
+    reinplace "s:/etc/profile.d:${prefix}/etc/profile.d:g" ${worksrcpath}/bin/autojump.sh
+    reinplace "s:/usr/bin/env python:${prefix}/bin/python2.7:g" ${worksrcpath}/bin/autojump
+}
+
+use_configure       no
+
+build {}
+
+destroot {
+    xinstall -m 755 -W ${worksrcpath}/bin autojump ${destroot}${prefix}/bin/
+    xinstall -m 755 -W ${worksrcpath}/docs autojump.1 ${destroot}${prefix}/share/man/man1/
+    xinstall -d ${destroot}${prefix}/etc/profile.d/
+    xinstall -m 644 -W ${worksrcpath}/bin autojump.sh autojump.bash autojump.zsh ${destroot}${prefix}/etc/profile.d/
+    xinstall -d ${destroot}${prefix}/share/zsh/site-functions/
+    xinstall -m 644 -W ${worksrcpath}/bin _j ${destroot}${prefix}/share/zsh/site-functions/
+}
+
+notes "
+To use autojump for bash, add the following to the end of your .bash_profile:
+if \[ -f ${prefix}/etc/profile.d/autojump.sh \]; then
+    . ${prefix}/etc/profile.d/autojump.sh
+fi
+
+To use autojump for zsh, add the following to the end of your .zshrc:
+export FPATH=\"\$FPATH:${prefix}/share/zsh/site-functions/\"
+if \[ -f ${prefix}/etc/profile.d/autojump.sh \]; then
+    . ${prefix}/etc/profile.d/autojump.sh
+fi
+"

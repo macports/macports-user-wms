@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                org-mode
+version             7.9.1
+categories          editors
+license             GPL-3+
+maintainers         dports
+platforms           darwin
+supported_archs     noarch
+
+description         an Emacs Mode for Notes, Project Planning, and Authoring
+long_description    Org is a mode for keeping notes, maintaining TODO lists, \
+                    and doing project planning with a fast and effective     \
+                    plain-text system.
+
+homepage            http://orgmode.org/
+master_sites        ${homepage}
+distname            org-${version}
+
+checksums           rmd160  0b3b730aa938a7885f876afcfff3964d07c1db58 \
+                    sha256  01087eff07faf70b2336a2d327b8bab2359b7b4e1f944015a7bad6ebbe6de14f
+
+depends_lib         port:emacs
+depends_build       port:texinfo
+
+use_configure       no
+
+destroot.destdir    prefix=${destroot}${prefix}
+destroot.target     install-lisp install-info
+
+livecheck.type      regex
+livecheck.url       ${homepage}/org-mode-download.html
+livecheck.regex     {Current Version: Org ([\w.]+)}

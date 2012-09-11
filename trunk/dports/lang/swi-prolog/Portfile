@@ -1,0 +1,127 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem	1.0
+
+name		swi-prolog
+conflicts	swi-prolog-devel swi-prolog-lite
+epoch		20051223
+version		6.2.1
+
+categories	lang
+license		LGPL-2.1
+maintainers	uva.nl:J.Wielemaker logtalk.org:pmoura
+platforms	darwin
+description	SWI-Prolog compiler plus extra packages (stable version)
+
+long_description	\
+	ISO/Edinburgh-style Prolog compiler including modules,		\
+	autoload, libraries, Garbage-collector, stack-expandor,		\
+	C/C++-interface, Multiple threads, GNU-readline interface,	\
+	coroutining, constraint programming, global variables,		\
+	very fast compiler. Including packages clib (Unix process	\
+	control, sockets, MIME), cpp (C++ interface), sgml (reading	\
+	XML/SGML), sgml/RDF (reading RDF into triples), ODBC		\
+	interface and XPCE (Graphics UI toolkit, integrated editor	\
+	(Emacs-clone) and graphical debugger).
+
+homepage	http://www.swi-prolog.org/
+master_sites	http://www.swi-prolog.org/download/stable/src
+
+checksums   \
+	sha1    edb637c654a92b7ddd77c29425058ecb2cfcc9cb \
+	rmd160  8e7f2e82cd24c3ef45f5a0eccbe0be7b1b126d98
+
+depends_build   \
+	port:gawk	\
+	port:junit	\
+	port:pkgconfig
+
+depends_lib		\
+	port:readline		\
+	port:ncurses		\
+	port:jpeg		\
+	port:libmcrypt		\
+	port:gmp		\
+	port:zlib		\
+	port:Xft2 \
+	port:xorg-libXinerama \
+	port:xpm \
+	port:xorg-libXt
+
+use_parallel_build	no
+
+distname	pl-${version}
+
+configure.env	\
+	LIBRARY_PATH=/usr/lib:${prefix}/lib 	\
+	CPATH=/usr/include:${prefix}/include	\
+	PKG_CONFIG_PATH=${prefix}/lib/pkgconfig \
+	JUNIT=${prefix}/share/java/junit.jar
+
+configure.ldflags
+
+configure.args	\
+	--mandir=${prefix}/share/man	\
+	--x-includes=${prefix}/include	\
+	--x-libraries=${prefix}/lib	    \
+	--with-world
+
+if {${configure.compiler} == "llvm-gcc-4.2"} {
+	configure.compiler gcc-4.2
+} elseif {${configure.compiler} == "clang"} {
+	depends_build-append port:apple-gcc42
+	configure.compiler apple-gcc-4.2
+	# base (as of 2.0.3) doesn't set cxx for apple-gcc-4.2
+	configure.cxx ${prefix}/bin/g++-apple-4.2
+}
+
+build.env	\
+	LIBRARY_PATH=/usr/lib:${prefix}/lib	    \
+	CPATH=/usr/include:${prefix}/include	\
+	PKG_CONFIG_PATH=${prefix}/lib/pkgconfig \
+	JUNIT=${prefix}/share/java/junit.jar    \
+	CC=${configure.cc}
+
+post-build {
+	file mkdir ${workpath}/macosx
+	file copy -force -- ${workpath}/pl-${version}/man/macosx/License.html ${workpath}/macosx/
+	file copy -force -- ${workpath}/pl-${version}/man/macosx/macosx.html ${workpath}/macosx/
+	file copy -force -- ${workpath}/pl-${version}/man/macosx/Welcome.html ${workpath}/macosx/
+}
+
+post-pkg {
+	set resources ${workpath}/${name}-${version}.pkg/Contents/Resources/
+	file copy -force -- ${workpath}/macosx/License.html ${resources}
+	file copy -force -- ${workpath}/macosx/macosx.html ${resources}
+	file copy -force -- ${workpath}/macosx/Welcome.html ${resources}
+	file rename ${resources}/macosx.html ${resources}/ReadMe.html
+	file delete -force -- ${resources}/Welcome.rtf
+}
+
+post-mpkg {
+	set resources ${workpath}/${name}-${version}.mpkg/Contents/Resources/
+	file copy -force -- ${workpath}/macosx/License.html ${resources}
+	file copy -force -- ${workpath}/macosx/macosx.html ${resources}
+	file copy -force -- ${workpath}/macosx/Welcome.html ${resources}
+	file rename ${resources}/macosx.html ${resources}/ReadMe.html
+	file delete -force -- ${resources}/Welcome.rtf
+}
+
+if {![variant_isset st]} {
+	default_variants +mt
+}
+
+variant st conflicts mt description {Single-threaded} {
+	configure.args-append --disable-mt
+}
+
+variant mt conflicts st description {Multi-threaded} {
+	configure.args-append --enable-mt
+}
+
+universal_variant   no
+
+livecheck.type      regexm
+livecheck.url       ${homepage}download/stable
+livecheck.regex     "/download/stable/src/pl-(\\d+\\.\\d+\\.\\d+).tar.gz"

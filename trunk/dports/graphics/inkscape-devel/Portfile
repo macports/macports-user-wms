@@ -1,0 +1,118 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name            inkscape-devel
+conflicts       inkscape
+set bzr_rev     11604
+version         0.48.99.${bzr_rev}
+epoch           1
+license         GPL-2 LGPL-2.1
+maintainers     devans
+categories      graphics gnome
+platforms       darwin
+homepage        http://www.inkscape.org/
+
+description     Unstable development version of Inkscape from \
+                recent BZR trunk leading up to release of version 0.49.
+
+long_description \
+                Inkscape is an open source SVG editor with \
+                capabilities similar to Illustrator, CorelDraw, \
+                Visio, etc. Supported SVG features include basic \
+                shapes, paths, text, alpha blending, transforms, \
+                gradients, node editing, svg-to-png export, \
+                grouping, and more.
+
+universal_variant no
+
+fetch.type      bzr
+bzr.url         lp:inkscape
+bzr.revision    ${bzr_rev}
+
+depends_build   port:pkgconfig \
+                port:autoconf \
+                port:automake \
+                port:intltool \
+                path:bin/perl:perl5
+
+depends_lib     path:lib/libgc.dylib:boehmgc \
+                port:gsl \
+                port:gtkmm \
+                port:gnome-vfs \
+                port:dbus-glib \
+                port:lcms \
+                port:poppler \
+                port:boost \
+                port:ImageMagick \
+                port:libwpg \
+                port:gtkspell2
+
+#
+# external dependencies for included Python extensions
+#
+
+pre-fetch {
+    ui_msg "--->  Fetching source from bzr repository: this may take a while"
+}
+
+variant python26 conflicts python27 description {Configure to use Python version 2.6} {
+    depends_lib-append \
+        port:py26-lxml \
+        port:py26-numpy
+
+    patchfiles-append  patch-configure.ac-python26.diff
+
+    post-patch {
+        reinplace "s|\"python-interpreter\", \"python\"|\"python-interpreter\", \"python2.6\"|g" ${worksrcpath}/src/extension/implementation/script.cpp
+        reinplace "s|^#include \"Object.h\"|#include \"${prefix}/include/poppler/Object.h\"|" ${worksrcpath}/src/extension/internal/pdfinput/pdf-parser.h
+        reinplace "s|^#include \"Object.h\"|#include \"${prefix}/include/poppler/Object.h\"|" ${worksrcpath}/src/extension/internal/pdfinput/pdf-parser.cpp
+    }
+
+    configure.python \
+        ${prefix}/bin/python2.6
+}
+
+variant python27 conflicts python26 description {Configure to use Python version 2.7} {
+    depends_lib-append \
+        port:py27-lxml \
+        port:py27-numpy
+
+    patchfiles-append  patch-configure.ac-python27.diff
+
+    post-patch {
+        reinplace "s|\"python-interpreter\", \"python\"|\"python-interpreter\", \"python2.7\"|g" ${worksrcpath}/src/extension/implementation/script.cpp
+        reinplace "s|^#include \"Object.h\"|#include \"${prefix}/include/poppler/Object.h\"|" ${worksrcpath}/src/extension/internal/pdfinput/pdf-parser.h
+        reinplace "s|^#include \"Object.h\"|#include \"${prefix}/include/poppler/Object.h\"|" ${worksrcpath}/src/extension/internal/pdfinput/pdf-parser.cpp
+    }
+
+    configure.python \
+        ${prefix}/bin/python2.7
+}
+
+if {${configure.compiler} == "clang"}  {
+    configure.compiler llvm-gcc-4.2
+}
+
+configure.cmd   {./autogen.sh && ./configure}
+
+configure.args  --with-xft \
+                --with-gnome-vfs \
+                --with-python \
+                --enable-lcms \
+                --enable-poppler-cairo \
+                --enable-dbusapi
+
+configure.cppflags-append \
+        -I${worksrcpath}/src/extension/script
+
+if {![variant_isset python26] && ![variant_isset python27]} {
+    default_variants +python27
+}
+
+post-activate {
+        system "${prefix}/bin/gtk-update-icon-cache -f -t ${prefix}/share/icons/hicolor"
+}
+
+livecheck.type  none

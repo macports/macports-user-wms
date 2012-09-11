@@ -1,0 +1,64 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           muniversal 1.0
+
+name                gts
+version             0.7.6
+revision            2
+categories          math
+platforms           darwin
+maintainers         ryandesign openmaintainer
+license             LGPL-2+
+
+description         The GNU Triangulated Surface library
+
+long_description    GTS stands for the GNU Triangulated Surface Library. \
+                    It is an Open Source Free Software Library intended \
+                    to provide a set of useful functions to deal with \
+                    3D surfaces meshed with interconnected triangles.
+
+homepage            http://gts.sourceforge.net/
+master_sites        sourceforge:project/${name}/${name}/${version}
+
+checksums           sha1    000720bebecf0b153eb28260bd30fbd979dcc040 \
+                    rmd160  2bfd4121412c16d63ee0aca65ccbc2601d6a7d51
+
+depends_build       port:pkgconfig
+
+depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:netpbm
+
+patchfiles          patch-examples-happrox.c.diff
+
+if {[variant_isset universal]} {
+    # Find architectures which will not run on build platform.
+    if {${os.arch}=="i386"} {
+        if {${os.major} >= 10} {
+            set cross_archs "ppc ppc64"
+        } else {
+            set cross_archs "ppc64"
+        }
+    } else {
+        set cross_archs "i386 x86_64"
+    }
+    
+    set run_arch [lindex ${universal_archs} 0]
+    if {[lsearch ${cross_archs} ${run_arch}] >= 0} {
+        ui_msg "When building a universal binary of ${name}, make sure none of {${cross_archs}} is first in universal_archs in ${prefix}/etc/macports/macports.conf"
+        error "incompatible universal_archs value"
+    }
+    
+    post-configure {
+        foreach arch ${cross_archs} {
+            if {[file exists ${worksrcpath}-${arch}/src/Makefile]} {
+                reinplace "s|\\./predicates_init|${worksrcpath}-${run_arch}/src/predicates_init|" \
+                    ${worksrcpath}-${arch}/src/Makefile
+            }
+        }
+    }
+}
+
+livecheck.type      sourceforge
+livecheck.regex     /${name}-(\[0-9.\]+)${extract.suffix}

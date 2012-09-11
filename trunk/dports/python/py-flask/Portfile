@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-flask
+version             0.9
+python.versions     25 26 27
+python.default_version 27
+platforms           darwin
+maintainers         ryandesign openmaintainer
+license             BSD
+supported_archs     noarch
+
+description         microframework for Python based on Werkzeug and Jinja2
+
+long_description    Flask is a ${description}, intended for small-scale applications
+
+homepage            http://flask.pocoo.org/
+master_sites        http://pypi.python.org/packages/source/F/Flask/
+distname            Flask-${version}
+
+checksums           rmd160  43e9f7703b44295f694961631d844ec075d462c6 \
+                    sha256  2fd5d4ffe81f762dd2a3e58472d690a0dbba3766776506003aee3ed7aaa8afef
+
+if {$subport != $name} {
+    depends_lib-append  port:py${python.version}-jinja2 \
+                        port:py${python.version}-werkzeug
+    
+    livecheck.type      none
+} else {
+    livecheck.type      regex
+    livecheck.url       [lindex ${master_sites} 0]
+    livecheck.regex     Flask-(\[0-9.\]+)${extract.suffix}
+}

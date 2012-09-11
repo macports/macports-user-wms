@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        civil-engineering 1.0.7
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Functions to solution some ODE's in Civil Engineering.
+long_description    ${description}
+
+checksums           md5     d04d56f6d85ae17911560b6021ce47a8 \
+                    sha1    9ad2b073a48b773c7d5bf804ac06a4abb029cba2 \
+                    rmd160  c677a355f22ce4666c205c0d8782b334143ff844

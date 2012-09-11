@@ -1,0 +1,16 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        informationtheory 0.1.8
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Functions and routines for basic Information Theory \
+                    definitions, and source coding.
+long_description    ${description}
+
+checksums           md5     8948c888555cd4377edcc3cdc8611bee \
+                    sha1    6f8ec439fc764c1140de8e44cdf0c1655683c861 \
+                    rmd160  bd79132384e307dcebd805e5a1ab2ab4af171b43

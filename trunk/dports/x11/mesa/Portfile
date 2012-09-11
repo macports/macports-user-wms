@@ -1,0 +1,135 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                mesa
+epoch               1
+version             8.0.4
+categories          x11 graphics
+maintainers         jeremyhu openmaintainer
+license             MIT
+license_noconflict  py26-libxml2 py27-libxml2
+description         Mesa 3D Graphics Library
+long_description    Mesa is an open-source implementation of the OpenGL specification, a system for rendering interactive 3D graphics.
+
+homepage            http://mesa3d.sourceforge.net/
+distname            MesaLib-${version}
+worksrcdir          Mesa-${version}
+platforms           macosx darwin
+use_bzip2           yes
+master_sites        ftp://ftp.freedesktop.org/pub/mesa/${version}/
+checksums           sha1    c64f8c03caf9ededd5f7011e246c42a649096c8c \
+                    rmd160  c8f822a529adc4390d70f48746d9a6d4b79c85b4 \
+                    sha256  02ed19f4f5f6535dda03a9932a81438aa78ea723ebba1f39a3d49a70a4e1d07e
+
+depends_build       bin:makedepend:makedepend \
+                    bin:tclsh8.5:tcl
+
+depends_lib         port:xorg-glproto \
+                    port:xorg-dri2proto \
+                    port:xorg-libXfixes \
+                    port:xorg-libXi \
+                    port:xorg-libXmu
+
+patch.pre_args -p1
+
+use_configure  no
+use_parallel_build yes
+
+build.target darwin
+build.args-append INSTALL_DIR=${prefix}
+destroot.args-append INSTALL_DIR=${prefix}
+
+variant universal {}
+build.args-append RC_CFLAGS="[get_canonical_archflags]"
+
+if { ![file exists /usr/include/Xplugin.h] } {
+    # Xplugin.h is missing on Tiger
+    configure.cppflags-append -I${filespath}/include
+}
+
+configure.cppflags-delete -I${prefix}/include
+
+post-extract {
+    if {! [file exists "${worksrcpath}/configs/current"]} {
+        ln -s darwin ${worksrcpath}/configs/current
+    }
+}
+
+post-patch {
+    # Ensure correct compilers are used in mklib.
+    reinplace "s:LINK=\"g++\":LINK=\"${configure.cxx}\":"  ${worksrcpath}/bin/mklib
+    reinplace "s:LINK=\"cc\":LINK=\"${configure.cc}\":"    ${worksrcpath}/bin/mklib
+}
+
+pre-configure {
+    if { ![file exists /usr/lib/libXplugin.dylib] } {
+        ui_error "Detected a problem with your development environment.  Please work around it by executing:"
+        ui_error "sudo ln -s libXplugin.1.dylib /usr/lib/libXplugin.dylib"
+        return -code error "missing libXplugin.dylib"
+    }
+}
+
+pre-build {
+    build.args-append \
+        CC="${configure.cc} ${configure.cppflags}" \
+        CXX="${configure.cxx} ${configure.cppflags}"
+}
+
+variant iglx description {Install a libGL that uses your X11 server's indirect GLX path for rendering (the default is off which allows libGL to accelerate rendering using OpenGL.framework)} {
+    patchfiles-append iglx.patch
+}
+
+variant python26 conflicts python27 description {Use python 2.6} {
+    depends_build-append \
+        port:py26-libxml2
+    build.args-append \
+        PYTHON2="${prefix}/bin/python2.6"
+}
+
+variant python27 conflicts python26 description {Use python 2.7} {
+    depends_build-append \
+        port:py27-libxml2
+    build.args-append \
+        PYTHON2="${prefix}/bin/python2.7"
+}
+
+if {![variant_isset python26] && ![variant_isset python27]} {
+    default_variants +python27
+}
+
+platform darwin 8 {
+    patchfiles-append tiger-exports.patch
+
+    # https://trac.macports.org/ticket/24345
+    # https://trac.macports.org/ticket/24393
+    # https://trac.macports.org/ticket/29860
+    if {${build_arch} == "ppc"} {
+        patchfiles-append patch-src-mesa-Makefile.diff
+        post-patch {
+            reinplace "/SRC_DIRS/ s/gallium//" ${worksrcpath}/configs/darwin
+        }
+    }
+    
+    post-patch {
+        # These are being comented out to find out if they're still broken
+        # 6/6/2011
+        #reinplace "/SRC_DIRS/ s/mesa//" ${worksrcpath}/configs/darwin
+
+        # libOSMesa fails on Tiger, too...
+        #reinplace "/DRIVER_DIRS/ s/osmesa//" ${worksrcpath}/configs/darwin
+
+        # http://trac.macports.org/ticket/24366
+        reinplace "s:-fno-strict-aliasing:-fno-strict-aliasing -fno-common:g" ${worksrcpath}/configs/darwin
+    }
+}
+
+platform darwin 9 {
+    # https://trac.macports.org/ticket/24345
+    configure.compiler gcc-4.2
+}
+
+livecheck.type  regex
+livecheck.url   http://www.mesa3d.org/news.html
+livecheck.regex {relnotes-([0-9.]+)\.html}

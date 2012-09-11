@@ -1,0 +1,24 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		Mail-POP3Client 2.18
+revision        3
+license		{Artistic-1 GPL}
+maintainers		nomaintainer
+description		Perl 5 module to talk to a POP3 (RFC1939) server
+long_description	This is a POP3 client module for perl5.  It provides \
+					an object-oriented interface to a POP3 server.  It \
+					can be used to write perl-based biff clients, mail \
+					readers, or whatever.  See the inline POD doco for \
+					more details.  (perldoc Mail::POP3Client)
+
+checksums               md5     27b99775072f6ad4b585f7484c47405d \
+                        sha1    61d39947688dff3211445a777d0a9373fab79187 \
+                        rmd160  2bbae09628ce6948f5e055e59045655bdc358e68
+
+platforms		darwin
+
+supported_archs noarch

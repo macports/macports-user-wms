@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           php 1.1
+
+name                php-rrd
+version             1.1.0
+categories-append   net devel
+platforms           darwin
+maintainers         ryandesign openmaintainer
+license             BSD
+
+php.branches        5.3 5.4
+php.pecl            yes
+
+description         PHP rrdtool extension
+
+long_description    ${name} is a procedural and simple object-oriented wrapper \
+                    for PHP for using rrdtool—data logging and graphing system \
+                    for time series data.
+
+checksums           rmd160  4fe488010e23467dec7e243ed67bea1916017b1f \
+                    sha256  3c31c9e07da55a57978a1e2801051ebfcad4a35fd1664e9bea63ecdfca0fcfdb
+
+if {${name} != ${subport}} {
+    depends_lib-append  port:rrdtool \
+                        port:libffi
+    
+    configure.args      --with-rrd=${prefix}
+}

@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                quvi
+version             0.4.2
+categories          net www
+license             GPL-3
+maintainers         openmaintainer snc
+description         A command line tool for parsing video download links.
+long_description    ${name} is a command line tool for parsing video download \
+                    links. It supports Youtube and other similar video \
+                    websites. lib${name} is a library for parsing video \
+                    download links with C API. It is written in C and intended \
+                    to be a cross-platform library.
+homepage            http://quvi.sourceforge.net/
+installs_libs       no
+
+platforms           darwin
+depends_build       port:pkgconfig
+depends_lib         port:libquvi
+
+master_sites        sourceforge
+use_bzip2           yes
+
+checksums           rmd160  aa915e94af728e5014ac044ef555831ace8a656e \
+                    sha256  1f4e40c14373cb3d358ae1b14a427625774fd09a366b6da0c97d94cb1ff733c3
+
+configure.cppflags  -I${worksrcpath}/include -I${prefix}/include
+
+livecheck.regex     ${name}-(\\d+(\\.\\d+)+)

@@ -1,0 +1,50 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                libebml
+version             1.2.2
+categories          textproc
+license             LGPL-2.1+
+maintainers         nomaintainer
+description         EBML (Extensible Binary Meta Language), sort of binary version of XML.
+long_description    EBML (Extensible Binary Meta Language), a binary derivative of \
+                    XML. EBML enables the Matroska Development Team to gain \
+                    significant advantages in terms of future format \
+                    extensibility, without breaking file support in old parsers.
+homepage            http://www.matroska.org/
+platforms           darwin
+master_sites        http://dl.matroska.org/downloads/${name}/
+use_bzip2           yes
+
+checksums           md5     726cc2bd1a525929ff35ff9854c0ebab \
+                    sha1    f8ef2e044b79b6e4f777b20c0e0e2382c16fbafc \
+                    rmd160  a5399b991d613c4ae3e37bfd7e0a8db33db91131
+
+post-extract {
+    system "cd ${worksrcpath}/make && cp -R linux darwin"
+}
+
+use_configure       no
+
+variant universal {}
+if {[variant_isset universal]} {
+    set archflags ${configure.universal_cxxflags}
+} else {
+    set archflags ${configure.cxx_archflags}
+}
+
+build.dir           ${worksrcpath}/make/darwin
+build.args          prefix=${prefix} \
+                    CXX=${configure.cxx} \
+                    CXXFLAGS="${archflags}"
+
+# We need -p for install because ld will ask for ranlib if the modification date changes.
+destroot.args       INSTALL_OPTS_LIB='-m 644 -p'
+destroot.destdir    prefix=${destroot}${prefix}
+
+# livecheck.
+livecheck.type      regex
+livecheck.url       http://www.bunkus.org/videotools/mkvtoolnix/source.html
+livecheck.regex     ${name} (\[0-9.\]+)

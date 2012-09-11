@@ -1,0 +1,41 @@
+# $Id$
+
+PortSystem          1.0
+
+name                ocaml-ssl
+version             0.4.6
+revision            2
+categories          devel ml
+license             {LGPL-2.1 OpenSSLException}
+maintainers         nomaintainer
+description         SSL bindings for OCaml
+long_description    SSL bindings for OCaml to use secure connections via the \
+                    OpenSSL library.
+homepage            http://savonet.sf.net
+platforms           darwin
+master_sites        sourceforge:project/savonet/ocaml-ssl/${version}
+
+distname            ocaml-ssl-${version}
+
+checksums           md5     576c677bb70ea6552e4d49913c74d420 \
+                    sha1    e42e9518a982ef559f249a22e1fe37cddc45360f \
+                    rmd160  9d2fe7275debb969693d6e679230ac05a1bbf3d6
+
+depends_lib         port:ocaml port:ocaml-findlib
+
+configure.cc_archflags {}
+configure.ld_archflags {}
+
+use_parallel_build  no
+
+set ocamlfind_destdir ${destroot}${prefix}/lib/ocaml/site-lib
+destroot.env        OCAMLFIND_INSTFLAGS="-ldconf ignore -destdir $ocamlfind_destdir"
+
+livecheck.type      regex
+livecheck.url       http://sf.net/api/file/index/project-id/89802/rss?path=%2Focaml-ssl
+livecheck.regex     {ocaml-ssl-(.*)\.tar\.gz}
+
+pre-destroot {
+    file mkdir $ocamlfind_destdir
+}
+

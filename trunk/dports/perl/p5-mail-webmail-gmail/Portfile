@@ -1,0 +1,18 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Mail-Webmail-Gmail 1.09
+revision            3
+maintainers         sky.fr:cbellot
+description         An interface to Google's webmail service
+long_description    ${description}
+platforms           darwin
+checksums           md5 441c0eac1fa6afac777b0404dec79ed2
+if {${perl5.major} != ""} {
+depends_lib-append  port:p${perl5.major}-crypt-ssleay
+
+supported_archs noarch
+}

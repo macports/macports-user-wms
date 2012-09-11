@@ -1,0 +1,35 @@
+# $Id$
+
+PortSystem 1.0
+
+name             sic
+version          1.1
+categories       irc
+maintainers      toby
+description      extremely fast, small and simple irc client
+long_description \
+	sic is an extremely fast, small and simple irc client. It \
+	reads commands from standard input and prints all server \
+	output to standard output. It multiplexes also all channel \
+	traffic into one output, that you don't have to switch \
+	different channel buffers, that's actually a feature.
+homepage         http://tools.suckless.org/sic
+platforms        darwin
+license          MIT
+master_sites     http://dl.suckless.org/tools/
+checksums        md5    856d0e5faa151ae9602713ee7d34a2d5 \
+                 sha1   816d522758f6d04e6af6b7396c8077c32b2ddfb2 \
+                 rmd160 3990c1d26d7ed067bdedae06b82d7773a947dd15
+
+patchfiles       patch-config.mk
+
+configure {
+	reinplace "s|__PREFIX__|${prefix}|" ${worksrcpath}/config.mk
+	reinplace "s|__CC__|${configure.cc}|" ${worksrcpath}/config.mk
+	reinplace "s|__CFLAGS__|${configure.cflags}|" ${worksrcpath}/config.mk
+	reinplace "s|__LDFLAGS__|${configure.ldflags}|" ${worksrcpath}/config.mk
+}
+
+livecheck.type   regex
+livecheck.url    [lindex ${master_sites} 0]
+livecheck.regex  href=\"sic-(.*)\\.tar\\.gz\"

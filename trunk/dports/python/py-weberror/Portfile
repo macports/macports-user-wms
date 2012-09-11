@@ -1,0 +1,41 @@
+# $Id$
+
+PortSystem              1.0
+PortGroup               python 1.0
+
+name                    py-weberror
+version                 0.10.3
+python.versions         26 27
+python.default_version  27
+maintainers             perry openmaintainer
+platforms               darwin
+
+description             Web Error handling and exception catching
+long_description        ${description}
+license                 MIT
+homepage                http://pypi.python.org/pypi/WebError/
+
+livecheck.regex         {>WebError (.+) :}
+livecheck.type          regex
+livecheck.url           ${homepage}
+
+if {$name != $subport} {
+    depends_build-append    port:py${python.version}-distribute
+    depends_lib-append \
+        port:py${python.version}-paste \
+        port:py${python.version}-pygments \
+        port:py${python.version}-simplejson \
+        port:py${python.version}-tempita \
+        port:py${python.version}-webob
+
+    post-extract {
+        foreach file [glob ${worksrcpath}/WebError.egg-info/*] {
+            file attributes ${file} -permissions 0644
+        }
+    }
+}
+
+distname                WebError-${version}
+master_sites            http://pypi.python.org/packages/source/W/WebError/
+
+checksums               rmd160 14893cefa17f70600f7d63f733edd51fda01e487

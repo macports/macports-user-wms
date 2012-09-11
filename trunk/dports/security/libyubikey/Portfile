@@ -1,0 +1,20 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                libyubikey
+version             1.9
+categories          security
+maintainers         snc openmaintainer
+license             BSD
+description         Low-level library for decrypting and parsing Yubikey One-Time Passwords (OTP) in C.
+long_description    ${description}
+
+homepage            http://code.google.com/p/yubico-c/
+platforms           darwin
+master_sites        http://yubico-c.googlecode.com/files/
+checksums           rmd160  73973d67d4ba74d03d07bff58b2e2fee5d0004fd \
+                    sha256  fb720bd683dd37968904e1ff3d4486307d3d5933f6c6cdc96f81ab27a19c46a6
+
+livecheck.regex     "files/${name}-(\\d+\\.\\d+)"

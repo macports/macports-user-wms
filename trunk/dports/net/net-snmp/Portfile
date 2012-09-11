@@ -1,0 +1,97 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    net-snmp
+version                 5.7.1
+revision                1
+categories              net
+license                 BSD
+platforms               darwin
+maintainers             ryandesign openmaintainer
+homepage                http://net-snmp.sourceforge.net/
+master_sites            sourceforge:project/${name}/${name}/${version}
+
+description             An extendable SNMP implementation
+
+long_description        This is net-snmp, a derivative of CMU's SNMP \
+                        package. Various tools relating to the Simple \
+                        Network Management Protocol including: an extensible \
+                        agent, an SNMP library, tools to request or set \
+                        information from SNMP agents, tools to generate and \
+                        handle SNMP traps, a version of the unix 'netstat' \
+                        command using SNMP, a Tk/perl MIB browser.
+
+checksums               rmd160  3e4397417f1cb7ffd1a32fb50e0482969d995f07 \
+                        sha256  7c71c9650c65b715356547e20ca2dbe6313944278af8cc19c32a5337f46b181f
+
+patchfiles              patch-configure.diff
+
+depends_lib             port:openssl \
+                        port:zlib \
+                        port:bzip2 \
+                        path:bin/perl:perl5
+
+use_parallel_build      yes
+
+configure.env-append    PERLPROG=${prefix}/bin/perl
+
+configure.args          --with-defaults \
+                        --disable-agent \
+                        --with-sys-contact=nobody@no.where \
+                        --with-persistent-directory=${prefix}/var/net-snmp \
+                        --mandir=${prefix}/share/man \
+                        --infodir=${prefix}/share/info \
+                        --with-logfile=${prefix}/var/log \
+                        --with-openssl=${prefix} \
+                        --with-zlib=${prefix} \
+                        --with-bzip2=${prefix} \
+                        --with-install-prefix=${destroot} \
+                        --without-elf \
+                        --without-kmem-usage \
+                        --enable-ipv6 \
+                        --with-out-mib-modules=mibII/ipv6
+
+variant no_ssl description {Without libssl support} {
+    depends_lib-delete port:openssl
+    configure.args-delete --with-openssl=${prefix}
+    configure.args-append --without-openssl
+}
+
+variant server description {Build snmpd} {
+    configure.args-delete --disable-agent
+    
+    startupitem.create  yes
+    startupitem.name    NetSNMP
+    startupitem.start   "echo \"NOT starting (net-)snmpd, no real startup item yet\""
+    startupitem.stop    "echo \"NOT stopping (net-)snmpd, no real startup item yet\""
+}
+
+variant ksm description {support for kerberos based SNMP security} {
+    configure.args-append --with-security-modules="usm ksm"
+}
+
+post-build {
+    reinplace -E {s|-arch [a-z0-9_]+||g} \
+        ${worksrcpath}/net-snmp-config \
+        ${worksrcpath}/net-snmp-create-v3-user
+}
+
+post-destroot {
+    destroot.keepdirs ${destroot}${prefix}/var/net-snmp
+    foreach packlist [exec find ${destroot} -name .packlist] {
+        ui_info "Fixing packlist ${packlist}"
+        reinplace "s|${destroot}||" ${packlist}
+    }
+    foreach badfile [exec find ${destroot} -name perllocal.pod] {
+        ui_info "Removing ${badfile}"
+        file delete ${badfile}
+    }
+}
+
+install.asroot          yes
+
+livecheck.type          regex
+livecheck.url           ${homepage}download.html
+livecheck.regex         {net-snmp/([0-9.]+)/}

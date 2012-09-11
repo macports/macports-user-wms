@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+categories          perl net
+platforms           darwin
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Net-OAuth 0.27
+revision            4
+maintainers         nomaintainer
+supported_archs     noarch
+description         OAuth protocol support
+long_description    ${description}.
+
+checksums           md5     6b7a854c8c848ba08e5e0703bdfd8c95 \
+                    sha1    b425e4888140327de43b941442d1a2edf4c319b1 \
+                    rmd160  6a864891bd877a399af8c0868478393c9d1bbe5d
+
+if {${perl5.major} != ""} {
+depends_lib-append \
+  port:p${perl5.major}-digest-hmac \
+  port:p${perl5.major}-digest-sha1 \
+  port:p${perl5.major}-test-warn \
+  port:p${perl5.major}-uri \
+  port:p${perl5.major}-class-accessor \
+  port:p${perl5.major}-class-data-inheritable
+}

@@ -1,0 +1,61 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name                xapian-bindings
+version             1.2.8
+categories          devel
+maintainers         gmail.com:dcolish
+description         Xapian bindings
+long_description    Xapian is a highly adaptable toolkit which allows \
+                    developers to easily add advanced indexing and search \
+                    facilities to their own applications. It supports the \
+                    Probabilistic Information Retrieval model and also \
+                    supports a rich set of boolean query operators.
+
+homepage            http://www.xapian.org/
+platforms           darwin
+master_sites        http://oligarchy.co.uk/xapian/${version}
+
+checksums           rmd160  4cd756afb296a6ad826d4dcdc07ee8c690db348a \
+                    sha256  eb740c619c75d288e65a1c2f86faecdca53d44d3f9896bcc080085839887b124
+
+depends_lib         port:xapian-core
+
+configure.args      --without-python --without-csharp --without-java \
+                    --without-tcl --without-php --without-ruby --without-perl
+
+variant     ruby description {builds ruby bindings} {
+                    configure.args-delete  --without-ruby
+                    configure.args-append  --with-ruby
+                    depends_lib-append port:ruby
+                }
+variant     php description {builds php bindings} {
+                    configure.args-delete  --without-php
+                    configure.args-append  --with-php
+                    depends_lib-append path:bin/php:php5
+                }
+variant     python26 conflicts python27 description {builds python bindings} {
+                    configure.args-delete  --without-python
+                    configure.args-append  --with-python
+                    configure.python       ${prefix}/bin/python2.6
+                    depends_lib-append port:python26
+                }
+variant     python27 conflicts python26 description {builds python bindings} {
+                    configure.args-delete  --without-python
+                    configure.args-append  --with-python
+                    configure.python       ${prefix}/bin/python2.7
+                    depends_lib-append port:python27
+                }
+variant     java description {builds java bindings} {
+                    configure.args-delete  --without-java
+                    configure.args-append  --with-java
+                }
+default_variants +ruby
+
+post-destroot {
+  if {[file exists ${destroot}${prefix}/share/doc/xapian-bindings/ruby/rdocs]} {
+    delete "${destroot}${prefix}/share/doc/xapian-bindings/ruby/rdocs"
+  }
+}

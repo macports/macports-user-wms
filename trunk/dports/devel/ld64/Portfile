@@ -1,0 +1,175 @@
+# $Id$
+
+PortSystem              1.0
+
+# cctools uses a static library from this port when it builds, please
+# revbump cctools whenever this port updates
+
+name                    ld64
+# XCode 4.4
+version                 133.3
+revision                1
+set llvm_version        3.0
+categories              devel
+platforms               darwin
+maintainers             mfeiri jeremyhu
+homepage                http://opensource.apple.com/source/${name}/
+master_sites            http://opensource.apple.com/tarballs/${name}/
+license                 APSL-2
+depends_build           port:libunwind-headers \
+                        path:include/mach-o/dyld_priv.h:dyld-headers \
+                        path:include/mach-o/arm/reloc.h:cctools-headers
+description             ld64 is the new mach-o linker
+long_description        ld64 combines several object files and libraries, \
+                        resolves references, and produces an ouput file.
+
+checksums               ${distname}${extract.suffix} \
+                        rmd160  4099dbcbc296d618c6e08b1cd01f73e640a477b0 \
+                        sha256  d641e7820b4fd4cac2bc3c1038149f02503a883a145a588860dc6a283399129f
+
+patchfiles              ld64-version.patch ld64-133-no-CrashReporterClient.h.patch
+
+# We don't set llvmXX as the default variant on Tiger because it would introduce a
+# dependency cycle as llvm requires apple-gcc42 and ld64 to build correctly.  Users
+# wanting LTO support in ld64 on Tiger can install the +llvm variant after llvm
+# has been installed.
+if {![variant_isset llvm29] && ![variant_isset llvm30] && ![variant_isset llvm31] && ![variant_isset llvm32] && ${os.major} >= 9} {
+    default_variants +llvm31
+
+    # Leopard/powerpc has the option to not be LTO
+    if {![variant_isset llvm31] && ${os.arch} != "powerpc"} {
+        ui_error "Your platform cannot be configured without LTO support in ld64.  Please enable one of the llvmXX variants, and try again."
+        return -code error "Your platform cannot be configured without LTO support in ld64.  Please enable one of the llvmXX variants, and try again."
+    }
+}
+
+variant universal {}
+
+set llvm_version {}
+variant llvm29 conflicts llvm30 llvm31 llvm32 description {Use llvm-2.9 for libLTO} {
+    set llvm_version        2.9
+    depends_lib-append      port:llvm-${llvm_version}
+}
+
+variant llvm30 conflicts llvm29 llvm31 llvm32 description {Use llvm-3.0 for libLTO} {
+    set llvm_version        3.0
+    depends_lib-append      port:llvm-${llvm_version}
+}
+
+variant llvm31 conflicts llvm29 llvm30 llvm32 description {Use llvm-3.1 for libLTO} {
+    set llvm_version        3.1
+    depends_lib-append      port:llvm-${llvm_version}
+}
+
+variant llvm32 conflicts llvm29 llvm30 llvm31 description {Use llvm-3.2 for libLTO} {
+    set llvm_version        3.2
+    depends_lib-append      port:llvm-${llvm_version}
+}
+
+if {${os.arch} == "powerpc" || ${os.major} < 9} {
+    # XCode 3.2.6
+    # 127.2 should work for powerpc, but it will require some build fixes.
+    version             97.17
+    revision            1
+    checksums           rmd160  d52df7d7f741c8bedd29cbac73dbb9db992b4795 \
+                        sha256  02bd46af0809eaa415d096d7d41c3e8e7d80f7d8d181840866fb87f036b4e089
+    supported_archs     x86_64 i386 ppc
+
+    patchfiles-delete   ld64-133-no-CrashReporterClient.h.patch
+    patchfiles-append   ld64-97-no-LTO.patch ld64-97-Makefile.patch
+} elseif {${os.major} < 11} {
+    # XCode 4.2
+    # This was the last ld64 release that supported linking ppc executables.
+    version             127.2
+    revision            5
+    checksums           rmd160  8ee709341549a1944732daef6ebab7ef1acfcc6e \
+                        sha256  97b75547b2bd761306ab3e15ae297f01e7ab9760b922bc657f4ef72e4e052142
+    supported_archs     i386 x86_64
+
+    patchfiles-delete   ld64-133-no-CrashReporterClient.h.patch
+    patchfiles-append   ld64-127-any-cctools.patch ld64-127-Makefile.patch
+}
+
+platform darwin 8 {
+    pre-fetch {
+        if {[variant_isset llvm29] || [variant_isset llvm30] || [variant_isset llvm31] || [variant_isset llvm32]} {
+            if {![file exists ${prefix}/bin/llvm-config-mp-${llvm_version}]} {
+                ui_error "You must first install ld64 without llvm support to build llvm.  After llvm is installed, you can reinstall ld64 with the llvm variant."
+                return -code error "You must first install ld64 without llvm support to build llvm.  After llvm is installed, you can reinstall ld64 with the llvm variant."
+            }
+        }
+    }
+
+    post-patch {
+        reinplace "s:-Wl,-exported_symbol,__mh_execute_header::g" \
+            ${worksrcpath}/Makefile
+    }
+}
+
+if {${configure.compiler} == "gcc-4.0"} {
+    configure.compiler gcc-4.2
+    if {![file exists ${configure.cc}]} {
+        depends_build-append port:apple-gcc42
+        depends_skip_archcheck-append apple-gcc42
+        configure.compiler apple-gcc-4.2
+    }
+}
+
+post-extract {
+    file copy ${filespath}/Makefile ${worksrcpath}
+}
+
+post-patch {
+    reinplace "s|@@VERSION@@|${version}|g" \
+        ${worksrcpath}/src/ld/Options.cpp
+
+    if {${os.major} < 9} {
+        # No CommonCrypto, use openssl
+        reinplace "s:<CommonCrypto/CommonDigest.h>:<openssl/md5.h>:" \
+            ${worksrcpath}/src/ld/MachOWriterExecutable.hpp
+        reinplace "s:CC_MD5:MD5:" \
+            ${worksrcpath}/src/ld/MachOWriterExecutable.hpp
+    } 
+}
+
+use_configure no
+build.args \
+    CC="${configure.cc}" \
+    CXX="${configure.cxx}" \
+    OTHER_CPPFLAGS="${configure.cppflags}" \
+    OTHER_CFLAGS="${configure.cflags} [get_canonical_archflags]" \
+    OTHER_CXXFLAGS="${configure.cxxflags} [get_canonical_archflags]" \
+    OTHER_LDFLAGS="${configure.ldflags} [get_canonical_archflags]"
+
+if {${os.major} >= 11} {
+    build.args-append \
+        RC_SUPPORTED_ARCHS="armv6 armv7 i386 x86_64"
+}
+
+destroot.args \
+    PREFIX=${prefix}
+
+pre-build {
+    if {[variant_isset llvm29] || [variant_isset llvm30] || [variant_isset llvm31]  || [variant_isset llvm32]} {
+        build.args-append LLVM_CONFIG=${prefix}/bin/llvm-config-mp-${llvm_version}
+    }
+
+    if {${os.major} < 9} {
+        build.args-append OTHER_LDFLAGS_LD64=-lcrypto
+    }    
+}
+
+post-destroot {
+    # ${prefix}/bin/ld will always use the llvm we built against
+    # ${prefix}/libexec/ld64/ld uses relative linking for use with the llvm ports
+    file mkdir ${destroot}${prefix}/libexec/ld64
+    file copy ${destroot}${prefix}/bin/ld ${destroot}${prefix}/libexec/ld64/ld
+
+    if {[variant_isset llvm29] || [variant_isset llvm30] || [variant_isset llvm31] || [variant_isset llvm32]} {
+        system "install_name_tool -change ${prefix}/libexec/llvm-${llvm_version}/lib/libLTO.dylib \
+                @executable_path/../lib/libLTO.dylib ${destroot}${prefix}/libexec/ld64/ld"
+    }
+}
+
+livecheck.type          regex
+livecheck.regex         "${name}-(\[\\d.\]+)"

@@ -1,0 +1,33 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           ocaml 1.0
+
+name                ocaml-react
+version             0.9.4
+categories          devel ml
+license             BSD
+maintainers         mww openmaintainer
+description         Functional reactive progreamming for OCaml
+long_description    React is an OCaml module for functional reactive programming (FRP).\
+                    It provides support to program with time varying values : applicative \
+                    events and signals. React doesn't define any primitive event or signal, \
+                    this lets the client chooses the concrete timeline.
+homepage            http://erratique.ch/software/react
+platforms           darwin
+
+master_sites        http://erratique.ch/software/react/releases/
+use_bzip2           yes
+extract.suffix      .tbz
+distname            react-${version}
+
+depends_lib         port:ocaml
+
+checksums           rmd160  64fc6c80cb4ff1c52daa89dda0d774297f900b6c \
+                    sha256  466ad4e2e7ff57c93c4e51511f53f2bdf32df46354458f4a158cd13bf3fbd4ab
+
+use_oasis           yes
+
+livecheck.type      regex
+livecheck.url       http://erratique.ch/software/react/releases/
+livecheck.regex     react-(\[0-9.\]+)${extract.suffix}

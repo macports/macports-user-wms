@@ -1,0 +1,62 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        D-Programming-Language phobos 2.060 v
+categories          lang
+platforms           darwin
+license             Boost-1
+maintainers         takeshi openmaintainer
+description         Runtime library for the D programming language
+long_description \
+    Phobos is the standard runtime library that comes with the D language compiler.
+homepage            http://dlang.org/
+
+checksums           rmd160  8cd11c9fe523fa41eb8b1c644b18a18750ef81d1 \
+                    sha256  cc1909b4dcbea0b5536d2f3eeb975a3b314e67609d2215c5426d65e64b19360b
+
+depends_lib         port:druntime
+
+post-patch {
+    reinplace "s|-m\$(MODEL)||" ${worksrcpath}/posix.mak
+    reinplace "s|/import||" ${worksrcpath}/posix.mak
+}
+
+use_configure       no
+
+if {${build_arch}=="x86_64"} {
+    set model 64
+} else {
+    set model 32
+}
+
+build.args          -f posix.mak \
+                    DRUNTIME_PATH=${prefix}/include/druntime \
+                    DRUNTIME=${prefix}/lib/libdruntime.a \
+                    CC=${configure.cc} \
+                    CFLAGS="${configure.cflags} [get_canonical_archflags cc]"\
+                    DMD=${prefix}/bin/dmd \
+                    MODEL=${model} \
+                    BUILD=release
+build.target
+
+destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/lib
+    xinstall -m 644 ${worksrcpath}/generated/osx/release/${model}/lib${name}2.a \
+        ${destroot}${prefix}/lib
+    xinstall -d -m 755 ${destroot}${prefix}/include
+    xinstall -d -m 755 ${destroot}${prefix}/include/${name}
+    foreach f [glob ${worksrcpath}/*.d] {
+        xinstall -m 644 ${f} ${destroot}${prefix}/include/${name}
+    }
+    xinstall -d -m 755 ${destroot}${prefix}/include/${name}/etc
+    xinstall -d -m 755 ${destroot}${prefix}/include/${name}/etc/c
+    foreach f [glob ${worksrcpath}/etc/c/*.d] {
+        xinstall -m 644 ${f} ${destroot}${prefix}/include/${name}/etc/c
+    }
+    system "cd ${worksrcpath}; \
+        cp -r std ${destroot}${prefix}/include/${name}
+    "
+}

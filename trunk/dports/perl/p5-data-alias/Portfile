@@ -1,0 +1,17 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Data-Alias 1.11 ../by-authors/id/Z/ZE/ZEFRAM/
+revision            3
+maintainers         nomaintainer
+description         Comprehensive set of aliasing operations
+long_description    ${description}
+
+platforms           darwin
+
+checksums           md5 38952015c8d5ef2a51139f278a644b4d \
+                    sha1 868a99a4e52b9a84886402edf4b4790668051552 \
+                    rmd160 6036361394816db3ffeb03131133b896850010d7

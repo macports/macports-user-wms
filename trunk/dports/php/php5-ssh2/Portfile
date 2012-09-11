@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               php5extension 1.0
+
+php5extension.setup     ssh2 0.11.3 pecl
+categories-append       net
+platforms               darwin
+maintainers             ryandesign openmaintainer
+license                 PHP
+
+description             PHP5 bindings for libssh2
+
+long_description        ${description}
+
+checksums               rmd160  b889f89c4d6843ed9e98fc26f4c2a0f4a045953e \
+                        sha256  b2518e101a53fd7940e49bb36a9b9559cbbfda946ebe5bb62e220d4ce132bf33
+
+depends_lib-append      port:libssh2
+
+configure.args          --with-ssh2=${prefix}
+
+livecheck.regex         {>(\d+(?:\.\d+)*(?:p\d+)?)</a></th>}

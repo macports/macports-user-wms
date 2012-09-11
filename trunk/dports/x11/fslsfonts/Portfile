@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem          1.0
+
+name                fslsfonts
+version             1.0.4
+categories          x11 graphics
+maintainers         jeremyhu openmaintainer
+description         List fonts served by X11 font server
+long_description    ${description}
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           sha1    67c6f49fa0eb94221d0663d212e8d35275a44696 \
+                    rmd160  a44877cd45d9726ed588c6e9a69c3baeead331de \
+                    sha256  a38072eebfd195478ea673ebef33c8df0f6f571c5fe19d85248fe9b532d6921c
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libFS port:xorg-libX11
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

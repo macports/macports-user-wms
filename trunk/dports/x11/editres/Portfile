@@ -1,0 +1,35 @@
+# $Id$
+
+PortSystem          1.0
+
+name                editres
+version             1.0.5
+categories          x11 graphics
+maintainers         jeremyhu openmaintainer
+description         Dynamic resource editor for X11 Toolkit applications
+long_description \
+   Editres is a tool that allows users and application developers to view \
+   the full widget hierarchy of any X Toolkit application that speaks the \
+   Editres protocol.   In addition, editres will help the user construct \
+   resource specifications, allow the user to apply the resource to the \
+   application and view the results dynamically.  Once the user is happy \
+   with a resource specification editres will append the resource string to \
+   the user's X Resources file.
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           md5     87e499fd2599910af7961187205ca7ed \
+                    sha1    a1a8af23afde85bada5472da1ac029a384dedae4 \
+                    rmd160  142d0ccf40adecfdf9e2952cbf5afd2cfd305254
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libXaw
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

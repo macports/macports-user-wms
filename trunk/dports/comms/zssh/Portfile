@@ -1,0 +1,52 @@
+# $Id$
+
+PortSystem              1.0
+
+name                    zssh
+version                 1.5c
+revision                1
+categories              comms security
+platforms               darwin
+maintainers             nomaintainer
+
+description             Program for transferring files using SSH
+long_description        "zssh (Zmodem SSH) is a program that can \
+                        transfer files to a remote machine using a \
+                        SSH connection. It acts as an alternative to scp."
+
+master_sites            sourceforge
+homepage                http://zssh.sourceforge.net/
+
+extract.suffix          .tgz
+
+checksums               md5     9f140ec2705a96d6a936b7dca0e8dd13 \
+                        sha1    68dc9b8572646ef63909b3855e7990d75f49926c \
+                        rmd160  87f3c69d6497a90fc89bc423de932915ee667efa
+
+depends_lib             port:readline
+
+configure.args          --mandir=${destroot}${prefix}/share/man
+
+use_parallel_build      yes
+
+pre-destroot {
+    move ${worksrcpath}/INSTALL ${worksrcpath}/INSTALL.txt
+}
+
+destroot.destdir        prefix=${destroot}${prefix}
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}-${version}
+    xinstall -d ${docdir}
+    xinstall -W ${worksrcpath} \
+        CHANGES \
+        COPYING \
+        FAQ \
+        README \
+        TODO \
+        ${docdir}
+}
+
+livecheck.type          regex
+livecheck.url           http://sourceforge.net/projects/${name}/files/
+livecheck.regex         /${name}-(\[0-9a-z.\]+)\\${extract.suffix}

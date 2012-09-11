@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        struct 1.0.7
+platforms           darwin
+license             GPL-2+ GPL-3+
+maintainers         nomaintainer
+description         Additional Structure manipulations functions.
+long_description    ${description}
+
+checksums           md5     0ea3950edd845c8a778c9154ed75bd33 \
+                    sha1    55f232a95f015347875a2e64830d8ff8588f9967 \
+                    rmd160  d082d047117a5bccbf2e4b64c2d5035a7d6ceeb9

@@ -1,0 +1,40 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           python27 1.0
+name                hg-forest
+version             20101118
+revision            1
+categories          devel mercurial
+maintainers         nomaintainer
+description         Mercurial extension for nested repositories
+long_description \
+   Operations on trees with nested Mercurial repositories. \
+   This extension provides commands that apply to a composite tree called \
+   a forest. Some commands simply wrap standard Mercurial commands, such \
+   as 'clone' or 'status', and others involve a snapshot file.
+
+platforms           darwin
+
+homepage            http://mercurial.selenic.com/wiki/ForestExtension
+# This is only here since master_sites is a required key
+master_sites        macports
+
+depends_lib         port:mercurial
+
+distfiles
+use_configure       no
+build               {}
+destroot {
+   xinstall -m 755 -d ${destroot}${python.pkgd}/hgext
+   xinstall -m 644 -W ${filespath} forest.py ${destroot}${python.pkgd}/hgext
+}
+
+notes "To setup forest to run, edit your .hgrc to add:
+   \[extensions\]
+   hgext.forest=
+See ${homepage} for more explanation
+"
+
+livecheck.type      none
+

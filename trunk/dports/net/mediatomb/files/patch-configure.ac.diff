@@ -1,0 +1,20 @@
+--- configure.ac.orig	2010-03-25 10:47:02.000000000 -0500
++++ configure.ac	2010-03-25 16:11:28.000000000 -0500
+@@ -692,8 +692,7 @@
+         AC_MSG_NOTICE([You are running OSX, assuming threadsafe gethostbyname version])
+ elif test $CYGWIN_OS -eq 1; then
+         AC_MSG_NOTICE([Your are building under Cygwin, assuming threadsafe gethostbyname implementation])
+-fi
+-
++else
+ AC_CHECK_FUNCS([gethostbyname_r],[],
+         [
+             AC_CHECK_HEADERS([lwres/netdb.h],
+@@ -712,6 +711,7 @@
+                     fi
+                 ])
+         ])
++fi
+ 
+ AC_CHECK_FUNCS([if_nameindex],[],
+         [

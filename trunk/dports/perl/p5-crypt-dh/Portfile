@@ -1,0 +1,18 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		Crypt-DH 0.06
+revision        3
+license			{Artistic-1 GPL}
+maintainers		nomaintainer
+description		Perl5 interface to a Diffie-Hellman key exchange system
+long_description	${description}
+
+platforms		darwin
+
+checksums		md5 eabecac024d427c670a6e0edbadcec5d
+
+supported_archs noarch

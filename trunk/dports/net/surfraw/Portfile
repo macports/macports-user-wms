@@ -1,0 +1,21 @@
+# $Id$
+
+PortSystem          1.0
+
+name                surfraw
+version             2.2.8
+categories          net
+license             public-domain
+maintainers         acuityph.com:alistair.israel
+description         Shell Users' Revolutionary Front Rage Against the Web
+long_description \
+    Surfraw provides a fast unix command line interface to a variety of \
+    popular WWW search engines and other artifacts of power.
+homepage            http://surfraw.alioth.debian.org/
+platforms           darwin
+supported_archs     noarch
+master_sites        ${homepage}dist/
+
+checksums           md5 e0f571f7a2d109555c26bdb40781a3f2 \
+                    sha1 3114cd6e8d64f87b84ed0eff4369bfb0b10f2eb6 \
+                    rmd160 77f8f625946fb76665c9e4834506ce4e45f1cd4f

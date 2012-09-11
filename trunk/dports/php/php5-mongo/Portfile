@@ -1,0 +1,25 @@
+# $Id$
+
+PortSystem      1.0
+PortGroup       php5extension 1.0
+
+php5extension.setup mongo 1.2.12 pecl
+categories      php databases devel
+license         Apache-2
+platforms       darwin
+maintainers     ryandesign openmaintainer
+
+description     Mongo Database Driver
+
+long_description \
+    This package provides an interface for communicating with the Mongo \
+    database in PHP.
+
+checksums       rmd160  343b8f825886b93e886482fd4f8d6551ac772263 \
+                sha256  bf3c3fd0e8e4a37bf476535361ce881ca6287a26390731961b20b2789f011c54
+
+patchfiles-append \
+    patch-config.m4.diff
+
+depends_build-append \
+    port:mongodb

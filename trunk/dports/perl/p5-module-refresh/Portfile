@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		Module-Refresh 0.09
+revision        3
+maintainers		nomaintainer
+description		Refresh %INC files when updated on disk
+long_description	${description}
+checksums		md5 f6168601b3be9cf59c0ed1698df954a6
+platforms		darwin
+
+supported_archs noarch

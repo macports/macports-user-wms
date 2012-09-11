@@ -1,0 +1,89 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                splash
+version             2.1.1
+categories          science graphics
+platforms           darwin
+maintainers         monash.edu:daniel.price
+description         Smoothed Particle Hydrodynamics visualisation tool
+long_description    SPLASH is a tool for visualisation of (mainly astrophysical) \
+                    Smoothed Particle Hydrodynamics simulations
+                    
+homepage            http://users.monash.edu.au/~dprice/splash
+master_sites        ${homepage}/releases/
+license             GPL-2+
+
+worksrcdir          ${name}
+
+checksums           rmd160   2bfb9c9945f3f5669cbc1e6fc9be46572051f86b \
+                    sha256   0134d87e45927293fa579b568b64ccbbde88a19fca1a753668d1d38738b246e1
+
+if {![variant_isset gcc44] && ![variant_isset gcc45] && ![variant_isset gcc46] && ![variant_isset gcc47]} {
+   default_variants      +gcc45
+}
+default_variants    +giza
+
+use_configure       no
+
+build.args          SYSTEM=gfortran \
+                    CC="${configure.cc}" \
+                    CFLAGS="[get_canonical_archflags cc]" \
+                    FFLAGS="[get_canonical_archflags fc]" \
+                    F90FLAGS="[get_canonical_archflags f90]"
+
+destroot.args       PREFIX=${prefix}
+use_parallel_build  no
+
+variant giza description {use giza as the backend graphics library} conflicts pgplot {
+   depends_lib-append      path:lib/pkgconfig/cairo.pc:cairo \
+                           port:xorg-libx11
+   build.args-append       X11DIR=${prefix} X11LIBS='-L${prefix}/lib -lX11'
+}
+
+variant pgplot description {use PGPLOT as the backend graphics library} conflicts giza {
+   depends_lib-append      port:pgplot
+   build.env-append        PGPLOT_DIR=${prefix}/lib \
+                           PGPLOT_DEV=/xw
+   build.args-append       BACKEND=pgplot
+}
+
+variant gcc47 description {build with gfortran/gcc v4.7} conflicts gcc44 gcc45 gcc46 {
+   depends_build-append    port:gcc47
+   build.args-append       F90C=gfortran-mp-4.7 FC=gfortran-mp-4.7
+}
+
+variant gcc46 description {build with gfortran/gcc v4.6} conflicts gcc44 gcc45 gcc47 {
+   depends_build-append    port:gcc46
+   build.args-append       F90C=gfortran-mp-4.6 FC=gfortran-mp-4.6
+}
+
+variant gcc45 description {build with gfortran/gcc v4.5} conflicts gcc44 gcc46 gcc47 {
+   depends_build-append    port:gcc45
+   build.args-append       F90C=gfortran-mp-4.5 FC=gfortran-mp-4.5
+}
+
+variant gcc44 description {build with gfortran/gcc v4.4} conflicts gcc45 gcc46 gcc47 {
+   depends_build-append    port:gcc44
+   build.args-append       F90C=gfortran-mp-4.4 FC=gfortran-mp-4.4
+}
+
+variant hdf5 description {compiles data reads that depend on HDF5} {
+   build.args-append       gadgethdf5 HDF5ROOT=${prefix}
+   depends_lib-append      port:hdf5
+}
+
+variant h5part description {compiles H5Part data read} {
+   build.args-append       h5part HDF5ROOT=${prefix} H5PART_DIR=${prefix} H5PART_LIBS="-L${prefix}/lib -lH5Part"
+   depends_lib-append      port:h5part
+}
+
+variant read_extraformats1 description {compiles additional data reads: foulkes, mbatesph, oilonwater, rsph, urban (f/b/o/r/usplash)} conflicts read_extraformats2 {
+   build.args-append       foulkes mbatesph oilonwater rsph urban
+}
+
+variant read_extraformats2 description {compiles additional data reads: Bauswein, UCLA, vanaverbeke data read (bsplash, usplash, vsplash)} conflicts read_extraformats1 {
+   build.args-append       bauswein ucla vanaverbeke
+}

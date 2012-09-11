@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        data-smoothing 1.2.0
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Algorithms for smoothing noisy data
+long_description    ${description}
+
+checksums           md5     d92ea47df22efaa748b125d397de1339 \
+                    sha1    8a1a48180f644fa11af12d91d4527ce0737ba4ac \
+                    rmd160  db3266c4cd813162a26997f4fb0219c4ed7d28f1

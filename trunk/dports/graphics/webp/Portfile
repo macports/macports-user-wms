@@ -1,0 +1,73 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    webp
+version                 0.2.0
+revision                1
+categories              graphics science devel
+platforms               darwin
+maintainers             ryandesign openmaintainer
+license                 BSD
+
+description             image format library providing lossy compression \
+                        for photographic images
+
+long_description        WebP is a new image format that provides lossy \
+                        compression for photographic images. In a large \
+                        scale study of 900,000 web images, WebP images \
+                        were 39.8% smaller than jpeg images of similar \
+                        quality. \
+                        \
+                        A WebP file consists of VP8 image data, and a \
+                        container based on RIFF. Webmasters, web developers \
+                        and browser developers can use the WebP format \
+                        to create smaller, better-looking images that can \
+                        help make the web faster.
+
+homepage                http://code.google.com/p/webp/
+master_sites            googlecode
+
+checksums               rmd160  c8ed61c2888d4f292818142399f189319b4700e0 \
+                        sha256  aa7d5e162826362c79d7c36d41484042ab7460dc08dc33d4ea6823a0c77d4bfb
+
+depends_lib             port:zlib \
+                        port:libpng \
+                        port:jpeg \
+                        port:tiff
+
+distname                libwebp-${version}
+
+post-extract {
+    # I'm going mad trying to develop this port when I can't access its files.
+    fs-traverse item ${worksrcpath} {
+        if {[file isdirectory ${item}]} {
+            file attributes ${item} -permissions a+rx
+        } elseif {[file isfile ${item}]} {
+            file attributes ${item} -permissions a+r
+        }
+    }
+}
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS \
+        ChangeLog \
+        COPYING \
+        NEWS \
+        PATENTS \
+        README \
+        ${docdir}
+}
+
+variant debug description {Compile with debugging information and reduce optimization level} {
+    configure.optflags -O1
+    configure.cflags-append -ggdb
+    configure.cxxflags-append -ggdb
+}
+
+livecheck.name          ${name}
+livecheck.regex         /libwebp-(\[0-9.\]+)${extract.suffix}

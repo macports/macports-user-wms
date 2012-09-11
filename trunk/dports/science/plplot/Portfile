@@ -1,0 +1,235 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+
+name            plplot
+version         5.9.9
+revision        2
+platforms       darwin
+maintainers     takeshi openmaintainer
+categories      science
+description     Scientific plotting package
+master_sites    sourceforge
+checksums           md5     9f2c8536a58875d97ab6b29bbed67d26 \
+                    sha1    3df8fc21723e14af62fea4098e4ef019e1b52a54 \
+                    rmd160  403d56896714336e6f8d65ef51563e7c28c7e588
+homepage        http://plplot.sourceforge.net/
+long_description \
+    PLplot is a cross-platform software package for creating           \
+    scientific plots. To help accomplish that task it is               \
+    organized as a core C library, language bindings for that library, \
+    and device drivers which control how the plots are presented       \
+    in non-interactive and interactive plotting contexts.
+
+depends_build   port:cmake \
+                path:bin/pkg-config:pkgconfig
+depends_lib     port:expat \
+                port:fontconfig \
+                port:freefont-ttf \
+                port:freetype \
+                port:libiconv \
+                port:libLASi \
+                port:libpng \
+                path:lib/pkgconfig/pango.pc:pango \
+                port:swig-tcl \
+                port:tcl \
+                port:tk \
+                port:zlib
+
+post-patch {
+    reinplace "s|-framework AquaTerm|-F${frameworks_dir} -framework AquaTerm|" ${worksrcpath}/cmake/modules/aqt.cmake
+}
+
+if {[variant_isset universal]} {
+    set cflags "${configure.cppflags} ${configure.cflags} ${configure.universal_cflags}"
+    set cxxflags "${configure.cppflags} ${configure.cxxflags} ${configure.universal_cxxflags}"
+} else {
+    set cflags "${configure.cppflags} ${configure.cppflags}"
+    set cxxflags "${configure.cppflags} ${configure.cxxflags}"
+}
+
+configure.dir           ${workpath}/build
+configure.cmd           cmake
+configure.env           HOME=${workpath}
+configure.pre_args      -DCMAKE_INSTALL_PREFIX=${prefix}
+configure.args          -DCMAKE_VERBOSE_MAKEFILE=ON \
+                        -DCMAKE_C_COMPILER=${configure.cc} \
+                        -DCMAKE_C_FLAGS=\"${cflags}\" \
+                        -DCMAKE_CXX_COMPILER=${configure.cxx} \
+                        -DCMAKE_CXX_FLAGS=\"${cxxflags}\" \
+                        -DCMAKE_INCLUDE_PATH=${prefix}/include \
+                        -DCMAKE_LIBRARY_PATH=${prefix}/lib \
+                        -DTCL_INCLUDE_PATH=${prefix}/include \
+                        -DTCL_LIBRARY=${prefix}/lib/libtcl.dylib \
+                        -DTCL_STUB_LIBRARY=${prefix}/lib/libtclstub8.5.a \
+                        -DTK_INCLUDE_PATH=${prefix}/include \
+                        -DTK_LIBRARY=${prefix}/lib/libtk.dylib \
+                        -DTK_STUB_LIBRARY=${prefix}/lib/libtkstub8.5.a \
+                        -DFREETYPE_INCLUDE_DIR=${prefix}/include/freetype2 \
+                        -DFREETYPE_LIBRARY=${prefix}/lib/libfreetype.dylib \
+                        -DPL_FREETYPE_FONT_PATH=${prefix}/share/fonts/freefont-ttf \
+                        -DWITH_FREETYPE=ON \
+                        -DPLD_aqt=OFF \
+                        -DPLD_extcairo=ON \
+                        -DPLD_memcairo=ON \
+                        -DPLD_ps=ON \
+                        -DPLD_psttf=ON \
+                        -DPLD_pscairo=ON  \
+                        -DPLD_pdfcairo=ON \
+                        -DPLD_pngcairo=ON \
+                        -DPLD_svgcairo=ON \
+                        -DPLD_tk=ON \
+                        -DPLD_wxwidgets=OFF \
+                        -DPLD_xcairo=ON  \
+                        -DPLD_tkwin=OFF \
+                        -DENABLE_ada=OFF \
+                        -DENABLE_d=OFF \
+                        -DENABLE_f77=OFF \
+                        -DENABLE_f95=OFF \
+                        -DENABLE_itcl=OFF \
+                        -DENABLE_itk=OFF \
+                        -DENABLE_java=OFF \
+                        -DENABLE_lua=OFF \
+                        -DENABLE_ocaml=OFF \
+                        -DENABLE_octave=OFF \
+                        -DENABLE_pdl=OFF \
+                        -DENABLE_pyqt4=OFF \
+                        -DENABLE_python=OFF \
+                        -DENABLE_qt=OFF \
+                        -DENABLE_tcl=ON \
+                        -DENABLE_tk=ON \
+                        -DENABLE_wxwidgets=OFF \
+                        -DBUILD_TEST=OFF \
+                        -DHAVE_AGG=OFF \
+                        -DSWIG_DIR=${prefix}/bin
+configure.post_args     ../${distname}
+
+pre-configure {
+    file mkdir ${workpath}/build
+#    if {[file exists ${prefix}/lib/libplplotd.dylib]} {
+#        return -code error "Before upgrading plplot, please uninstall (or deactivate) the old version of plplot."
+#    }
+}
+
+if {[variant_isset universal]} {
+    configure.args-append -DCMAKE_OSX_ARCHITECTURES=\"[strsed ${configure.universal_archs} "g| |;|"]\" -DENABLE_f77:BOOL=OFF -DENABLE_f95:BOOL=OFF
+} else {
+# Adhoc fix
+# cmake passes -arch to Fortran compiler
+# g95 ignores -arch but gfortran fails with it
+    if {[variant_isset g95]} {
+        configure.args-append -DCMAKE_OSX_ARCHITECTURES=\"[strsed ${build_arch} "g| |;|"]\"
+    }
+}
+
+build.dir               ${workpath}/build
+
+pre-destroot {
+    set mods "${workpath}/build/bindings/f95/plplot.mod
+              ${workpath}/build/bindings/f95/plplotp.mod
+              ${workpath}/build/bindings/f95/plplot_flt.mod"
+    foreach m $mods {
+        if {[file exists $m]} {
+            file copy $m ${workpath}/build/
+        }
+    }
+}
+
+#platform i386 {
+#    configure.args-append   -DCMAKE_MODULE_LINKER_FLAGS=\"-undefined dynamic_lookup\" \
+#                            -DCMAKE_EXE_LINKER_FLAGS=\"-undefined dynamic_lookup\"
+#}
+
+if {${os.platform}=="darwin"} {
+    default_variants    +aquaterm
+} 
+
+subport ${name}-single {
+    configure.pre_args      -DCMAKE_INSTALL_PREFIX=${prefix}/lib/${subport}
+    configure.args-append   -DPL_DOUBLE=OFF
+}
+
+# variant gcw is deleted since it has been deprecated
+# gd driver (gif, jpeg, png, svg) has been deprecated
+
+variant gcc43 conflicts g95 gcc44 gcc45 universal description {Add support for fortran using gfortran-mp-4.3} {
+    depends_lib-append      port:gcc43
+    configure.args-delete   -DENABLE_f77=OFF \
+                            -DENABLE_f95=OFF
+    configure.args-append   -DCMAKE_Fortran_COMPILER=\"${prefix}/bin/gfortran-mp-4.3\" \
+                            -DCMAKE_Fortran_FLAGS=\"${configure.fflags}\"
+}
+variant gcc44 conflicts g95 gcc43 gcc45 universal description {Add support for fortran using gfortran-mp-4.4} {
+    depends_lib-append      port:gcc44
+    configure.args-delete   -DENABLE_f77=OFF \
+                            -DENABLE_f95=OFF
+    configure.args-append   -DCMAKE_Fortran_COMPILER=\"${prefix}/bin/gfortran-mp-4.4\" \
+                            -DCMAKE_Fortran_FLAGS=\"${configure.fflags}\"
+}
+variant gcc45 conflicts g95 gcc43 gcc44 universal description {Add support for fortran using gfortran-mp-4.5} {
+    depends_lib-append      port:gcc45
+    configure.args-delete   -DENABLE_f77=OFF \
+                            -DENABLE_f95=OFF
+    configure.args-append   -DCMAKE_Fortran_COMPILER=\"${prefix}/bin/gfortran-mp-4.5\" \
+                            -DCMAKE_Fortran_FLAGS=\"${configure.fflags}\"
+}
+variant g95 conflicts gcc43 gcc44 gcc45 universal description {Add support for fortran using g95} {
+    depends_lib-append      port:g95
+    configure.args-delete   -DENABLE_f77=OFF \
+                            -DENABLE_f95=OFF
+    configure.args-append   -DCMAKE_Fortran_COMPILER=\"${prefix}/bin/g95\" \
+                            -DCMAKE_OSX_DEPLOYMENT_TARGET=\"\" \
+                            -DCMAKE_Fortran_FLAGS=\"${configure.fflags} -fno-second-underscore\"
+# Ad hoc fix to enable build of f95 binding by disabling some features
+    if {${os.major}<10} {
+        patchfiles-append       patch-sfstubsf95.f90.diff
+    }
+}
+
+variant octave description {Add support for Octave} {
+    depends_lib-append       port:swig-octave
+    configure.args-delete   -DENABLE_octave=OFF
+    configure.args-append   -DENABLE_octave=ON
+}
+
+variant java description {Add support for Java} {
+    depends_lib-append       port:swig-java
+    configure.args-delete   -DENABLE_java=OFF
+    configure.args-append   -DENABLE_java=ON
+}
+
+variant python25 description {Add support for python25} {
+    depends_lib-append      port:python25 \
+                            port:py25-numpy \
+                            port:swig-python
+    configure.args-delete   -DENABLE_python=OFF
+    configure.args-append   -DENABLE_python=ON \
+                            -DHAVE_NUMPY:BOOL=ON \
+                            -DPYTHON_INCLUDE_PATH=${prefix}/include/python2.5
+}
+
+variant gdc description {Add support for D} {
+    depends_lib-append      port:gdc
+    configure.args-delete   -DENABLE_d=OFF
+    configure.args-append   -DENABLE_d=ON
+}
+
+variant aquaterm description {Add support for Aquaterm} {
+    depends_lib-append      port:aquaterm
+    configure.args-delete   -DPLD_aqt=OFF
+    configure.args-append   -DPLD_aqt=ON
+}
+
+variant no_x11 {
+    depends_lib-delete      path:lib/pkgconfig/pango.pc:pango \
+                            port:tk
+    configure.args-delete   -DPLD_xcairo=ON  \
+                            -DPLD_tk=ON \
+                            -DTK_INCLUDE_PATH=${prefix}/include \
+                            -DTK_LIBRARY=${prefix}/lib/libtk.dylib
+    configure.args-append   -DPLD_xcairo=OFF \
+                            -DPLD_xwin=OFF \
+                            -DPLD_tk=OFF \
+                            -DENABLE_tk=OFF
+}

@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem              1.0
+PortGroup               python 1.0
+
+name                    py-markupsafe
+version                 0.15
+maintainers             perry openmaintainer
+platforms               darwin
+
+description             Implements a XML/HTML/XHTML Markup safe string for Python
+long_description        ${description}
+license                 BSD
+homepage                http://pypi.python.org/pypi/MarkupSafe/
+
+livecheck.regex         {>MarkupSafe (.+) :}
+livecheck.type          regex
+livecheck.url           ${homepage}
+
+python.versions         24 25 26 27
+python.default_version  27
+
+if {$subport != $name} {
+    depends_build-append    port:py${python.version}-distribute
+}
+
+distname                MarkupSafe-${version}
+master_sites            http://pypi.python.org/packages/source/M/MarkupSafe/
+
+checksums               rmd160 862475bb620c6b92be74a8daa2eafe09a488fcb8

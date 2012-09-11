@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                proj
+version             4.8.0
+revision            0
+set datumgrid_version   1.5
+categories          gis
+license             MIT
+platforms           darwin
+
+maintainers         gmail.com:seanasy openmaintainer
+
+description         PROJ.4 - Cartographic Projections Library
+
+long_description    PROJ.4 is a library for converting data between \
+                    cartographic projections.
+
+homepage            http://trac.osgeo.org/proj/
+master_sites        http://download.osgeo.org/proj/
+
+distfiles-append    ${name}-datumgrid-${datumgrid_version}.zip
+
+checksums           ${name}-${version}.tar.gz \
+                    rmd160  a2a20159b333aeef9f6322ccc97a0a14cc38fe89 \
+                    sha256  2db2dbf0fece8d9880679154e0d6d1ce7c694dd8e08b4d091028093d87a9d1b5 \
+                    \
+                    proj-datumgrid-${datumgrid_version}.zip \
+                    rmd160  f5deacd0242557c92c35d43941cd52a7e4096467 \
+                    sha256  723c4017d95d7a8abdf3bda4e18d3c15d79b00f9326d453da5fdf13f96c287db
+
+extract.only        ${name}-${version}.tar.gz
+
+post-extract {
+    system "unzip ${distpath}/${name}-datumgrid-${datumgrid_version}.zip -d ${worksrcpath}/nad"
+}
+
+configure.args      --mandir=${prefix}/share/man
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

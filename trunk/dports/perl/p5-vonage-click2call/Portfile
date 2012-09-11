@@ -1,0 +1,18 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Vonage-Click2Call 0.11
+revision            3
+maintainers         email.arc.nasa.gov:sal 
+description         Perl extension for using the Vonage Click2Call service
+long_description    ${description}
+homepage            http://search.cpan.org/~jv/Data-Hexify
+
+platforms           darwin
+
+checksums           sha1 0d26fc297a35c8436cd31ba82535e9b8721f7583
+
+supported_archs noarch

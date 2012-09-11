@@ -1,0 +1,52 @@
+# $Id$
+
+PortSystem      1.0
+
+name            makeself
+version         2.1.5
+categories      archivers
+platforms       darwin
+maintainers     nomaintainer
+supported_archs noarch
+
+description     A small shell script that generates a self-extractable archives
+
+long_description \
+    makeself.sh is a small shell script that generates a \
+    self-extractable tar.gz archive  from a directory. The \
+    resulting file appears as a shell script (many of those have \
+    a .run suffix), and can be launched as is. 
+
+homepage        http://www.megastep.org/makeself/
+master_sites    ${homepage}
+extract.suffix  .run
+
+checksums       md5     85f03bd3602fd55debec6ae449f7c15c \
+                sha1    803ca42ea64e51af72a4ee50b4d8f7a6107c926d \
+                rmd160  31e718793aa417e9b4cf4977b73459ffded19409
+
+patchfiles      patch-makeself.sh
+
+extract {
+    system "sh ${distpath}/${distfiles} --nox11 --target ${worksrcpath}"
+}
+
+post-patch {
+    reinplace s|@PREFIX@|${prefix}|g ${worksrcpath}/makeself.sh
+}
+
+use_configure   no
+
+build {}
+
+destroot {
+    xinstall -d ${destroot}${prefix}/libexec/makeself
+    xinstall ${worksrcpath}/makeself-header.sh ${destroot}${prefix}/libexec/makeself
+    xinstall ${worksrcpath}/makeself.sh ${destroot}${prefix}/bin/makeself
+
+    xinstall ${worksrcpath}/makeself.1 ${destroot}${prefix}/share/man/man1
+
+    set docdir ${prefix}/share/doc/${name}-${version}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} COPYING README TODO ${destroot}${docdir}
+}

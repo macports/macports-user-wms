@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                kgeography
+version             4.8.3
+categories          kde kde4
+maintainers         sharky michaelld
+license             GPL-2+ GFDL-1.2
+description         Geography Trainer
+long_description    KDE ${description}
+homepage            http://www.kde.org
+
+platforms           darwin
+depends_lib-append  port:libkdeedu
+
+master_sites        kde:stable/${version}/src/
+use_xz              yes
+
+checksums           rmd160  9bb7fec27ee6decea66ed7380ede503a2139bbe4 \
+                    sha256  7a2f8423b696f3ea4f91033c7be1d3465803b0ce939a94f0be940b1a9d9e1b41
+
+if {![variant_isset doc]} {
+    patchfiles-append   patch-CMakeLists.txt.diff
+}
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/latest/src/
+livecheck.regex     ${name}-(\\d+(\\.\\d+)+)

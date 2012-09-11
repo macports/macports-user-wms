@@ -1,0 +1,28 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                      1.0
+PortGroup                       pure 1.0
+
+pure.setup                      gsl 0.11
+categories                      math science
+platforms                       darwin
+maintainers                     ryandesign
+license                         GPL-3
+
+description                     a wrapper to call GNU Scientific Library \
+                                functions from Pure
+
+long_description                ${name} aims to provide a complete wrapper \
+                                for the GNU Scientific Library which provides \
+                                a wide range of mathematical routines useful \
+                                for scientific programming, number crunching \
+                                and signal processing applications.
+
+# 0.10 was stealth-updated 2011-10-20
+dist_subdir                     ${name}/${version}_1
+
+checksums                       rmd160  67a015ac2848f33857ee1fdee3067e8547c72485 \
+                                sha256  785cac601a557dd7d926daa3017ddf6aa550f1aa0da047d7a7601d041aa6f191
+
+depends_lib-append              port:gsl

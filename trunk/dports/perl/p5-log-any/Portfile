@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Log-Any 0.11
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Bringing loggers and listeners together
+long_description    ${description}
+
+platforms           darwin
+
+checksums           md5 9186d94ee2ae7cada408fc5faf86d975 \
+                    sha1 a08709ac634257bf59fc67cef844889f3aea020a \
+                    rmd160 034d1c6c2f1945e61e132ec8f65965f5db4dbb08
+
+supported_archs noarch

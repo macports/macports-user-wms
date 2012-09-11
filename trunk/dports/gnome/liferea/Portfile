@@ -1,0 +1,51 @@
+# $Id$
+
+PortSystem 1.0
+
+name                liferea
+# Note: do not remove the epoch line.
+epoch               20090731
+version             1.6.5
+revision        3
+description         A feed aggregator for GTK+/GNOME.
+long_description    Liferea is an aggregator for online news feeds. \
+                    It supports the RSS/RDF, CDF, Atom, OCS and OPML \
+                    formats and enclosures (podcasting). It also has \
+                    filtering mechanisms.
+maintainers         nomaintainer
+categories          gnome net
+license             GPL-2+
+platforms           darwin
+homepage            http://liferea.sourceforge.net/
+master_sites        sourceforge
+checksums           md5     b5a2c0803eec5d0aff0b9ca4114eaf16 \
+                    sha1    f24dbd0e81c5a8309f0d19853211fc02ff818477 \
+                    rmd160  77b384595a757983ab9d3f8ed91d824628991670
+depends_build       port:intltool port:pkgconfig
+depends_lib         port:gtk2 port:gconf port:libxml2 port:libxslt \
+                    port:sqlite3 port:webkit-gtk port:libglade2
+
+configure.args      --disable-lua
+
+variant lua description {LUA scripting support} {
+    depends_lib-append      port:lua
+    configure.args-delete   --disable-lua
+    configure.args-append   --enable-lua
+}
+
+pre-destroot {
+    file mkdir "${destroot}${prefix}/share/doc/${name}"
+    xinstall -m 644 -v -W ${worksrcpath} AUTHORS ChangeLog README \
+      "${destroot}${prefix}/share/doc/${name}"
+}
+
+post-activate {
+    ui_msg "The date/time format has changed. If you want to override the"
+    ui_msg "new one, you need to run"
+    ui_msg "  gconftool-2 -s -t string /apps/liferea/date-format <format>"
+    ui_msg "where <format> is the format in strftime syntax."
+}
+
+livecheck.type      regex
+livecheck.url       http://liferea.sourceforge.net/
+livecheck.regex     {Liferea Stable/liferea-([1-9.]+)\.tar}

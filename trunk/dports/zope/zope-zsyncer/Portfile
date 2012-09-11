@@ -1,0 +1,18 @@
+# $Id$
+PortSystem 1.0
+PortGroup zope 1.0
+
+zope.setup		ZSyncer 0.6.1
+maintainers		nomaintainer
+description		Zope object synchronization product
+long_description	ZSyncer allows you to synchronize and compare \
+					objects from one zope (source) to another \
+					(destination). It is a lot more convenient than the \
+					old manual export / transfer / import procedure.
+homepage		http://sourceforge.net/projects/zsyncer
+master_sites	sourceforge:zsyncer
+extract.suffix	.tgz
+checksums		md5 196a662186f7b45fc793eb3a02b6e46f \
+				sha1 2bcbb97b2f410b6356aa8318c178b2092903e7d4
+platforms		darwin freebsd
+

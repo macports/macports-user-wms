@@ -1,0 +1,195 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    nodejs-devel
+version                 0.9.1
+categories              devel net
+platforms               darwin
+license                 {MIT BSD}
+maintainers             ciserlohn
+
+description             Evented I/O for V8 JavaScript
+
+long_description        Node's goal is to provide an easy way to build scalable network programs in JavaScript. \
+                        Node is similar in design to and influenced by systems like Ruby's Event \
+                        Machine or Python's Twisted. Node takes the event model a bit further-it \
+                        presents the event loop as a language construct instead of as a library.
+
+conflicts               nodejs
+
+homepage                http://nodejs.org/
+master_sites            ${homepage}dist/v${version}
+
+checksums               rmd160  53ff9c04872a3b4cf3bb46c75367a994ee0909af \
+                        sha256  12bc0deb1a0c3fdcd5c54ffd241c1e291d372620944c3f97388d38f460f222b9
+
+distname                node-v${version}
+
+proc rec_glob {basedir pattern} {
+    set files [glob -directory $basedir -nocomplain -type f $pattern]
+    foreach dir [glob -directory $basedir -nocomplain -type d *] {
+        eval lappend files [rec_glob $dir $pattern]
+    }
+    return $files
+}
+
+configure.python ${prefix}/bin/python2.7
+
+post-patch {
+    foreach f [concat ${worksrcpath}/configure \
+                   ${worksrcpath}/tools/gyp/gyp \
+                   ${worksrcpath}/tools/gyp_node \
+                   ${worksrcpath}/deps/uv/gyp_uv \
+                   ${worksrcpath}/deps/npm/node_modules/node-gyp/legacy/tools/gyp/gyp \
+                   ${worksrcpath}/deps/npm/node_modules/node-gyp/legacy/tools/gyp_addon \
+                   [rec_glob ${worksrcpath} *.py]] {
+        reinplace "s|/usr/bin/env python|${configure.python}|" ${f}
+    }
+    reinplace "s|/usr/bin/env node|${prefix}/bin/node|" ${worksrcpath}/tools/doc/node_modules/marked/bin/marked
+}
+
+configure.args          --without-ssl
+configure.args-append   --without-npm
+
+variant python25 conflicts python26 python27 description {Use python 2.5} {
+    depends_lib-append  port:python25
+    configure.python    ${prefix}/bin/python2.5
+}
+
+variant python26 conflicts python25 python27 description {Use python 2.6} {
+    depends_lib-append  port:python26
+    configure.python    ${prefix}/bin/python2.6
+}
+
+variant python27 conflicts python25 python26 description {Use python 2.7} {
+    depends_lib-append  port:python27
+    configure.python    ${prefix}/bin/python2.7
+}
+
+if {![variant_isset python25] && ![variant_isset python26]} {
+    default_variants +python27
+}
+
+variant ssl description {Add secure socket layer support} {
+    depends_build-append    port:pkgconfig
+    depends_lib-append      port:openssl
+    configure.args-delete   --without-ssl
+    configure.args-append   --openssl-use-sys
+    configure.args-append   --openssl-includes=${prefix}/include/openssl
+    configure.args-append   --openssl-libpath=${prefix}/lib
+}
+
+default_variants        +ssl
+
+# V8 only supports ARM and IA-32 processors
+supported_archs         i386 x86_64
+
+universal_variant       no
+
+# "V8 doesn't like cache."
+configure.ccache        no
+
+test.run                yes
+
+use_parallel_build      no
+
+switch $build_arch {
+    i386 {
+        configure.args-append   --dest-cpu=ia32
+    }
+    x86_64 {
+        configure.args-append   --dest-cpu=x64
+    }
+}
+
+build.args-append   CC=${configure.cc} \
+                    CXX=${configure.cxx} \
+                    CPP=${configure.cpp} \
+                    CFLAGS=${configure.cflags} \
+                    CXXFLAGS=${configure.cxxflags} \
+                    LDFLAGS=${configure.ldflags} \
+                    PYTHON=${configure.python} \
+                    V=1
+
+destroot {
+    set bindir ${destroot}${prefix}/bin
+    set libdir ${destroot}${prefix}/lib
+    set libndir ${libdir}/node
+    set libddir ${libdir}/dtrace
+    set incdir ${destroot}${prefix}/include/node
+    set incpdir ${destroot}${prefix}/include/node/uv-private
+    set docdir ${destroot}${prefix}/share/doc/${name}
+
+    xinstall -d ${bindir}
+    xinstall -d ${libdir}
+    xinstall -d ${libndir}
+    xinstall -d ${libddir}
+    xinstall -d ${incdir}
+    xinstall -d ${incpdir}
+    xinstall -d ${docdir}
+
+# install binaries
+    xinstall -m 755 -W ${worksrcpath} \
+        out/Release/node \
+        ${bindir}
+
+# install headers
+    xinstall -m 644 -W ${worksrcpath} \
+        src/node.h \
+        src/node_buffer.h \
+        src/node_object_wrap.h \
+        src/node_version.h \
+        src/ev-emul.h \
+        src/eio-emul.h \
+        deps/v8/include/v8-debug.h \
+        deps/v8/include/v8-preparser.h \
+        deps/v8/include/v8-profiler.h \
+        deps/v8/include/v8-testing.h \
+        deps/v8/include/v8.h \
+        deps/v8/include/v8stdint.h \
+        deps/uv/include/uv.h \
+        deps/cares/include/ares.h \
+        deps/cares/include/ares_version.h \
+        ${incdir}
+
+# install privat uv headers
+    xinstall -m 644 -W ${worksrcpath} \
+        deps/uv/include/uv-private/eio.h \
+        deps/uv/include/uv-private/ev.h \
+        deps/uv/include/uv-private/ngx-queue.h \
+        deps/uv/include/uv-private/tree.h \
+        deps/uv/include/uv-private/uv-unix.h \
+        deps/uv/include/uv-private/uv-win.h \
+        ${incpdir}
+
+# install dtrace script
+    xinstall -m 644 -W ${worksrcpath} \
+        src/node.d \
+        ${libddir}
+
+# install manpage
+    xinstall -m 644 -W ${worksrcpath} \
+        doc/node.1 \
+        ${destroot}${prefix}/share/man/man1
+
+# install docs
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS \
+        ChangeLog \
+        LICENSE \
+        README.md \
+        ${docdir}
+}
+
+if {${os.major} < 10} {
+    pre-fetch {
+        ui_error "${name} ${version} requires Mac OS X 10.6 or greater."
+        return -code error "incompatible Mac OS X version"
+    }
+}
+
+livecheck.url       ${homepage}dist/
+livecheck.type      regex
+livecheck.regex     v(\\d+\\.\[13579\]+\\.\\d+)

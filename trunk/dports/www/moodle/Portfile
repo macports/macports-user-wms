@@ -1,0 +1,70 @@
+# $Id$
+
+PortSystem              1.0
+
+name                    moodle
+version                 1.9.9
+revision                1
+set branch              [join [lrange [split ${version} .] 0 1] {}]
+categories              www
+platforms               darwin freebsd
+maintainers             nomaintainer
+license                 GPL-2
+supported_archs         noarch
+homepage                http://moodle.org/
+master_sites            http://download.moodle.org/stable${branch}
+extract.suffix          .tgz
+worksrcdir              ${name}
+
+description             Course management system based on social constructionism
+
+long_description        Moodle is a course management system (CMS) - a free, Open Source software \
+                        package designed using sound pedagogical principles, to help educators \
+                        create effective online learning communities. You can use it on any \
+                        computer you have handy (including webhosts), yet it can scale from a \
+                        single-teacher site to a 40,000-student University.
+
+checksums               md5     f47d350b0b337b3057da550ea88f8695 \
+                        sha1    936eaa405cef8722c31f6a0a385fee7fa9999919 \
+                        rmd160  a44406d71829c88d5ad21a3368b62c76c420c7e7
+
+depends_lib             port:php5-web
+
+depends_run             path:bin/latex:texlive-latex \
+                        path:bin/dvips:texlive-bin \
+                        path:bin/convert:ImageMagick
+
+post-extract {
+    # Remove pre-compiled binaries of mimetex; if mimetex is desired, make a port for it.
+    foreach f {mimetex.darwin mimetex.exe mimetex.freebsd mimetex.linux} {
+        delete ${worksrcpath}/filter/tex/${f}
+    }
+}
+
+patchfiles              patch-prefix.diff
+post-patch {
+    reinplace "s|@PREFIX@|${prefix}|g" ${worksrcpath}/filter/tex/filtersettings.php
+}
+
+use_configure           no
+build                   {}
+
+destroot {
+    file copy ${worksrcpath} ${destroot}${prefix}/www/moodle
+}
+
+variant mysql description {Use MySQL} {
+    depends_lib-append  port:php5-mysql
+}
+
+variant postgresql description {Use PostgreSQL} {
+    depends_lib-append  port:php5-postgresql
+}
+
+if {![variant_isset mysql] && ![variant_isset postgresql]} {
+    default_variants    +mysql
+}
+
+livecheck.type          regex
+livecheck.url           http://download.moodle.org/
+livecheck.regex         ${name}-(\[0-9.\]+)\\${extract.suffix}

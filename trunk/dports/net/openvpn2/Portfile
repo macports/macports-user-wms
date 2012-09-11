@@ -1,0 +1,50 @@
+# $Id$
+
+PortSystem 1.0
+
+name		openvpn2
+version		2.2.1
+distname	openvpn-${version}
+categories	net security
+platforms	darwin
+maintainers	nomaintainer
+
+description	easy-to-use, robust, and highly configurable VPN
+long_description	OpenVPN is an easy-to-use, robust, and highly \
+			configurable VPN (Virtual Private Network) daemon \
+			which can be used to securely link two or more \
+			private networks using an encrypted tunnel over \
+			the internet.
+
+homepage	http://www.openvpn.net
+master_sites        http://swupdate.openvpn.net/community/releases/
+
+checksums           rmd160  115ff6ac548014d38da9e21bbb91103bcbb0cd09 \
+                    sha256  a860858cc92d4573399bb2ff17ac62d9b4b8939e6af0b8cc69150ba39d6e94e0
+
+depends_lib	port:lzo2 port:openssl
+
+patchfiles	patch-syshead.h.diff
+
+configure.args	--mandir=${prefix}/share/man \
+		--with-lzo-headers=${prefix}/include \
+		--with-lzo-lib=${prefix}/lib \
+		--with-ssl-headers=${prefix}/include \
+		--with-ssl-lib=${prefix}/lib \
+		--program-suffix=2
+
+post-destroot {
+	set docdir ${destroot}${prefix}/share/doc/${name}
+	xinstall -m 755 -d ${docdir}
+	foreach dir "easy-rsa sample-config-files sample-scripts \
+		contrib sample-keys"  {
+		file copy ${worksrcpath}/${dir} ${docdir}
+	}
+	foreach file "AUTHORS COPYING NEWS PORTS README" {
+		xinstall -m 644 -W ${worksrcpath} ${file} ${docdir}
+	}
+	xinstall -m 644 ${worksrcpath}/openvpn-plugin.h ${destroot}${prefix}/include
+}
+
+livecheck.url	${homepage}/download.html
+livecheck.regex	openvpn-(\[0-9.\]*).tar.gz

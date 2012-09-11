@@ -1,0 +1,25 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                qore-oracle-module
+version             2.1
+use_bzip2           yes
+categories          lang
+license             LGPL-2.1
+maintainers         davidnichols
+description         Oracle module for Qore
+long_description    Module allowing communication with Oracle DBs from the Qore Programming Language
+homepage            http://qore.org
+platforms           darwin
+master_sites        sourceforge:qore
+
+checksums           md5     39205c5e928b6d6e319a7f361908437d \
+                    sha1    aed78f9dfd488e558a607211dbfdd2cdb298302c \
+                    rmd160  5b3a2ec8796a1e8e882813da34e9b0d851a93307
+
+depends_lib         port:qore \
+                    port:oracle-instantclient
+
+configure.args      --disable-debug

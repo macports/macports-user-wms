@@ -1,0 +1,59 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    libkml
+version                 1.2.0
+maintainers             ryandesign
+license                 BSD
+platforms               darwin
+categories              gis
+
+description             library to parse, generate and operate on KML
+
+long_description        ${name} is Google's library for use with applications \
+                        that want to parse, generate and operate on KML. It \
+                        is an implementation of the OGC KML 2.2 standard.
+
+homepage                http://code.google.com/p/libkml/
+master_sites            googlecode
+
+checksums               md5     25d534437f971bf55a945608e39fea79 \
+                        sha1    3fa5acdc2b2185d7f0316d205002b7162f079894 \
+                        rmd160  f73ed3ce47d38c5d45bd04c9498a847b24c572da
+
+# Not sure what needs cURL, but the configure script looks for it
+depends_build-append    port:curl
+
+depends_lib-append      port:expat \
+                        port:zlib
+
+post-patch {
+    # Fix build with clang
+    fs-traverse f ${worksrcpath} {
+        switch [file tail ${f}] {
+            Makefile.in {
+                reinplace "s| -Werror||g" ${f}
+            }
+        }
+    }
+}
+
+# Otherwise SWIG will be used if it's installed
+configure.args-append   --disable-swig
+
+test.run                yes
+test.target             check
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    xinstall -W ${worksrcpath} -m 644 \
+        AUTHORS \
+        COPYING \
+        ChangeLog \
+        NEWS \
+        README \
+        ${docdir}
+}

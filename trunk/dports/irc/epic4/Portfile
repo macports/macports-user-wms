@@ -1,0 +1,37 @@
+# $Id$
+
+PortSystem 1.0
+name             epic4
+version          2.10.1
+revision        1
+categories       irc
+maintainers      toby
+description      The (E)nhanced (P)rogrammable (I)RC-II (C)lient
+homepage         http://www.epicsol.org/
+platforms        darwin freebsd
+long_description \
+    EPIC4 is a new direction in ircII development. No \
+    longer is EPIC 100% backwards compatible with ircII, \
+    but instead those things where compatibility is \
+    undesirable have been found and fixed. No gratuitous \
+    incompatibilities have been added, but lots of new \
+    code has been added to make EPIC the best ircII client \
+    available.
+license          BSD
+
+master_sites     ftp://ftp.epicsol.org/pub/epic/EPIC4-PRODUCTION/
+use_bzip2        yes
+
+checksums        md5 f0520cdf58a0f8be1237d0db612d30fe \
+                 sha1 038d0e11ee6bd8085dc46d531296d581cc7fc311 \
+                 rmd160 3d7ccbac3776eaccfb1bff7eae5bf6d1db0657ee
+
+configure.args   --mandir=${prefix}/share/man
+
+destroot.destdir IP=${destroot}
+
+depends_lib      port:openssl port:ncurses
+
+livecheck.type   regex
+livecheck.url    ${master_sites}
+livecheck.regex  ${name}-(\[0-9\\.\]+)\\.tar

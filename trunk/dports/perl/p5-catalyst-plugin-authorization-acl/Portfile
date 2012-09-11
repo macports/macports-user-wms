@@ -1,0 +1,34 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           Catalyst-Plugin-Authorization-ACL 0.15
+revision              3
+maintainers           nomaintainer
+description           ACL support for Catalyst applications.
+long_description      This module provides Access Control List style \
+                      path protection, with arbitrary rules for Catalyst applications.
+
+platforms             darwin
+
+checksums             md5 653a88331431ad2644999d8995f18fbf \
+                      sha1 4b4bb17cf942d838aa97085f5641be913492b23d \
+                      rmd160 f4a401b8f1bc8164dd9596ee23191037301d3f1b
+
+if {${perl5.major} != ""} {
+    depends_lib-append    port:p${perl5.major}-catalyst-runtime \
+                          port:p${perl5.major}-class-data-inheritable \
+                          port:p${perl5.major}-class-throwable \
+                          port:p${perl5.major}-mro-compat \
+                          port:p${perl5.major}-tree-simple-visitorfactory \
+                          port:p${perl5.major}-catalyst-plugin-authorization-roles \
+                          port:p${perl5.major}-catalyst-plugin-session-state-cookie \
+                          port:p${perl5.major}-namespace-autoclean \
+                          port:p${perl5.major}-catalyst-plugin-session \
+                          port:p${perl5.major}-catalyst-plugin-authentication \
+                          port:p${perl5.major}-tree-simple \
+                          port:p${perl5.major}-moose \
+                          port:p${perl5.major}-test-www-mechanize-catalyst
+}

@@ -1,0 +1,49 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-gdal
+version             1.8.1
+license             MIT
+maintainers         and.damore openmaintainer
+description         GDAL: Geospatial Data Abstraction Library
+long_description \
+    This Python package and extensions are a number of tools for programming \
+    and manipulating the GDAL Geospatial Data Abstraction Library.
+platforms           darwin
+homepage            http://www.gdal.org
+master_sites        http://pypi.python.org/packages/source/G/GDAL/
+distname            GDAL-${version}
+checksums           md5     cab9540923a71f448aeb0ef588e462ce \
+                    sha1    f76ec50adbb74924aa6699397688d8124d73f1e4 \
+                    rmd160  47c6be95e0407e1b72272b9f505c868aa3bea93c
+
+#set python.prefix   ${frameworks_dir}/Python.framework/Versions/${python.branch}
+python.versions     24 25 26 27 
+
+if {$subport != $name} {
+    depends_lib-append     port:gdal \
+                           port:py${python.version}-numpy
+    patch {
+        reinplace "s|../../apps/|${prefix}/bin/|" ${worksrcpath}/setup.cfg
+    }
+    
+    post-destroot {
+        xinstall -m 755 -d ${destroot}${prefix}/share/doc/${subport}
+        xinstall -m 755 -d ${destroot}${prefix}/share/examples/${subport}
+        xinstall -m 755 -d ${destroot}${prefix}/share/examples/${subport}/scripts
+    
+        xinstall -W ${worksrcpath} README.txt PKG-INFO \
+            ${destroot}${prefix}/share/doc/${subport}
+    
+        xinstall -m 644 ${worksrcpath}/samples/README \
+            ${destroot}${prefix}/share/examples/${subport}/
+        eval xinstall -m 755 [glob ${worksrcpath}/samples/*.py] \
+            ${destroot}${prefix}/share/examples/${subport}/
+        eval xinstall -m 755 [glob ${worksrcpath}/scripts/*.py] \
+            ${destroot}${prefix}/share/examples/${subport}/scripts
+        eval xinstall -m 644 [glob ${worksrcpath}/scripts/*.dox] \
+            ${destroot}${prefix}/share/examples/${subport}/scripts
+    }
+}

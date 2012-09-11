@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+
+name            gnome-icon-theme
+version         2.30.3
+set branch      [join [lrange [split ${version} .] 0 1] .]
+maintainers     nomaintainer
+categories      gnome
+platforms       darwin
+license         GPL-2
+description     A collection of icons for the GNOME 2 desktop.
+
+long_description \
+    gnome-icon-theme is a collection of icons and \
+    emblems for the GNOME 2 desktop.
+
+homepage        http://www.gnome.org/
+master_sites    gnome:sources/${name}/${branch}/
+
+checksums       md5     77d272e4220c75588418d9bec31eae24 \
+                sha1    41c2c43480376f784f21487727e6c726ed60addf \
+                rmd160  ffdd45c00ddff4854a4b979c539d9f12ed2dff6f
+
+depends_build \
+    port:intltool \
+    port:pkgconfig \
+    port:libiconv \
+    port:hicolor-icon-theme \
+    port:icon-naming-utils \
+    
+use_bzip2       yes
+
+supported_archs noarch
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

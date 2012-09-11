@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		Test-Expect 0.30
+revision        3
+maintainers		nomaintainer
+description		Automated driving and testing of terminal-based programs.
+long_description	${description}
+checksums		md5 b22cb4575d910bb2d36e506a958da300
+platforms		darwin
+
+supported_archs noarch

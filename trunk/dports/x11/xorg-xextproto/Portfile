@@ -1,0 +1,54 @@
+# $Id$
+PortSystem 1.0
+
+name		xorg-xextproto
+version		7.2.1
+categories	x11 devel
+license		X11
+maintainers	jeremyhu openmaintainer
+description	X.org xextproto
+homepage	http://www.x.org
+platforms	darwin
+supported_archs	noarch
+long_description Prototype headers for Xext
+master_sites 	xorg:individual/proto/
+distname	xextproto-${version}
+use_bzip2	yes
+
+checksums           sha1    f969e02009adf2d51fd1ba4583a859984728a461 \
+                    rmd160  bd57600da0f561d8e7eb70fc7916407b00cd8d4b \
+                    sha256  7c53b105407ef3b2eb180a361bd672c1814524a600166a0a7dbbe76b97556d1a
+
+configure.args \
+	--without-xmlto \
+	--without-fop \
+	--disable-specs
+
+build.args V=1
+
+# Depending on ghostscript for the PDF documentation creates a dependency
+# loop, so you may want to install first without the docs variant
+variant docs description "Install extra documentation" {
+	depends_build-append \
+		port:xmlto \
+		port:fop \
+		port:xorg-sgml-doctools
+
+	configure.args-delete \
+		--without-xmlto \
+		--without-fop \
+		--disable-specs
+
+	configure.args-append \
+		--with-xmlto \
+		--with-fop \
+		--enable-specs
+
+	configure.env-append \
+		FOP="${prefix}/bin/fop" \
+		XMLTO="${prefix}/bin/xmlto"
+}
+
+livecheck.type  regex
+livecheck.url   http://xorg.freedesktop.org/archive/individual/proto/?C=M&O=D
+livecheck.regex xextproto-(\\d+(?:\\.\\d+)*)

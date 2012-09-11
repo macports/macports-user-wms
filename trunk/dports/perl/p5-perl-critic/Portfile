@@ -1,0 +1,40 @@
+# $Id$
+
+PortSystem                1.0
+PortGroup                 perl5 1.0
+
+epoch                     1
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup               Perl-Critic 1.106
+revision                  3
+license                   {Artistic-1 GPL}
+maintainers               nomaintainer
+description               Critique Perl source code for best-practices.
+long_description          ${description}
+
+platforms                 darwin
+
+checksums                 md5 e2a24627d6c152ec0b4156132b739694 \
+                          sha1 571f97eed9436cfbd4d2bfee3677844eac11f42f \
+                          rmd160 2121b9bf64d1d19ecc0290c036fb44867b166777
+
+if {${perl5.major} != ""} {
+depends_lib-append        port:p${perl5.major}-b-keywords \
+                          port:p${perl5.major}-config-tiny \
+                          port:p${perl5.major}-exception-class \
+                          port:p${perl5.major}-io-string \
+                          port:p${perl5.major}-list-moreutils \
+                          port:p${perl5.major}-module-pluggable \
+                          port:p${perl5.major}-ppi \
+                          port:p${perl5.major}-string-format \
+                          port:p${perl5.major}-version \
+                          port:p${perl5.major}-file-homedir \
+                          port:p${perl5.major}-file-which \
+                          port:p${perl5.major}-perl-tidy \
+                          port:p${perl5.major}-pod-spell \
+                          port:p${perl5.major}-readonly \
+                          port:p${perl5.major}-regexp-parser \
+                          port:p${perl5.major}-readonly-xs
+
+perl5.use_module_build
+}

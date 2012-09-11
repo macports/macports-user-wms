@@ -1,0 +1,109 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+PortGroup               archcheck 1.0
+
+name		pgAdmin3
+version		1.14.3
+license     PostgreSQL
+
+categories	aqua
+maintainers	jwa
+
+description	An administration program to PostgreSQL
+long_description pgAdmin III is a powerful administration and development \
+    platform for the PostgreSQL database, free for any use. The \
+    application works on several platforms, e.g. GNU/Linux, FreeBSD, \
+    OS X and Windows 2000/XP. This port is for OS X.
+
+platforms	macosx
+homepage	http://www.pgadmin.org/
+
+master_sites	http://developer.pgadmin.org/ftp/release/v${version}/src/ \
+    http://www.postgresql.org/ftp/pgadmin3/release/v${version}/src/ \
+			postgresql:pgadmin3/release/v${version}/src/
+
+distname	pgadmin3-${version}
+
+checksums           rmd160  e7846f76c54a935ba1395265f0c2de265c199c45 \
+                    sha256  00724a88b9f9f6ded24c98052053aef9b09a6a51816fbe9809f398307de12dd7
+
+depends_lib	port:postgresql91 \
+    port:wxWidgets \
+    port:openssl \
+    port:libxml2 \
+    port:libxslt
+
+archcheck.files lib/postgresql91/libpq.dylib \
+    lib/libwx_macu_gl-2.8.dylib
+#    lib/libwx_osx_cocoau_gl-2.9.dylib
+
+configure.args	--with-pgsql=${prefix}/lib/postgresql91 \
+    --with-wx=${prefix} \
+    --with-wx-version=2.8 \
+    --with-libxml2=${prefix} \
+    --with-libxslt=${prefix} \
+    --enable-appbundle
+
+use_parallel_build	no
+build.target	all install
+
+supported_archs	i386 ppc
+
+# wxWidgets is not universal
+universal_variant no
+
+#destroot.violate_mtree	yes
+destroot {
+    xinstall -d -m 0755 ${destroot}${applications_dir}
+    file copy ${worksrcpath}/${name}.app ${destroot}${applications_dir}/${name}.app
+}
+
+variant with_postgresql82 conflicts with_postgresql83 with_postgresql84 with_postgresql90 \
+    description {support for PostgreSQL 8.2.x} {
+        archcheck.files-delete lib/postgresql91/libpq.dylib
+        archcheck.files-append lib/postgresql82/libpq.dylib
+	depends_lib-delete	port:postgresql91
+	depends_lib-delete	--with-pgsql=${prefix}/lib/postgresql91
+	depends_lib-append	port:postgresql82
+	configure.args-append	--with-pgsql=${prefix}/lib/postgresql82
+}
+
+variant with_postgresql83 conflicts with_postgresql82 with_postgresql84 with_postgresql90 \
+    description {support for PostgreSQL 8.3.x} {
+        archcheck.files-delete lib/postgresql91/libpq.dylib
+        archcheck.files-append lib/postgresql83/libpq.dylib
+	depends_lib-delete	port:postgresql91
+	depends_lib-delete	--with-pgsql=${prefix}/lib/postgresql91
+	depends_lib-append	port:postgresql83
+	configure.args-append	--with-pgsql=${prefix}/lib/postgresql83
+}
+
+variant with_postgresql84 conflicts with_postgresql82 with_postgresql83 with_postgresql90 \
+    description {support for PostgreSQL 8.4.x} {
+        archcheck.files-delete lib/postgresql91/libpq.dylib
+        archcheck.files-append lib/postgresql84/libpq.dylib
+	depends_lib-delete	port:postgresql91
+	depends_lib-delete	--with-pgsql=${prefix}/lib/postgresql91
+	depends_lib-append	port:postgresql84
+	configure.args-append	--with-pgsql=${prefix}/lib/postgresql84
+}
+
+variant with_postgresql90 conflicts with_postgresql82 with_postgresql83 with_postgresql84 \
+    description {support for PostgreSQL 9.0.x} {
+        archcheck.files-delete lib/postgresql91/libpq.dylib
+        archcheck.files-append lib/postgresql90/libpq.dylib
+	depends_lib-delete	port:postgresql91
+	depends_lib-delete	--with-pgsql=${prefix}/lib/postgresql91
+	depends_lib-append	port:postgresql90
+	configure.args-append	--with-pgsql=${prefix}/lib/postgresql90
+}
+
+variant debug description {provide a debug build in case of difficulties} {
+    configure.args-append	--enable-debug
+}
+
+livecheck.type	regex
+livecheck.url	${homepage}
+livecheck.regex	pgAdmin v(1\\.\[0-9\]+\\.\[0-9\]+)

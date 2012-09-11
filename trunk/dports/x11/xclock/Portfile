@@ -1,0 +1,31 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xclock
+version             1.0.6
+categories          x11
+maintainers         jeremyhu openmaintainer
+description         Analog/digital clock for X11
+long_description \
+   The xclock program displays the time in analog or digital form.  The time \
+   is continuously updated at a frequency which may be specified by the user.
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           sha1    993817c9e3cc2baaaebe52b29fa2ad26e58b124d \
+                    rmd160  ebdba0264b66bee85a73d1ee41bc6f7f5ff3edd0 \
+                    sha256  21bb6f57b0a158c05a47558302321c4764a8d2e1b8e5d4ad23e3809b4cee3fd0
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libXaw port:Xft2 \
+                    port:xorg-libxkbfile
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

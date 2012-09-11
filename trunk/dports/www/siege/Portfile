@@ -1,0 +1,55 @@
+# $Id$
+
+PortSystem       1.0
+
+name             siege
+version          2.70
+categories       www benchmarks
+maintainers      nomaintainer
+description      http regression testing and benchmarking utility
+long_description \
+    Siege is an http regression testing and benchmarking utility. \
+    It was designed to let web developers measure the performance \
+    of their code under duress, to see how it will stand up to \
+    load on the internet. It lets the user hit a web server with \
+    a configurable number of concurrent simulated users.
+homepage         http://www.joedog.org/index/siege-home
+platforms        darwin
+master_sites     http://www.joedog.org/pub/siege/ \
+                 ftp://sid.joedog.org/pub/siege/ \
+                 ftp://ftp.joedog.org/pub/siege/
+
+checksums        sha1    ee0a0c3a9e6559cf8cbaf717649f6684b0d9643a \
+                 rmd160  3c3e780ece92ee4b5b98d490347cdf612371536b
+
+depends_lib      port:openssl
+configure.args   --mandir=${prefix}/share/man \
+                 --with-ssl=${prefix}
+
+# broken ftp server
+fetch.use_epsv   yes
+
+pre-configure {
+    # prevent installation of .siegerc in $HOME, use `siege.config` for this:
+    reinplace {s|$(INSTALL_DATA) $(srcdir)/siegerc $(SIEGERC);|echo "";|g} \
+        ${worksrcpath}/doc/Makefile.in
+    # ensure urls.txt is installed in ${destroot}:
+    reinplace "s|@sysconfdir@|${destroot}@sysconfdir@|g" \
+        ${worksrcpath}/doc/Makefile.in
+}
+
+set docdir ${prefix}/share/doc/${name}
+
+post-destroot {
+    # copy an example siegerc to ${prefix}share/doc so an updater can see
+    # possible changes to siegerc:
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 ${worksrcpath}/doc/siegerc ${destroot}${docdir}
+}
+
+notes "
+To use siege you have to run 'siege.config'. This generates a default\
+configuration file.
+If you are updating have a look at a possible new '.siegrc' file in\
+${docdir}/siegerc.
+"

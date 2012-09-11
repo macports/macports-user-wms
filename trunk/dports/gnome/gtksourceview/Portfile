@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+
+name            gtksourceview
+version         1.8.5
+revision        3
+set branch      [join [lrange [split ${version} .] 0 1] .]
+maintainers     nomaintainer
+categories      gnome
+license         GPL-2+
+platforms       darwin 
+description     GtkSourceView is a text widget
+
+long_description \
+    GtkSourceView is a text widget that extends the standard gtk+ 2.x \
+    text widget GtkTextView. It improves GtkTextView by implementing \
+    syntax highlighting and other features typical of a source editor.
+
+homepage        http://projects.gnome.org/gtksourceview/ 
+master_sites    gnome:sources/${name}/${branch}/
+use_bzip2       yes
+
+checksums       md5 de67df2944c1cccbc2d0b4a738e11050 \
+                sha1 4e61b6cda043c44dc918edecd2bd9ccfc5438d2c \
+                rmd160 978c59d5f99baeb5d8b9c3c14246ffc48ce150f8
+
+depends_build   port:intltool \
+                port:pkgconfig
+
+depends_lib     port:gtk2 \
+                port:gnome-vfs \
+                port:libxml2 \
+                port:libgnomeprint \
+                port:libgnomeprintui \
+                port:gettext \
+                port:gnuregex
+
+patchfiles      patch-glib-2.32.diff patch-gtksourceregex.c.diff
+
+configure.args  --enable-gnuregex
+
+configure.cppflags-append   -L${prefix}/lib
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

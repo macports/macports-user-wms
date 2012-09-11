@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4 1.1
+
+name                qjson
+version             0.7.1
+revision            1
+categories          devel kde4 kde
+maintainers         snc openmaintainer
+license             LGPL-2.1
+description         map JSON data to QVariant objects
+long_description    QJson is a qt-based library that maps JSON data to QVariant objects.
+
+homepage            http://gitorious.org/qjson/
+master_sites        sourceforge
+use_bzip2           yes
+platforms           darwin
+
+checksums           rmd160  9b333dda51c70a8994d3203b238fe33ec3281af5 \
+                    sha256  3b8e94345fe846171c4b4d7d3518891d5fc864fda1e0c10d935bdb77bd3db994
+
+worksrcdir          ${name}

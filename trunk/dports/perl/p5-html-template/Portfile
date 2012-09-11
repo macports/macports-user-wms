@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         HTML-Template 2.9
+revision            3
+categories          perl textproc
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Perl module to use HTML Templates from CGI scripts
+long_description    HTML::Template - Perl module to use HTML Templates \
+                    from CGI scripts
+
+platforms           darwin
+
+checksums           md5 cbf88a486b36284be55765ac7357c187
+
+supported_archs noarch

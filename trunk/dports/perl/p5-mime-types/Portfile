@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         MIME-Types 1.26
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Definition of MIME types
+long_description    ${description}
+
+platforms           darwin
+
+checksums           md5 c270cea5f387212c12bae0a72e4da1ab \
+                    sha1 396d98d55f728833505c658f8c0594278e05abe5 \
+                    rmd160 edae41fdeca8740f7584fc8a1801365ac5ab4e42
+
+supported_archs noarch

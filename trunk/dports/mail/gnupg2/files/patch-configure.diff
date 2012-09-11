@@ -1,0 +1,11 @@
+--- configure.orig	2012-03-27 03:22:50.000000000 -0500
++++ configure	2012-05-27 02:11:40.000000000 -0500
+@@ -558,7 +558,7 @@
+ MAKEFLAGS=
+ 
+ # Identity of this package.
+-PACKAGE_NAME='gnupg'
++PACKAGE_NAME='gnupg2'
+ PACKAGE_TARNAME='gnupg'
+ PACKAGE_VERSION='2.0.19'
+ PACKAGE_STRING='gnupg 2.0.19'

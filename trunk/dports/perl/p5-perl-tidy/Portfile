@@ -1,0 +1,23 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Perl-Tidy 20101217
+revision            3
+license             GPL-2+
+maintainers         nomaintainer
+description         Parses and beautifies perl source
+long_description    Perltidy reads a perl script and writes an indented, \
+                    reformatted script. \
+                    Perltidy can produce output on either of two modes, \
+                    depending on the existence of an -html flag. Without \
+                    this flag, the output is passed through a formatter.
+
+platforms           darwin
+
+checksums           sha1    d9efd9bd29403fcda7d6f1667b0b0bdd62d8d744 \
+                    rmd160  bd28763749424456598135e877890c97fdf594cc
+
+supported_archs noarch

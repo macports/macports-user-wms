@@ -1,0 +1,30 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup ocaml 1.0
+
+name                ocaml-comparelib
+version             108.00.02
+revision            1
+categories          devel ml
+platforms           darwin
+license             LGPL-2.1
+maintainers         mww openmaintainer
+description         Syntax extension for deriving "compare" functions automatically
+long_description    ${description}
+
+homepage            https://ocaml.janestreet.com/code
+master_sites        https://ocaml.janestreet.com/ocaml-core/${version}/individual/
+distname            comparelib-${version}
+
+checksums           rmd160  44a089d22f7cfbbb7214a30b9a5eb64ac601434c \
+                    sha256  2cdfeed2c0783e50a1031c3d10d7dd3414c968995155fd4ec66a8ea24fba39b1
+
+depends_lib         port:ocaml port:ocaml-findlib port:ocaml-type-conv
+
+use_oasis           yes
+
+livecheck.type      regex
+livecheck.url       https://ocaml.janestreet.com/ocaml-core/
+livecheck.regex     (\[0-9\]+\\\.\[0-9\\\.\]+)
+

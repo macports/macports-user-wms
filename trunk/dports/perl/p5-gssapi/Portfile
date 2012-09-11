@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem              1.0
+PortGroup               perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup             GSSAPI 0.28 ../by-authors/id/A/AG/AGROLMS/
+revision                2
+platforms               darwin
+maintainers             l2g openmaintainer
+license                 Artistic GPL
+description             Perl extension providing access to the GSSAPIv2 library.
+
+long_description        This module gives access to the routines of the \
+                        GSSAPI library, as described in rfc2743 and rfc2744 \
+                        and implemented by the Kerberos-1.2 distribution \
+                        from MIT.
+
+checksums               sha1    c857485532e92e266a75b56ed247284f94b2d3d4 \
+                        rmd160  849d01d39851ec2726559d4f2b92832758a333ad

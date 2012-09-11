@@ -1,0 +1,26 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                kdegraphics-thumbnailers
+version             4.8.3
+categories          kde kde4
+license             GPL-2+ LGPL-2+
+maintainers         nicos openmaintainer
+description         Component of kdegraphics.
+long_description    ${description}
+platforms           darwin
+homepage            http://www.kde.org/
+master_sites        kde:stable/${version}/src/
+use_xz              yes
+distname            kdegraphics-thumbnailers-${version}
+checksums           rmd160  ff3b7102e434b29bcadc0f82b6e7ce16ef97e0a0 \
+                    sha256  b483bdeb536b3dd0cd5ddf828b96b417c11303eb7ab271392c083272404b1a9f
+
+depends_lib-append  port:kdelibs4 \
+                    port:libkexiv2 port:libkdcraw
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/latest/src/
+livecheck.regex     kdegraphics-thumbnailers-(\\d+\\.\\d+\\.\\d+)${extract.suffix}

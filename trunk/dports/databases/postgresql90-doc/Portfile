@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name			postgresql90-doc
+version			9.0.9
+categories		databases
+platforms		darwin
+maintainers		mww jwa
+license			Permissive
+description		Documentation for the postgresql database.
+long_description PostgreSQL is Object-Relational Database Management System. \
+				It supports almost all SQL constructs, including transactions, \
+				subselects, and user-defined types and functions. Write-ahead \
+				logging means increased performance while retaining data \
+				integrity. This is the documentation.
+
+homepage		http://www.postgresql.org/
+master_sites		postgresql:source/v${version}
+distname		postgresql-${version}
+
+checksums           rmd160  03cd901956c09e50e3d91f69962301d31e361391 \
+                    sha256  87417d181a0f534fa96ba1d315a62b721f5bc22b7bb70af3f674bc1a68a5da8a
+
+use_bzip2		yes
+dist_subdir		postgresql90
+
+set libdir		${prefix}/lib/postgresql90
+configure.args	--mandir=${prefix}/share/man \
+				--with-docdir=${prefix}/share/doc/postgresql90 \
+				--without-openssl \
+				--without-rendezvous \
+				--without-readline \
+				--without-zlib
+
+build.dir		${worksrcpath}/doc
+build.type		gnu
+build.target
+
+destroot.dir	${build.dir}
+
+post-destroot {
+	file rename ${destroot}${prefix}/share/doc/postgresql \
+		${destroot}${prefix}/share/doc/postgresql90
+}
+
+livecheck.type	regex
+livecheck.url	${homepage}
+livecheck.regex	(9\\.0\\.\[.0-9\]+)
+

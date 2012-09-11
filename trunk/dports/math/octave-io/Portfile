@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        io 1.0.9
+platforms           darwin
+license             GPL-2+ GPL-3+ BSD
+maintainers         nomaintainer
+description         Input/Output in external formats.
+long_description    ${description}
+
+checksums           md5     a53eb6864746d230240745a8f82c0d0b \
+                    sha1    2c9e3d9b94aba55f97d42dbf91d7d8c6b6af2f21 \
+                    rmd160  a6009ca3afe53573624348bbd8d449679badbabb

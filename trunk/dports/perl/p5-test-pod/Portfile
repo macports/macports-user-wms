@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem                1.0
+PortGroup                 perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup               Test-Pod 1.45
+revision                  2
+maintainers               nomaintainer
+license                   {Artistic GPL-2}
+supported_archs           noarch
+
+description               check for POD errors in files
+long_description          ${description}
+
+checksums                 sha1    5f44b590877a33b7b09623dded15ee9c1dae224f \
+                          rmd160  9695e51b6f1e5a79644f739582c6e6f429d32abf
+
+platforms                 darwin
+
+if {${perl5.major} != ""} {
+depends_lib-append        port:p${perl5.major}-pod-simple \
+                          port:p${perl5.major}-test-simple
+
+perl5.use_module_build
+}

@@ -1,0 +1,50 @@
+# $Id$
+
+PortSystem 1.0
+name		darcs
+version		2.4.1
+revision	1
+categories	devel haskell
+maintainers	gwright
+license		GPL-2
+platforms	darwin
+description	A distributed, interactive, smart revision control system
+long_description	\
+                David's Advanced Revision Control System is yet         \
+                another replacement for CVS. It is written in Haskell,  \
+                and has been tested on Linux and Mac OS X. Darcs        \
+                includes a cgi script, which can be used to view the    \
+                contents of your repository.
+
+homepage	http://darcs.net
+master_sites	${homepage}/releases/
+
+checksums	md5     1cfd8cad4ec09d88e081df3b56f9eca3 \
+		sha1    fa140c035514bee9531d56dde0e7ae1cb245d993 \
+		rmd160  5a909b22a1aab1f8acf07f65dfd3f5f12e6de312
+
+depends_build	port:hs-platform-mtl		\
+		port:hs-platform-html		\
+		port:hs-platform-parsec		\
+		port:hs-platform-regex-compat	\
+		port:hs-haskeline		\
+		port:hs-hashed-storage-04	\
+		port:hs-utf8-string		\
+		port:hs-zlib			\
+		port:hs-HTTP
+depends_lib	port:gmp
+
+configure       {
+                  system "cd ${worksrcpath} && runhaskell Setup configure -v --ghc --prefix=${prefix} --with-gcc=${configure.cc}"
+                }
+
+build           {
+                  system "cd ${worksrcpath} && runhaskell Setup build -v"
+                }
+
+destroot        {
+                  system "cd ${worksrcpath} && runhaskell Setup copy --copy-prefix=${destroot}${prefix}"
+                }
+
+livecheck.type  regex
+livecheck.regex "version (.+) released"

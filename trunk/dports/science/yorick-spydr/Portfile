@@ -1,0 +1,55 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+set uname           spydr
+github.setup        frigaut yorick-${uname} 0.8.2
+revision            1
+license             GPL-3+
+categories          science yorick
+platforms           darwin
+maintainers         thibaut openmaintainer
+supported_archs     noarch
+description         FITS image display and simple analysis
+long_description    Spydr (pronounced like spider) basically is an FITS \
+                    image viewer. It can work as a stand-alone \
+                    application but is best integrated in a \
+                    Yorick-based data-analysis work-flow (Yorick is an \
+                    interpreted language specialized in numerical \
+                    computations and scientific graphics). It includes \
+                    tools to zoom, produce cuts, histograms, \
+                    Gaussian/Moffat fits, PSF fits (inc. FWHM and \
+                    Strehl). Can work on single images, sequences of \
+                    images or data cubes.
+homepage            http://maumae.net/yorick/doc/plugins.php
+
+checksums           rmd160  63297f26fce89822fe99129a256c2d0bebe0b9be\
+                    sha256  d0306c0d62705f54c33f7688f416b7b32e0d7971861d674f0621b1fc59455bbd
+
+depends_lib         path:bin/yorick:yorick
+
+depends_run         port:yorick-yao \
+                    port:py27-gtk \
+                    port:zenity
+
+post-patch {
+    reinplace "s|#!/usr/bin/env python|#!${prefix}/bin/python2.7|" \
+        ${worksrcpath}/${uname}.py
+}
+
+configure.cmd       ${prefix}/bin/yorick
+configure.pre_args
+configure.args      -batch make.i
+
+build               {}
+
+post-destroot {
+    xinstall -d ${destroot}${prefix}/lib/yorick/packages/installed/
+    xinstall -m 644 ${worksrcpath}/${uname}.info \
+        ${destroot}${prefix}/lib/yorick/packages/installed/
+    xinstall -m 644 ${worksrcpath}/${uname}.1 \
+        ${destroot}${prefix}/share/man/man1/
+    ln -s ${prefix}/lib/yorick/bin/${uname} ${destroot}${prefix}/bin/
+}

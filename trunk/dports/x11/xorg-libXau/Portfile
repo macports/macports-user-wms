@@ -1,0 +1,29 @@
+# $Id$
+
+PortSystem 1.0
+
+name		xorg-libXau
+version		1.0.7
+categories	x11 devel
+license		X11
+maintainers	jeremyhu openmaintainer
+description	X.org libXau
+homepage	http://www.x.org
+platforms	darwin macosx
+long_description X Authorization Routines library
+master_sites	 xorg:individual/lib/
+
+distname	libXau-${version}
+checksums           sha1    29c47207fd246425b906f525b2220235ce4cd0f6 \
+                    rmd160  2d72bd7bb634f10a254b7b2924f2fd066381a528 \
+                    sha256  7153ba503e2362d552612d9dc2e7d7ad3106d5055e310a26ecf28addf471a489
+use_bzip2	yes
+use_parallel_build      yes
+
+depends_build   port:pkgconfig
+
+depends_lib     port:xorg-xproto
+
+livecheck.type  regex
+livecheck.url   http://xorg.freedesktop.org/archive/individual/lib/?C=M&O=D
+livecheck.regex libXau-(\\d+(?:\\.\\d+)*)

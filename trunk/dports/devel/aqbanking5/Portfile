@@ -1,0 +1,78 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem        1.0
+
+name              aqbanking5
+version           5.0.25
+# this is specific to this port and *version* for downloading it
+set release       95
+
+categories        devel net finance
+maintainers       mk dports openmaintainer
+platforms         darwin
+license           {GPL-2 GPL-3 OpenSSLException}
+
+description       a generic online banking interface
+long_description  aqbanking is a generic online banking interface mainly \
+                  supporting Home Banking Computer Interface, a standard \
+                  used for German checking accounts, but also suitable \
+                  for OFX as used in several other countries. \
+                  Note that the YellowNet backend (for Suisse Postfinance) \
+                  is not available for OS X (upstream only has a Linux binary).
+
+homepage          http://www2.aquamaniac.de/sites/aqbanking/index.php
+master_sites      http://www2.aquamaniac.de/sites/download/download.php?package=03&release=${release}&file=01&dummy=
+distname          aqbanking-${version}
+# This is only to be used in case the dist was directly created from git
+#distname          aqbanking-${version}.0-git
+
+checksums         md5     b238639962128ce25db81870f65173d9 \
+                  sha1    80314a6f6114a0a3f0062161bb38effc0f1f4b62 \
+                  rmd160  6dc5d915e3fda4e2eff7c604ee3fad7ca0e1052d
+
+conflicts         aqbanking
+
+depends_lib       port:gwenhywfar4 \
+                  port:ktoblzcheck \
+                  port:libofx \
+                  port:gmp
+
+depends_build     port:pkgconfig \
+                  port:libtool
+
+universal_variant no
+
+if {$subport == $name} {
+    conflicts-append aqbanking5-gtk
+}
+
+subport aqbanking5-gtk {
+    conflicts-append    aqbanking5
+    depends_lib-delete  port:gwenhywfar4 port:qt4-mac
+    depends_lib-append  port:gwenhywfar4-gtk
+}
+
+configure.cppflags-append "-L${prefix}/lib"
+configure.cflags-append   "-L${prefix}/lib"
+configure.ldflags-append  "-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib"
+configure.env             PKG_CONFIG=${prefix}/bin/pkg-config QTDIR=${prefix}
+configure.args-append \
+                          --enable-static \
+                          --disable-dependency-tracking \
+                          --with-backends="aqhbci aqofxconnect aqnone aqpaypal" 
+
+variant enable_local_install description "Enable local installation mode (plugins, data, locale and config are located relatively to the binary)" {
+    configure.args-append   --enable-local-install
+}
+
+variant debug description "Enable debug." {
+    configure.args-append --enable-debug
+}
+
+use_parallel_build no
+
+livecheck.type    regex
+livecheck.url     http://www2.aquamaniac.de/sites/download/packages.php?package=03&showall=1
+livecheck.regex   aqbanking-(\[0-9.\]*)\\.tar
+

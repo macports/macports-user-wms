@@ -1,0 +1,49 @@
+# $Id$
+
+PortSystem                1.0
+PortGroup                 perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup               HTML-Mason 1.45
+revision                  3
+license                   {Artistic-1 GPL}
+maintainers               nomaintainer
+description               High-performance, dynamic web site authoring system
+long_description          Mason is a tool for building, serving and managing \
+                          large web sites. Its features make it an ideal \
+                          backend for high load sites serving dynamic \
+                          content, such as online newspapers or database \
+                          driven e-commerce sites.
+
+platforms                 darwin
+
+checksums                 md5 5ad416ae8425d81dde3daf5fab913a23 \
+                          sha1 17f7bafb95f46cc872d3748bf4bb1f3a9ec349c4 \
+                          rmd160 96b84ec0488a1771a81af7ccc15470fb7456ee05
+
+if {${perl5.major} != ""} {
+depends_lib-append        port:p${perl5.major}-cache-cache \
+                          port:p${perl5.major}-class-container \
+                          port:p${perl5.major}-exception-class \
+                          port:p${perl5.major}-params-validate \
+                          port:p${perl5.major}-html-parser \
+                          port:p${perl5.major}-test-deep \
+                          port:p${perl5.major}-log-any
+
+perl5.use_module_build
+
+variant mod_perl conflicts mod_perl2 description {build with mod_perl port} {
+    depends_lib-append    port:mod_perl \
+                          port:p${perl5.major}-libapreq
+}
+
+variant mod_perl2 conflicts mod_perl description {build with mod_perl2 port} {
+    depends_lib-append    port:mod_perl2 \
+                          port:p${perl5.major}-libapreq2 \
+                          port:p${perl5.major}-cgi
+}
+
+if {![variant_isset mod_perl]} {
+    default_variants      +mod_perl2
+}
+}

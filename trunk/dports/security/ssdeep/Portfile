@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem		1.0
+
+name			ssdeep
+version			2.9
+categories		security sysutils
+license			GPL-2
+maintainers		gmail.com:jessekornblum
+description		Recursively compute fuzzy hashes on files
+long_description \
+  ssdeep is a program for computing fuzzy hashes on files. These hashes \
+  can be used for finding similar files.
+
+platforms     	  	darwin
+
+homepage		http://ssdeep.sourceforge.net/
+master_sites		sourceforge:project/ssdeep/ssdeep-${version}
+
+checksums           rmd160  88df55f99a05cfc128d5e65079547713b72e9426 \
+                    sha256  5270297d315541d188b11047fc26c1d4269ef853a0cabb0d59ee8d9a327bf8aa
+
+post-destroot {
+   xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+   xinstall -m 644 -W ${worksrcpath} AUTHORS COPYING ChangeLog FILEFORMAT \
+      NEWS README TODO ${destroot}${prefix}/share/doc/${name}
+}
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[.\\d\]+)\.tar\.gz
+livecheck.url       http://sourceforge.net/projects/${name}/files/${name}

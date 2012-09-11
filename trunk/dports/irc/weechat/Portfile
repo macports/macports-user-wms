@@ -1,0 +1,92 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name        weechat
+version     0.3.8
+revision    1
+categories  irc
+maintainers otherware.org:nefar openmaintainer
+license     GPL-3
+description Fast, light & extensible IRC client
+long_description    \
+    WeeChat (Wee Enhanced Environment for Chat) is a fast and light IRC client\
+     for many operating systems. Everything can be done with a keyboard.\
+     It is customizable and extensible with plugins/scripts, and includes:\
+      - nicklist\
+      - smart hotlist\
+      - infobar with highlight notification\
+      - horizontal and vertical split\
+      - double charset support (decode/encode)\
+      - FIFO pipe for remote control\
+      - and much more!
+homepage    http://weechat.org/
+platforms   darwin
+master_sites    ${homepage}files/src
+
+checksums           rmd160  48f7c0dd500551763fe19eaa7eef9a5990f870a9 \
+                    sha256  3cb8c88d5471e01fd74d41a2bc0845e2b2b893dd1ea887a672c2cf0a7a1a06a5
+
+depends_build   port:pkgconfig
+depends_lib port:gettext port:libiconv port:ncurses port:libgcrypt
+
+configure.args  --without-debug --disable-gnutls --disable-lua \
+        --disable-perl --disable-python --disable-ruby --disable-aspell --disable-guile
+
+use_bzip2   yes
+
+variant aspell description {Support for aspell} {
+    configure.args-delete   --disable-aspell
+    configure.args-append   --enable-aspell
+    depends_lib-append      port:aspell
+}
+
+variant lua description {Bindings for lua plugins} {
+    configure.args-delete --disable-lua
+    configure.args-append --enable-lua
+    depends_lib-append    port:lua
+}
+
+variant scheme description {Bindings for Scheme (guile) plugins} {
+    configure.args-delete --disable-guile
+    configure.args-append --enable-guile
+    depends_lib-append    port:guile
+}
+
+variant perl description {Bindings for perl plugins} {
+    configure.args-delete --disable-perl
+    configure.args-append --enable-perl
+    depends_lib-append    path:bin/perl:perl5
+}
+
+variant python description {Bindings for python plugins} {
+    configure.args-delete   --disable-python
+    configure.args-append   --enable-python
+    depends_lib-append      path:bin/python:python26
+}
+
+variant ruby description {Bindings for ruby plugins} {
+    configure.args-delete --disable-ruby
+    configure.args-append --enable-ruby
+    depends_lib-append    port:ruby
+}
+
+variant tls description {Support for secure connecting} {
+    configure.args-delete --disable-gnutls
+    configure.args-append --enable-gnutls
+    depends_lib-append    port:gnutls
+}
+
+post-destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} COPYING README AUTHORS NEWS ABOUT-NLS ChangeLog \
+        ${destroot}${prefix}/share/doc/${name}
+    eval xinstall -m 644 -W ${worksrcpath} [glob doc/en/weechat*.txt] \
+        ${destroot}${prefix}/share/doc/${name}
+
+    xinstall -m 755 ${worksrcpath}/doc/weechat-curses.1 ${destroot}${prefix}/share/man/man1
+
+    eval delete [glob -type l ${destroot}${prefix}/lib/weechat/plugins/*.so]
+}
+

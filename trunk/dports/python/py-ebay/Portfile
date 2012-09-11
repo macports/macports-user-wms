@@ -1,0 +1,36 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup python24 1.0
+
+name			py-ebay
+version			0.1.4
+revision		1
+categories		python
+platforms		darwin
+maintainers		nomaintainer
+description		Python library encapsulating the eBay API
+long_description	pyeBay is a Python library that encapsulates the eBay API. \
+					It is intended to make it very simple to create eBay \
+					applications on any platform.
+
+homepage		http://ebaydeveloper.typepad.com/pyebay.html
+master_sites	http://ebaydeveloper.typepad.com/
+distname		pyeBay-${version}
+checksums		md5 9092948a4bfdad76652bdc9d4ee0a314
+use_zip			yes
+
+worksrcdir
+
+post-extract	{
+	file rename ${workpath}/${distname} ${workpath}/eBay
+	file copy ${filespath}/setup.py ${workpath}
+	file copy ${filespath}/__init__.py ${workpath}/eBay
+	reinplace "s|__VERSION__|${version}|g" ${workpath}/eBay/__init__.py ${workpath}/setup.py
+	reinplace "s|__DOC__|${description}|g" ${workpath}/eBay/__init__.py
+}
+
+post-destroot	{
+	xinstall -m 644 -W ${workpath}/eBay LICENSE.TXT README.TXT ebay.ini \
+		${destroot}${prefix}/share/doc/${name}
+}

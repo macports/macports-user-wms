@@ -1,0 +1,73 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name		gucharmap
+version         2.30.3
+revision        4
+set branch      [join [lrange [split ${version} .] 0 1] .]
+description	gucharmap is a featureful unicode character map.
+long_description ${description}
+maintainers     devans openmaintainer
+categories      gnome
+license         GPL-2+
+platforms       darwin
+homepage        http://www.gnome.org/
+master_sites    gnome:sources/${name}/${branch}/
+
+checksums       md5     aa94a5dc04f2d38db37b3cb6f332066a \
+                sha1    ea2cc180ad6cf892a6e68fc3a0527e0ecc0eaec5 \
+                rmd160  c563a052ed400305e8dd52e98df8d87012629b83
+
+depends_build   port:pkgconfig \
+                port:intltool \
+                port:gnome-doc-utils \
+                port:gtk-doc
+
+depends_lib     port:gconf \
+                port:rarian
+
+use_bzip2       yes
+
+patchfiles      patch-configure.diff
+
+configure.args	--disable-schemas-install \
+                --disable-scrollkeeper \
+                --disable-introspection \
+                --enable-python-bindings
+
+variant python25 conflicts python26 python27 description {Use python 2.5} {
+    configure.python          ${prefix}/bin/python2.5
+    depends_lib-append        port:py25-gtk
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/2.5
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
+variant python26 conflicts python25 python27 description {Use python 2.6} {
+    configure.python          ${prefix}/bin/python2.6
+    depends_lib-append        port:py26-gtk
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/2.6
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
+variant python27 conflicts python25 python26 description {Use python 2.7} {
+    configure.python          ${prefix}/bin/python2.7
+    depends_lib-append        port:py27-gtk
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/2.7
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
+if {![variant_isset python25] && ![variant_isset python26]} {
+    default_variants +python27
+}
+
+post-activate	{
+    system "${prefix}/bin/scrollkeeper-update"
+    system "export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` && \
+        gconftool-2 --makefile-install-rule ${prefix}/etc/gconf/schemas/*.schemas"
+}
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

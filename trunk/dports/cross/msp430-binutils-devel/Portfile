@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=portfile:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           crossbinutils 1.0
+
+crossbinutils.setup msp430 2.22
+
+# Lets keep the value of $name provided by the crossbinutils PortGroup.
+set name_package    $name
+name                ${name_package}-devel
+conflicts           ${name_package}
+#Update the version.
+version             ${version}-20120716
+
+maintainers         g5pw
+
+patch_sites         sourceforge:project/mspgcc/Patches/${distname}/
+
+patchfiles          ${name_package}-${version}.patch
+
+checksums           ${name_package}-${version}.patch \
+                    rmd160  86e9f6f186e92d5a9b1f26929dad7343fdc19fa8 \
+                    sha256  f739619b76dd896ad48dfb97860a24605a3eaa4eb6e54a0dee1de7169287b97b \
+                    ${distname}${extract.suffix} \
+                    rmd160  34cebe4cdca9480d5dc6f6b00b052c48c8ac30dc \
+                    sha256  6c7af8ed1c8cf9b4b9d6e6fe09a3e1d3d479fe63984ba8b9b26bf356b6313ca9
+
+patch.pre_args      -p1
+
+configure.args-append \
+					--disable-werror

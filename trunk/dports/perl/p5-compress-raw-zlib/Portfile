@@ -1,0 +1,18 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Compress-Raw-Zlib 2.054
+revision        1
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         The Compress::Raw::Zlib module provides a Perl \
+                    interface to the zlib compression library
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  124ac3cba47159519e3ec7c93d02394854efa176 \
+                    sha256  aa29dde87b9f8ed5a9902b96dac42258a5f8ad72a0b4a136bfb5d2723a8f39ed

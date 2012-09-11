@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-translationstring
+version             1.1
+revision            0
+categories-append   devel
+license             BSD
+platforms           darwin
+supported_archs     noarch
+
+maintainers         stromnov openmaintainer
+
+description         Utility library for i18n.
+long_description    ${description}
+
+homepage            http://www.repoze.org/
+master_sites        http://pypi.python.org/packages/source/t/translationstring/
+
+distname            translationstring-${version}
+
+checksums           rmd160  96dede1205589b925e8a5d66624319850df9b739 \
+                    sha256  8147c47e8091bc7b8168758a01c049581959faba9d56cafde8734de44e98711c
+
+python.default_version  27
+python.versions     24 25 26 27 31 32
+
+if {$subport != $name} {
+    depends_build-append    port:py${python.version}-distribute
+}
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "translationstring-(\\d+(?:\\.\\d+)*)${extract.suffix}"

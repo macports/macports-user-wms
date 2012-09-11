@@ -1,0 +1,23 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         MooseX-Singleton 0.27
+revision            2
+platforms           darwin
+maintainers         l2g openmaintainer
+supported_archs     noarch
+
+description         MooseX::Singleton - turn your Moose class into a singleton
+
+long_description    ${description}
+
+checksums           sha1    7a0669a5fdbda2a98af2d01af1fdf528dd7f368b \
+                    rmd160  c75330d932928b740d6ab9e30b9a45bbae300a26
+
+if {${perl5.major} != ""} {
+depends_lib-append  port:p${perl5.major}-moose
+}

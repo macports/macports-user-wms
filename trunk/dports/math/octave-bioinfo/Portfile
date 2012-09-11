@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        bioinfo 0.1.2
+platforms           darwin
+license             GPL-2 GPL-3+
+maintainers         nomaintainer
+description         Bioinformatics manipulation
+long_description    ${description}
+
+checksums           md5     71f3319f41d2885c569c840ed137673b \
+                    sha1    cc62d0250f2f41b5f7ef3ea3095006667fe1e37f \
+                    rmd160  ef917f6190f1d57fdf72a19b9ff69147102ee6b6

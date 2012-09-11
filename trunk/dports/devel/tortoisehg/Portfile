@@ -1,0 +1,68 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           app 1.0
+
+name                tortoisehg
+version             2.1.2
+revision            1
+categories          devel python
+platforms           darwin
+license             GPL-2
+maintainers         nomaintainer
+supported_archs     noarch
+
+description         A set of graphical tools for Mercurial
+
+long_description    A set of graphical tools for the Mercurial distributed \
+                    revision control system.
+
+homepage            http://tortoisehg.bitbucket.org/
+master_sites        http://bitbucket.org/tortoisehg/targz/downloads/
+
+checksums           sha1    26d71af44a5cbd095e16d655d2874966e137e94e \
+                    rmd160  befd27d486e4f9a6840467befc65d9c52704c746
+
+python.default_version 27
+
+depends_lib         port:mercurial \
+                    port:py${python.version}-pyqt4 \
+                    port:py${python.version}-qscintilla \
+                    port:py${python.version}-iniparse
+
+depends_build       port:py${python.version}-sphinx
+
+post-extract {
+    file copy ${filespath}/config.py ${worksrcpath}/tortoisehg/util/
+}
+
+patchfiles          patch-setup.py.diff
+
+post-patch {
+    reinplace "s|{prefix}|${prefix}|" ${worksrcpath}/tortoisehg/util/config.py
+    reinplace "s|{python.prefix}|${python.prefix}|" ${worksrcpath}/tortoisehg/util/config.py
+}
+
+python.link_binaries_suffix
+
+post-destroot {
+    system "cd ${worksrcpath}/doc && make SPHINXBUILD=sphinx-build-${python.branch} html"
+    file copy ${worksrcpath}/doc/build/html ${destroot}${prefix}/share/doc/${name}/html
+
+    xinstall -m 644 -W ${worksrcpath} COPYING.txt ${destroot}${prefix}/share/doc/${name}
+}
+
+app.name            TortoiseHg
+app.executable      ${workpath}/${app.name}
+app.icon            icons/thg_logo_92x50.png
+
+platform macosx {
+    post-extract {
+        copy ${filespath}/${app.name}.in ${workpath}/${app.name}
+    }
+    post-patch {
+        reinplace "s|@PREFIX@|${prefix}|g" ${workpath}/${app.name}
+    }
+}

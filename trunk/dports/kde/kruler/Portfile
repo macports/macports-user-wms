@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                kruler
+version             4.8.3
+revision            1
+categories          kde kde4
+license             GPL-2+
+maintainers         nicos openmaintainer
+description         KRuler displays on screen a ruler measuring pixels.
+long_description    ${description} Position the 0 to your starting point \
+                    (simple drag it), and read off (top left of the ruler) the precise pixel count to your cursor.
+platforms           darwin
+homepage            http://userbase.kde.org/KRuler
+master_sites        kde:stable/${version}/src/
+use_xz              yes
+distname            kruler-${version}
+
+checksums           rmd160  58c908b6f1122dc763b8707350da95b6907b3439 \
+                    sha256  100f0e56ba1e0f597003d6caa529f19009ecc87ec64862b0673e7fccefe04809
+
+depends_lib-append  port:kdelibs4 \
+                    port:oxygen-icons
+
+if {![variant_isset docs]} {
+    patchfiles      patch-CMakeLists.txt.diff
+}
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/latest/src/
+livecheck.regex     kruler-(\\d+\\.\\d+\\.\\d+)${extract.suffix}

@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem 1.0
+
+name            iftop
+version         1.0
+distname        ${name}-${version}pre2
+categories      net
+maintainers     yeled
+description     display bandwidth usage on an interface
+long_description        iftop does for network usage what top(1) does for CPU \
+			usage. It listens to network traffic on a named \
+			interface and displays a table of current bandwidth \
+			usage by pairs of hosts. Handy for answering the \
+			question \"why is our ADSL link so slow?\".
+homepage        http://www.ex-parrot.com/~pdw/iftop/
+master_sites    http://www.ex-parrot.com/~pdw/iftop/download/
+checksums       md5 fef521a49ec0122458d02c64212af3c5
+platforms       darwin
+
+depends_lib	port:libpcap port:ncurses
+
+configure.args	--with-libpcap=${prefix} \
+                --mandir=${prefix}/share/man
+
+patchfiles	patch-configure.diff
+
+post-patch	{ reinplace {s|@@PREFIX@@|${prefix}|} ${worksrcpath}/configure }

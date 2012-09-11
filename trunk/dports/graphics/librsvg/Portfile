@@ -1,0 +1,99 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           archcheck 1.0
+
+name                librsvg
+version             2.36.3
+license             {GPL-2+ LGPL-2+}
+set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          graphics gnome
+platforms           darwin
+maintainers         pixilla openmaintainer
+description         Gnome implementation of rsvg.
+
+long_description    ${description}
+
+homepage            http://librsvg.sourceforge.net/
+master_sites        gnome:sources/${name}/${branch}/
+use_xz              yes
+
+checksums           rmd160  29285a92976e78a14a0a8603617310e57973735a \
+                    sha256  3d7d583271030e21acacc60cb6b81ee305713c9da5e98429cbd609312aea3632
+
+depends_build       port:pkgconfig
+
+depends_lib         port:libart_lgpl \
+                    path:lib/pkgconfig/cairo.pc:cairo \
+                    port:libcroco \
+                    port:fontconfig \
+                    port:freetype \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:libgsf \
+                    port:libpng \
+                    port:libxml2 \
+                    path:lib/pkgconfig/pango.pc:pango
+
+
+set pyversion 2.7
+depends_run         port:python[join [split ${pyversion} "."] ""]
+
+archcheck.files     lib/libart_lgpl_2.dylib \
+                    lib/libcairo.dylib \
+                    lib/libcroco-0.6.dylib \
+                    lib/libfontconfig.dylib \
+                    lib/libfreetype.dylib \
+                    lib/libglib-2.0.dylib \
+                    lib/libgsf-1.dylib \
+                    lib/libpango-1.0.dylib \
+                    lib/libxml2.dylib
+
+patch.pre_args      -p1
+patchfiles          patch-configure.diff
+
+configure.args      --disable-gtk-theme \
+                    --disable-gtk-doc \
+                    --disable-Bsymbolic
+
+# librsvg's build process includes the gobject-introspection Makefile, causing
+# the build to fail if not using GNU make 3.81+, #35204
+platform darwin 8 {
+    depends_build-append    port:gmake
+    build.cmd               ${prefix}/bin/gmake
+}
+
+# gobject-introspection doesn't use the right compiler
+build.args          CC="${configure.cc} ${configure.cc_archflags}"
+
+set buildpath ${worksrcpath}/macports
+post-build {
+    xinstall -d ${buildpath}
+    set fp [open ${buildpath}/svg2pdf w]
+    puts $fp "#!/bin/sh"
+    puts $fp "if \[ \$# -lt 2 -o \"\$1\" = \"-h\" -o \"\$1\" = \"--help\" \] ; then"
+    puts $fp "	echo \"FAIL: usage: \$0 input_file.svg output_file.pdf\""
+    puts $fp "	exit 255;"
+    puts $fp "fi"
+    puts $fp "rsvg-convert -f pdf -o \"\$2\" \"\$1\""
+    close $fp
+}
+
+post-destroot {
+    set python.branch ${pyversion}
+    set python.bin ${frameworks_dir}/Python.framework/Versions/${python.branch}/bin/python${python.branch}
+
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 -W ${worksrcpath} AUTHORS COPYING COPYING.LIB NEWS README \
+        ${destroot}${docdir}
+    xinstall -m 755 -W ${buildpath} svg2pdf \
+        ${destroot}${prefix}/bin
+}
+
+variant x11 conflicts quartz {}
+variant quartz conflicts x11 {}
+
+livecheck.type      regex
+livecheck.url       http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex     {LATEST-IS-(\d+(?:\.\d+)*)}

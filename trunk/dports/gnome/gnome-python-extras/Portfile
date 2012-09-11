@@ -1,0 +1,54 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem	1.0
+
+name		gnome-python-extras
+version		2.25.3
+set branch      [join [lrange [split ${version} .] 0 1] .]
+categories	gnome python
+platforms       darwin
+maintainers	landonf openmaintainer
+
+description	"Extra" Python modules for some GNOME Desktop libraries.
+long_description	${description}
+homepage	http://www.pygtk.org/
+
+master_sites	gnome:sources/${name}/${branch}
+
+checksums       md5     9f3b7ec5c57130b96061cb486b79c076 \
+                sha1    e69e5288466c960ed6f985bb10c9969b21ed85a4 \
+                rmd160  e09bc0152512e2caa61626a7dc788d7336f24e46
+
+use_bzip2	yes
+
+depends_lib	port:py25-gnome \
+		port:gdl \
+		port:libgda4 \
+		port:libgtkhtml
+
+patchfiles	patch-configure.diff \
+            patch-gdl-gdl-defs.diff \
+            patch-pygobject
+
+configure.python ${prefix}/bin/python2.5
+
+platform darwin 9 {
+    post-patch {
+        reinplace "s|-export-symbols-regex.*||g" \
+            ${worksrcpath}/egg/recent/Makefile.in \
+            ${worksrcpath}/egg/tray/Makefile.in \
+            ${worksrcpath}/gda/Makefile.in \
+            ${worksrcpath}/gdl/Makefile.in \
+            ${worksrcpath}/gksu/Makefile.in \
+            ${worksrcpath}/gksu2/Makefile.in \
+            ${worksrcpath}/gtkhtml2/Makefile.in \
+            ${worksrcpath}/gtkspell/Makefile.in
+        reinplace "s|-export-symbols-regex.*|\\\\|g" \
+            ${worksrcpath}/gtkmozembed/Makefile.in
+    }
+}
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

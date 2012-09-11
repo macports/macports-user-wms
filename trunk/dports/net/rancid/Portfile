@@ -1,0 +1,93 @@
+# $Id$
+
+PortSystem	1.0
+
+name				rancid
+version				2.3.6
+revision            1
+categories			net
+maintainers			markd openmaintainer
+platforms			darwin
+
+description			Really Awesome New Cisco confIg Differ
+
+long_description	        Rancid maintains a CVS repository of router and \
+				device config files.  It emails you when changes \
+				occur and tells you what commands were changed.
+
+homepage			http://www.shrubbery.net/rancid
+master_sites		        ftp://ftp.shrubbery.net/pub/rancid/
+checksums			md5 603dcc7923b0d34c024490c534362a35
+
+depends_lib                     port:perl5.12 \
+				port:openssl \
+				port:p5.12-lockfile-simple
+
+patchfiles			patch-etc-Makefile.in
+
+post-patch {
+# Set path for lg.conf.sample so Looking Glass will work
+	reinplace "s|@prefix@/bin|@prefix@/libexec/rancid:@prefix@/bin|g" \
+		${worksrcpath}/etc/lg.conf.sample.in
+}
+
+configure.args		--localstatedir=${prefix}/var/${name} \
+			--bindir=${prefix}/libexec/${name} \
+			--sysconfdir=${prefix}/etc/${name} \
+			--mandir=\\\${prefix}/share/man
+
+post-destroot {
+		system "ln -s -f ${prefix}/libexec/${name}/rancid-cvs ${destroot}${prefix}/bin/rancid-cvs"
+	        system "ln -s -f ${prefix}/libexec/${name}/rancid-run ${destroot}${prefix}/bin/rancid-run"
+}
+
+notes "
+#### To complete the RANCID installation ####
+
+Copy the sample .cloginrc file to the RANCID user's home directory,\
+make sure it isn't world readable, and edit it according to your needs.
+
+	cp ${prefix}/share/rancid/cloginrc.sample ~/.cloginrc
+	sudo chmod 640 ~/.cloginrc
+
+See the README file in ${prefix}/share/rancid for more information.
+
+
+To use the optional looking glass service to run status check commands\
+(show ip route, show run, etc) against your devices from a web form,\
+perform these steps:
+
+1) Copy the looking glass files and set permissions.
+
+   Use the lg.conf.sample looking glass configuration file as a start.
+	cd ${prefix}/etc/rancid
+	cp lg.conf.sample lg.conf
+
+   Make an /lg folder in your Apache document root and copy lg files
+	sudo mkdir -p <Apache-directory>/lg/log
+	cd <Apache-directory>/lg
+	sudo cp ${prefix}/share/rancid/index.html ./
+	sudo cp ${prefix}/share/rancid/lgnotes.html ./
+
+   Copy the .cgi's to the Apache document root
+	cd <Apache-directory>/lg
+	cp ${prefix}/libexec/rancid/lg.cgi      ./
+	cp ${prefix}/libexec/rancid/lgform.cgi  ./
+
+   Set the file permissions.  The rancid-user should also be the Apache user.
+	sudo chown -R <rancid-user>:<rancid-user> <Apache-docroot>/lg
+
+
+2) To enable the cgi's in this directory to run, set this line in your httpd.conf:
+
+	<Directory /Library/WebServer/Documents/lg>
+   		Options ExecCGI
+	</Directory>
+
+
+3) Goto url http://localhost/lg with a web browser to use the looking glass.
+"
+
+livecheck.type		regex
+livecheck.url		[lindex ${master_sites} 0]
+livecheck.regex		${name}-(\[0-9.\]+)\\.

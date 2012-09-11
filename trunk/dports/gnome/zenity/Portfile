@@ -1,0 +1,42 @@
+# $Id$
+
+PortSystem 1.0
+
+name		zenity
+version		2.32.1
+revision        4
+set branch  [join [lrange [split ${version} .] 0 1] .]
+description	zenity allows you to display dialog boxes from the commandline.
+long_description        This is zenity - a rewrite of gdialog, the GNOME port \
+			of dialog which allows you to display dialog boxes \
+			from the commandline and shell scripts.
+maintainers	devans openmaintainer
+categories	gnome
+license		LGPL-2+
+platforms	darwin 
+homepage	http://www.gnome.org/
+master_sites    gnome:sources/${name}/${branch}/
+
+checksums       sha1    5e75e9200768ecf9eb7f1e6edac7a395ddb47947 \
+                rmd160  30b19230d9e1ed478cfd17d2a6942863bcda6763
+
+depends_build   port:pkgconfig \
+                port:gnome-doc-utils \
+                port:intltool
+
+depends_lib     port:gtk2 \
+                port:libnotify \
+                port:libpng \
+                port:rarian
+
+use_bzip2 	yes
+
+configure.args	--mandir=${prefix}/share/man --disable-scrollkeeper
+
+post-activate	{
+	system "scrollkeeper-update"
+}
+
+livecheck.type  regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

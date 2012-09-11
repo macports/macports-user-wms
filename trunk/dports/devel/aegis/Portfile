@@ -1,0 +1,41 @@
+# $Id$
+
+PortSystem 1.0
+
+name        aegis
+version     4.24.3
+categories  devel
+license     GPL-3+
+maintainers nomaintainer
+description Aegis is a SCM/CASE tool with a difference
+homepage    http://aegis.sourceforge.net/
+platforms   darwin
+
+long_description    In the spirit of the UNIX Operating System, Aegis is a \
+                    small component designed to work with other programs. \
+                    Among other things, it supports geographically \
+                    distributed development on both push and pull models and \
+                    on many distribution topologies, concurrent editing, \
+                    atomic locking for changesets over multiple files, and \
+                    perhaps most usefully, enforcement of tests on changes to \
+                    the baseline to ensure that it always works.
+
+master_sites        sourceforge:project/aegis/aegis/${version}
+checksums           md5 64cc5c1ecd43d54c714d49b262f6dc62 \
+                    sha1 482bdeb1610d4bfd95c7d081078e1ca07ee89e79 \
+                    rmd160 ecce0d776b80a17749df76167b251c30f546cdad
+
+depends_lib         port:libxml2 port:zlib port:bison port:gettext port:file \
+                    port:cook
+
+configure.args  --mandir=${prefix}/share/man --infodir=${prefix}/share/info
+
+use_parallel_build  no
+
+destroot.keepdirs   ${destroot}${prefix}/com
+destroot.violate_mtree  yes
+
+notes "In order to use Aegis properly, you need to source a file\
+provided by Aegis that is appropriate to your shell,\
+${prefix}/share/aegis/profile if you use a Bourne-compatible\
+shell, or ${prefix}/share/aegis/cshrc if you use a C shell."

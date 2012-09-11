@@ -1,0 +1,25 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup	    perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup	    Gearman-Server 1.10
+revision        3
+categories          perl net
+platforms	    darwin
+maintainers	    pmq openmaintainer
+
+description         Function call "router" and load balancer
+long_description    ${description}
+
+homepage	    http://www.danga.com/gearman
+master_sites	    http://search.cpan.org/CPAN/authors/id/D/DO/DORMANDO
+checksums           md5 e1ba46ef14b87206897f3e28dc32dff2 \
+		    sha1 4b37b7f23f19428dd1313f7d4d33d9b1217a6a9e
+
+if {${perl5.major} != ""} {
+depends_run-append  port:p${perl5.major}-danga-socket port:p${perl5.major}-gearman
+
+supported_archs noarch
+}

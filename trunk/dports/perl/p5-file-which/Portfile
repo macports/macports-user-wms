@@ -1,0 +1,25 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           File-Which 1.09
+revision              3
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+description           Portable implementation of the `which' utility
+long_description      ${description}
+
+platforms             darwin
+
+checksums             md5 b9429edaad7f45caafa4d458afcfd8af \
+                      sha1 7862595004e68276c11bc012380f19f4b09c5cf7 \
+                      rmd160 2ebbe4afe4bdefada7f66c726a4156cbaecd0490
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-test-simple \
+                      port:p${perl5.major}-test-script
+
+supported_archs noarch
+}

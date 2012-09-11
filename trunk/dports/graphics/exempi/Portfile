@@ -1,0 +1,54 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+
+name            exempi
+version         2.1.1
+license         BSD
+categories      graphics
+maintainers     devans openmaintainer
+platforms       darwin
+homepage        http://libopenraw.freedesktop.org/wiki/Exempi
+master_sites    http://libopenraw.freedesktop.org/download/
+
+description \
+    Exempi is an implementation of XMP.
+
+long_description \
+    Exempi is an implementation of XMP. Version 2.x is based on Adobe XMP SDK 4.1.1.
+
+checksums       md5     62ecb5a01387b9f940a5429b3df67e65 \
+                sha1    f05a4c1d609c0e3cafdf839c16ec46afae1b160d \
+                rmd160  e79500f804e162df340e669deea620408e4926b4
+
+patch.pre_args      -p1
+
+# see http://trac.macports.org/ticket/19894
+
+if { ${os.platform} == "darwin" &&  ${os.major} > 8 } {
+    patchfiles-append      patch-source__XMPFiles__XMPFiles_Impl.hpp \
+                           patch-source__common__LargeFileAccess.hpp \
+                           patch-source__common__LargeFileAccess.cpp
+}
+
+# see http://trac.macports.org/ticket/20965
+if {$build_arch == "x86_64" || $build_arch == "ppc64"} {
+    patchfiles-append      patch-source__XMPFiles__FileHandlers__Makefile.am \
+                           patch-source__XMPFiles__FormatSupport__Makefile.am \
+                           patch-source__XMPFiles__FormatSupport__Reconcile_Impl.cpp
+    use_autoreconf         yes
+    configure.cppflags-append     -DXMP_64
+}
+
+configure.args  --enable-unittest=no
+
+variant unit_test description {Enable unit test}  {
+     depends_lib-append port:boost
+     configure.args-delete  --enable-unittest=no
+     configure.args-append  --enable-unittest=yes
+}
+
+livecheck.type  regex
+livecheck.url   ${homepage}
+livecheck.regex {version\ (\d+(?:\.\d+)*)}

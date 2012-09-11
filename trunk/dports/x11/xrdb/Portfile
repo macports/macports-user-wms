@@ -1,0 +1,29 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xrdb
+version             1.0.9
+categories          x11
+maintainers         jeremyhu openmaintainer
+description         X11 server resource database utility
+license             MIT
+long_description    ${description}
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           md5     ed2e48cf33584455d74615ad4bbe4246 \
+                    sha1    efa5f2420411988d6a6e142934393fd272507857 \
+                    rmd160  012685dc580c1f351f860fe73f2d291170a12964
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libXmu
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

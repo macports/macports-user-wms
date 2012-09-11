@@ -1,0 +1,48 @@
+# $Id$
+
+PortSystem 1.0
+
+name            ksh93
+version         2011-02-08
+categories      shells
+maintainers     nomaintainer
+license         CPL-1
+
+description     The AT&T Korn shell
+long_description \
+    The official version of ksh-93, by David Korn and AT&T research
+platforms       darwin freebsd
+homepage        http://www.research.att.com/sw/download/
+master_sites    http://www2.research.att.com/~gsf/download/tgz/
+
+distfiles       ast-ksh.$version.tgz \
+                INIT.$version.tgz
+checksums       ast-ksh.$version.tgz \
+                rmd160  058eb289d1351c7eff2aa8ddb735df6b2e4a6759 \
+                sha256  581e317d36ef55505329b5b67b6bc2208b496638a466cad18c6674b60449b01d \
+                INIT.$version.tgz \
+                rmd160  8513375dc377caa6d123d144f6da0286462b9427 \
+                sha256  d692d476fe4bb933e7b6459c0cc99a2e9f428bfd81a495ed4201ec197e070f57
+
+fetch.user      I accept www.opensource.org/licenses/cpl
+fetch.password  .
+
+extract.mkdir   yes
+
+use_configure   no
+
+build.cmd       bin/package
+build.target    make
+build.args      SHELL=sh
+
+destroot {
+    set arch [exec ${worksrcpath}/bin/package]
+    xinstall -m 555 ${worksrcpath}/arch/${arch}/bin/ksh \
+      ${destroot}${prefix}/bin
+    xinstall -m 444 ${worksrcpath}/arch/${arch}/man/man1/sh.1 \
+      ${destroot}${prefix}/share/man/man1/ksh.1
+}
+
+livecheck.type  regex
+livecheck.url   http://www2.research.att.com/~gsf/cgi-bin/download.cgi?action=list&name=ast-ksh
+livecheck.regex {ast-ksh\.([0-9-]+)\.tgz}

@@ -1,0 +1,165 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                SuiteSparse
+epoch               20120107
+version             4.0.0
+categories          math science
+platforms           darwin
+maintainers         nomaintainer
+license             GPL-2+ LGPL-2.1+
+
+description         Sparse matrix routines
+
+long_description    SuiteSparse is a single archive that contains all packages \
+                    authored by Tim Davis.
+
+homepage            http://www.cise.ufl.edu/research/sparse/SuiteSparse/
+master_sites        http://www.cise.ufl.edu/research/sparse/SuiteSparse/
+distname            SuiteSparse-${version}
+worksrcdir          ${name}
+
+checksums           rmd160  395d9cfa86785db17e30ce02ba55984b2c896b00 \
+                    sha256  b26cf214bf981d735a2f517aee1975cee0034c865b288d2629c6280e026f6bdb
+
+global makefile
+set makefile ${worksrcpath}/SuiteSparse_config/SuiteSparse_config.mk
+
+variant universal {}
+
+post-patch {
+    if {[variant_isset metis]} {
+        # Use the MacPorts version rather than extracting copy in source dir
+
+        # -I$(METIS_PATH)/Lib -> -I$(METIS_PATH)/include
+        reinplace \
+            "s|-I\$(METIS_PATH)/Lib|-I\$(METIS_PATH)/include|g" \
+            ${worksrcpath}/CHOLMOD/Lib/Makefile
+
+        # #include "metis.h" -> #include <metis/metis.h>
+        reinplace \
+            "s|#include \"metis.h\"|#include <metis/metis.h>|g" \
+            ${worksrcpath}/CHOLMOD/Partition/cholmod_metis.c
+
+        # CHOLMOD Makefile is set up to detect metis local to build dir. Use MacPorts version.
+        reinplace \
+            "s|ifeq (../../metis-4.0, \$(wildcard ../../metis-4.0))|ifneq \(,\$\(METIS_PATH\)\)|" \
+            ${worksrcpath}/CHOLMOD/Lib/Makefile ${worksrcpath}/CHOLMOD/Demo/Makefile
+
+        # Do not try to build Metis in /opt/local
+        reinplace \
+            "s|^\$\(METIS\):$|fooblafoo:|" \
+            ${worksrcpath}/UMFPACK/Demo/Makefile
+
+        # There is a patch on the SuiteSparse homepage to get Metis 5.0 to work with SuiteSparse.
+        # It replaces all idxtype with idx_t
+        # and METIS_NodeComputeSeparator with METIS_ComputeVertexSeparator
+        reinplace \
+            "s|idxtype|idx_t|g" \
+            ${worksrcpath}/CHOLMOD/Partition/cholmod_metis.c
+        reinplace \
+            "s|METIS_NodeComputeSeparator \(\&nn, Mp, Mi, Mnw, Mew, Opt, \&csp, Mpart\)|\
+               METIS_ComputeVertexSeparator \(\\\&nn, Mp, Mi, Mnw, Opt, \\\&csp, Mpart\)|g" \
+            ${worksrcpath}/CHOLMOD/Partition/cholmod_metis.c
+    }
+
+    # klu_version.h defines Real and Imag which conflicts with math.h on ppc
+    reinplace -E \
+        "s|(\[^a-zA-Z\])Real(\[^a-zA-Z\])|\\1RealPart\\2|g" \
+        ${worksrcpath}/KLU/Include/klu_version.h
+    reinplace -E \
+        "s|(\[^a-zA-Z\])Imag(\[^a-zA-Z\])|\\1ImagPart\\2|g" \
+        ${worksrcpath}/KLU/Include/klu_version.h
+}
+
+configure {
+    file rename ${worksrcpath}/SuiteSparse_config/SuiteSparse_config.mk \
+                ${worksrcpath}/SuiteSparse_config/SuiteSparse_config_Linux.mk
+    file rename ${worksrcpath}/SuiteSparse_config/SuiteSparse_config_Mac.mk \
+                ${worksrcpath}/SuiteSparse_config/SuiteSparse_config.mk
+
+    # SuiteSparse does not use configure, so the variables must be
+    #    set manually.
+    reinplace "s|INSTALL_LIB = .*$|INSTALL_LIB = ${destroot}${prefix}/lib|g" ${makefile}
+    reinplace "s|INSTALL_INCLUDE = .*$|INSTALL_INCLUDE = ${destroot}${prefix}/include|g" ${makefile}
+
+    # Include build archs
+    reinplace -E "s|^\[^#\].*(CF = .*)$|\\1 \$(TARGET_ARCH)|g" ${makefile}
+
+    if {[variant_isset atlas]} {
+        # linking to the threaded dylib, is there a reason to use non-threaded?
+        reinplace "s|BLAS = .*$|BLAS = ${prefix}/lib/libtatlas.dylib|g" ${makefile}
+        reinplace "s|LAPACK = .*$|LAPACK = ${prefix}/lib/libtatlas.dylib|g" ${makefile}
+    }
+
+    if {[variant_isset metis]} {
+        reinplace "s|^METIS_PATH = .*$|METIS_PATH = ${prefix}|g" ${makefile}
+        reinplace "s|^METIS = .*$|METIS = ${prefix}/lib/libmetis.dylib|g" ${makefile}
+    } else {
+        reinplace "s|^METIS_PATH = .*$|METIS_PATH = |g" ${makefile}
+        reinplace "s|^METIS = .*$|METIS = |g" ${makefile}
+        reinplace "s|^CHOLMOD_CONFIG = .*$|CHOLMOD_CONFIG = -DNPARTITION|g" ${makefile}
+    }
+}
+
+use_parallel_build  no
+
+build.target        default
+build.args-append   CC="${configure.cc}" CXX="${configure.cxx}" \
+                    CFLAGS="${configure.cflags}" LDFLAGS="${configure.ldflags}" \
+                    TARGET_ARCH="[get_canonical_archflags]"
+
+post-destroot {
+    # Create a dylib from all .a static libs
+
+    if {[variant_isset metis]} {
+        catch {exec port installed metis} output
+        if {[string match *+openmpi* ${output}]} {
+            # metis installed with +openmpi variant
+            set metis "-lmetis -fopenmp"
+        } else {
+            set metis "-lmetis"
+        }
+    } else {
+        set metis ""
+    }
+
+    if {[variant_isset atlas]} {
+        set atlas "-ltatlas"
+    } else {
+        set atlas "-framework Accelerate"
+    }
+
+    set major [join [lrange [split ${version} .] 0 0] .]
+
+    set libs [list libamd.a libbtf.a libcamd.a libccolamd.a \
+             libcholmod.a libcolamd.a libcxsparse.a libklu.a \
+             libldl.a librbio.a libspqr.a libsuitesparseconfig.a libumfpack.a]
+
+    system -W ${destroot}${prefix}/lib "\
+        ${configure.cxx} -Wall ${configure.cflags} [get_canonical_archflags cxx] -dynamiclib -Wl,-all_load \
+        -L${prefix}/lib ${atlas} ${metis} ${libs} -o lib${name}.${version}.dylib \
+        -compatibility_version ${major} -current_version ${version} \
+        -install_name ${prefix}/lib/lib${name}.${version}.dylib"
+
+    ln -s lib${name}.${version}.dylib ${destroot}${prefix}/lib/lib${name}.dylib
+    ln -s lib${name}.${version}.dylib ${destroot}${prefix}/lib/lib${name}.${major}.dylib
+
+    xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+    eval xinstall -m 644 \
+        [glob ${worksrcpath}/*/Doc/*.pdf] \
+        ${destroot}${prefix}/share/doc/${name}
+}
+
+variant metis description {Use METIS for graph partitioning and sparse matrix ordering} {
+    depends_build-append port:metis
+}
+
+variant atlas description {Use MacPorts' ATLAS instead of Accelerate Framework} {
+    depends_lib-append  port:atlas
+}
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\\d+(\\.\\d+)*)${extract.suffix}

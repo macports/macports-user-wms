@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem		1.0
+PortGroup		perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		File-MimeInfo 0.15
+revision		4
+license		{Artistic-1 GPL}
+maintainers		nomaintainer
+description		This module can be used to determine the mime type of a file.   \
+                It tries to implement the freedesktop specification for a shared MIME database.
+long_description	${description}
+
+checksums           md5     41fa5a252203e1d6023ab5849fd9e0df \
+                    sha1    e185dd52769ec3c77cbb1eb983e49b843e5e38e5
+
+platforms		darwin
+
+if {${perl5.major} != ""} {
+depends_lib-append		port:shared-mime-info
+
+
+patchfiles		patch-lib-File-MimeInfo.pm.diff
+post-patch      {
+        reinplace "s|__PREFIX__|${prefix}|g" ${worksrcpath}/lib/File/MimeInfo.pm
+}
+}

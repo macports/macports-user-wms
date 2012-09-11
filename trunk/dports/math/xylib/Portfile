@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                xylib
+version             1.0
+categories          math
+platforms           darwin
+maintainers         ryandesign openmaintainer
+license             LGPL-2.1
+
+description         library for reading x-y data files
+
+long_description    xylib is a portable library for reading files that contain \
+                    x-y data from powder diffraction, spectroscopy and other \
+                    experimental methods.
+
+homepage            http://xylib.sourceforge.net/
+master_sites        sourceforge:project/xylib
+use_bzip2           yes
+
+checksums           rmd160  3a125a7d08a60fa65e22a0b09122069a160ebfac \
+                    sha256  41f5eaeda7a1c1fc7699a5a234a9f5b5625b07b25086c44018d90a3bdc7f9cd6
+
+depends_build       port:boost
+
+depends_lib         port:bzip2 \
+                    port:zlib
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${subport}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        COPYING \
+        README \
+        TODO \
+        ${destroot}${docdir}
+}
+
+livecheck.regex     /${name}-(\[0-9.\]+)${extract.suffix}

@@ -1,0 +1,99 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup  muniversal 1.0
+
+name                openssl
+version             1.0.1c
+epoch               1
+revision            0
+platforms           darwin
+categories          devel security
+maintainers         mww
+homepage            http://www.openssl.org/
+license             OpenSSL SSLeay
+description         OpenSSL SSL/TLS cryptography library
+
+long_description \
+    The OpenSSL Project is a collaborative effort to develop a robust, \
+    commercial-grade, full-featured, and Open Source toolkit implementing \
+    the Secure Sockets Layer (SSL v2/v3) and Transport Layer Security \
+    (TLS v1) protocols as well as a full-strength general purpose \
+    cryptography library.
+
+master_sites        http://www.openssl.org/source/
+checksums           md5     ae412727c8c15b67880aef7bd2999b2e \
+                    sha1    91b684de947cb021ac61b8c51027cc4b63d894ce \
+                    rmd160  96d35c3f507d85ad14fc67770bb4464ac8496830 \
+                    sha256  2a9eb3cd4e8b114eb9179c0d3884d61658e7d8e8bf4984798a5f5bd48e325ebe
+
+depends_lib         port:zlib
+
+patchfiles          patch-Makefile.org.diff patch-crypto-Makefile.diff \
+                    patch-bn_internal.pod.diff patch-Configure.diff
+
+post-patch {
+    # Ensure that the correct compiler is used
+    reinplace "s|cc:|${configure.cc}:|" ${worksrcpath}/Configure
+    # use SDK if necessary
+    if {${configure.sdkroot} != ""} {
+        reinplace "s|\\(-arch \[_a-zA-Z0-9\]*\\)|\\1 -isysroot ${configure.sdkroot}|" ${worksrcpath}/Configure
+    }
+}
+
+configure.cmd       ./config
+configure.args      -L${prefix}/lib --openssldir=${prefix}/etc/openssl zlib no-krb5 shared no-asm
+configure.ccache    no
+
+use_parallel_build  no
+
+destroot.destdir    INSTALL_PREFIX=${destroot}
+destroot.args       MANDIR=${prefix}/share/man MANSUFFIX=ssl
+
+test.run            yes
+test.dir            ${worksrcpath}/test
+test.target         alltests
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     ${name}-(\[0-9.\]+\[a-z\]?)\\.tar\\.gz
+
+variant rfc3779 description {enable RFC 3779: X.509 Extensions for IP Addresses and AS Identifiers} {
+    configure.args-append    enable-rfc3779
+}
+
+# code for universal build
+array set merger_configure_args {
+    ppc    darwin-ppc-cc
+    i386   darwin-i386-cc
+    ppc64  darwin64-ppc-cc
+    x86_64 darwin64-x86_64-cc
+}
+
+if { [variant_isset universal] } {
+    configure.cmd    ./Configure
+
+    set merger_arch_compiler "no"
+
+    configure.universal_args-delete --disable-dependency-tracking
+    configure.args-delete  --disable-dependency-tracking
+
+    pre-destroot {
+        global merger_dont_diff
+        if { [llength ${universal_archs_to_use}] > 2 } {
+            lappend merger_dont_diff ${prefix}/include/openssl/opensslconf.h
+        }
+    }
+
+    # Do not set --host.
+    array set merger_host {
+        ppc    ""
+        i386   ""
+        ppc64  ""
+        x86_64 ""
+    }
+} elseif {[info exists merger_configure_args($build_arch)]} {
+    configure.cmd           ./Configure
+    configure.args-append   $merger_configure_args($build_arch)
+}
+

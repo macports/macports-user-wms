@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup python24 1.0
+
+name			webcleaner
+version			2.31
+categories		www python
+platforms		darwin
+maintainers		nomaintainer
+description		webcleaner is a powerful filtering http proxy
+long_description	${description}
+
+homepage		http://webcleaner.sourceforge.net/
+master_sites	sourceforge
+checksums		md5 c7980d19a3f0087b4f04708c244f2a97
+
+depends_build	port:spidermonkey
+
+post-extract {
+	file mkdir ${worksrcpath}/libjs/.libs/
+	system "cd ${worksrcpath}/libjs/.libs && ln -s ${prefix}/lib/libjs.a"
+}
+
+use_configure	yes
+configure.cflags-append	"-I${prefix}/include/spidermonkey"
+
+build.env		${configure.env}

@@ -1,0 +1,20 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Pod-Spell 1.01
+revision            3
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         a formatter for spellchecking Pod
+long_description    ${description}
+
+platforms           darwin
+
+checksums           md5 aa4964844da2586562aae5208e2dbe61 \
+                    sha1 6cebeccbd7a107fde35090d0c3525e7ca90548fb \
+                    rmd160 bf4e9111112b64de71fe303b89893514edd79a84
+
+supported_archs noarch

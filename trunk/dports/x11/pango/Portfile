@@ -1,0 +1,155 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    pango
+conflicts               pango-devel
+epoch                   1
+version                 1.30.1
+revision                2
+set branch              [join [lrange [split ${version} .] 0 1] .]
+categories              x11
+maintainers             ryandesign openmaintainer
+license                 LGPL-2
+homepage                http://www.pango.org/
+master_sites            gnome:sources/${name}/${branch}
+platforms               darwin
+use_xz                  yes
+use_parallel_build      yes
+
+description \
+    Framework for the layout and rendering of i18n text
+
+long_description \
+    The goal of the Pango project is to provide an \
+    open-source framework for the layout and rendering \
+    of internationalized text.
+
+checksums               rmd160  a0c68de9e02dbdb690ada02e945a378c6ca4a71b \
+                        sha256  3a8c061e143c272ddcd5467b3567e970cfbb64d1d1600a8f8e62435556220cbe
+
+depends_build \
+    port:pkgconfig
+
+depends_lib \
+    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+    path:lib/pkgconfig/cairo.pc:cairo \
+    port:gobject-introspection \
+    port:libpng
+
+patchfiles              patch-ltmain.sh.diff
+
+configure.ccache        no
+
+platform macosx {
+variant quartz {
+    # Although this variant does nothing, pango will automatically build
+    # itself differently depending on whether or not cairo is installed with
+    # the quartz variant. Therefore this variant is necessary to be able to
+    # distinguish whether an installed pango has quartz support or not.
+}
+}
+
+pre-configure {
+    set glib_minimum_version 2.31.0
+    set glib_installed_version [exec ${prefix}/bin/pkg-config glib-2.0 --modversion]
+    if {[vercmp ${glib_installed_version} ${glib_minimum_version}] < 0} {
+        ui_error "${name} ${version} requires glib2 ${glib_minimum_version} or later but you have glib2 ${glib_installed_version}."
+        return -code error "incompatible glib2 version"
+    }
+    
+    set cairo_minimum_version 1.7.6
+    set cairo_installed_version [exec ${prefix}/bin/pkg-config cairo --modversion]
+    if {[vercmp ${cairo_installed_version} ${cairo_minimum_version}] < 0} {
+        ui_error "${name} ${version} requires cairo ${cairo_minimum_version} or later but you have cairo ${cairo_installed_version}."
+        return -code error "incompatible cairo version"
+    }
+    
+    set cairo_quartz_pc ${prefix}/lib/pkgconfig/cairo-quartz.pc
+    if {[variant_exists quartz] && [variant_isset quartz]} {
+        if {![file exists ${cairo_quartz_pc}]} {
+            ui_error "To install pango with the quartz variant, cairo must be installed with the quartz variant."
+            return -code error "incompatible cairo installation"
+        }
+    } else {
+        if {[file exists ${cairo_quartz_pc}]} {
+            ui_error "To install pango without the quartz variant, cairo must be installed without the quartz variant."
+            return -code error "incompatible cairo installation"
+        }
+    }
+    
+    set cairo_xlib_pc ${prefix}/lib/pkgconfig/cairo-xlib.pc
+    if {[variant_isset x11]} {
+        if {![file exists ${cairo_xlib_pc}]} {
+            ui_error "To install pango with the x11 variant, cairo must be installed with the x11 variant."
+            return -code error "incompatible cairo installation"
+        }
+    } else {
+        if {[file exists ${cairo_xlib_pc}]} {
+            ui_error "To install pango without the x11 variant, cairo must be installed without the x11 variant."
+            return -code error "incompatible cairo installation"
+        }
+    }
+}
+
+configure.args          --enable-static \
+                        --enable-introspection \
+                        --disable-silent-rules \
+                        --without-x
+
+# gobject-introspection uses g-ir-scanner, which uses $CC from env
+build.args-append       CC="${configure.cc} ${configure.cc_archflags}"
+
+variant builtin_modules description {Build the modules into Pango statically (most users do not need this variant)} {
+    configure.args-append   --with-included-modules
+}
+
+variant no_x11 conflicts x11 description {Legacy compatibility variant} {}
+variant x11 {
+    depends_lib-append      port:Xft2
+    configure.args-delete   --without-x
+    configure.args-append   --x-include=${prefix}/include \
+                            --x-lib=${prefix}/lib
+}
+
+if {[variant_isset no_x11]} {
+    default_variants -x11
+} else {
+    default_variants +x11
+}
+
+post-destroot {
+    if {![variant_isset x11]} {
+        xinstall -d ${destroot}${prefix}/etc/pango
+    }
+    if {![variant_isset builtin_modules]} {
+        xinstall -m 0644 ${worksrcpath}/modules/pangorc \
+            ${destroot}${prefix}/etc/pango
+        reinplace "s|\\.\\./modules/|${prefix}/etc/pango/|g" \
+            ${destroot}${prefix}/etc/pango/pangorc
+
+        system "env LANG=C DYLD_LIBRARY_PATH=${destroot}${prefix}/lib \
+            ${destroot}${prefix}/bin/pango-querymodules ${destroot}${prefix}/lib/pango/1.6.0/modules/*.so \
+            >${destroot}${prefix}/etc/pango/pango.modules"
+        reinplace s|${destroot}||g ${destroot}${prefix}/etc/pango/pango.modules
+    }
+
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} AUTHORS ChangeLog COPYING MAINTAINERS NEWS README THANKS \
+        ${destroot}${docdir}
+}
+
+# The rules enabled by gobject-introspection require GNU make 3.81+, #35203
+platform darwin 8 {
+    depends_build-append    port:gmake
+    build.cmd               ${prefix}/bin/gmake
+}
+
+test.run                yes
+test.target             check
+
+livecheck.type          regex
+livecheck.url           http://ftp.gnome.org/pub/GNOME/sources/${name}/${branch}/?C=M&O=D
+livecheck.regex         ${name}-(\[0-9.\]+)\\.tar

@@ -1,0 +1,47 @@
+# $Id$
+
+PortSystem          1.0
+name                gphoto2
+version             2.5.0
+categories          graphics
+license             LGPL-2.1+
+maintainers         nomaintainer
+description         command line interface to libgphoto2.
+long_description \
+   gphoto2 is the command line interface to libgphoto2.  It allows almost \
+   everything that libgphoto2 can do.
+
+platforms           darwin
+
+homepage            http://www.gphoto.org/proj/gphoto2/
+master_sites        sourceforge:gphoto
+use_bzip2           yes
+
+checksums           sha1    4db56811b09e6496fb056f90effa4d7240b8e5dc \
+                    rmd160  077457b0ed80c7cc7090e67ca89fbb5054d50314
+
+depends_build       path:bin/pkg-config:pkgconfig
+depends_lib         port:gettext \
+                    port:jpeg \
+                    port:libexif \
+                    port:libgphoto2 \
+                    port:libiconv \
+                    port:libusb-compat \
+                    port:popt \
+                    port:readline
+
+configure.cflags-append   -I${prefix}/include
+configure.env       POPT_CFLAGS="-I${prefix}/include" \
+                    POPT_LIBS="-L${prefix}/lib -lpopt"
+configure.args      --without-cdk --without-aalib
+
+destroot.target     install-strip
+post-destroot {
+   xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+   xinstall -m 644 -W ${worksrcpath} COPYING ChangeLog INSTALL NEWS README \
+      TODO ${destroot}${prefix}/share/doc/${name}
+}
+
+livecheck.type      regex
+livecheck.url       http://sourceforge.net/projects/gphoto/files/
+livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

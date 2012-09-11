@@ -1,0 +1,116 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           muniversal 1.0
+
+name                povray
+version             3.6.1
+set branch          [join [lrange [split ${version} .] 0 1] .]
+revision            7
+categories          graphics
+platforms           darwin
+maintainers         nomaintainer
+
+description         Persistence Of Vision RAYtracer
+
+long_description    POVRAY is a 'free' and popular Ray Tracer available for \
+                    many platforms (including UNIX). This is a port of the \
+                    UNIX version, not the graphical Mac OS X version.
+
+homepage            http://www.povray.org/
+master_sites        ${homepage}ftp/pub/povray/Official/Unix/ \
+                    ftp://ftp.povray.org/pub/povray/Official/Unix/
+use_bzip2           yes
+
+checksums           md5     b5789bb7eeaed0809c5c82d0efda571d \
+                    sha1    1fab3ccbdedafbf77e3a66087709bbdf60bc643d
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libsm \
+                    port:xpm \
+                    port:libpng \
+                    port:jpeg \
+                    port:zlib \
+                    port:tiff
+
+patchfiles          patch-configure \
+                    patch-source_png_pov.cpp \
+                    povray-3.6.1-libpng14.patch
+
+# uses its own cflags in addition to the ones we pass anyway
+configure.optflags
+configure.args      --includedir=${prefix}/include \
+                    --mandir=${prefix}/share/man \
+                    COMPILED_BY="MacPorts"
+
+post-destroot {
+    foreach f {povray.conf povray.ini} {
+        move ${destroot}${prefix}/etc/povray/${branch}/${f} \
+             ${destroot}${prefix}/etc/povray/${branch}/${f}.sample
+    }
+}
+
+post-activate {
+    foreach f {povray.conf povray.ini} {
+        if {![file exists ${prefix}/etc/povray/${branch}/${f}]} {
+            copy ${prefix}/etc/povray/${branch}/${f}.sample \
+                 ${prefix}/etc/povray/${branch}/${f}
+        }
+    }
+}
+
+test.run            yes
+test.target         check
+
+# Unable to cross compile, so we need to be able to run the built code
+if {${os.arch} == "i386" && ${os.major} >= 11} {
+    supported_archs i386 x86_64
+    set universal_archs_supported {i386 x86_64}
+} elseif {${os.arch} == "i386" && ${build_arch} == "x86_64"} {
+    supported_archs i386 x86_64 ppc
+    set universal_archs_supported {i386 x86_64 ppc}
+} elseif {${os.arch} == "i386"} {
+    supported_archs i386 ppc
+    set universal_archs_supported {i386 ppc}
+} elseif {${build_arch} == "ppc64"} {
+    supported_archs ppc ppc64
+    set universal_archs_supported {ppc ppc64}
+} else {
+    supported_archs ${build_arch}
+    set universal_archs_supported ${build_arch}
+}
+
+platform darwin {
+    if {[variant_isset universal]} {
+        set merger_host(x86_64) x86_64-apple-${os.platform}${os.major}
+        set merger_host(i386) i686-apple-${os.platform}${os.major}
+        set merger_host(ppc64) powerpc64-apple-${os.platform}${os.major}
+        set merger_host(ppc) powerpc-apple-${os.platform}${os.major}
+        set merger_configure_args(x86_64) "--build=x86_64-apple-${os.platform}${os.major}"
+        set merger_configure_args(i386) "--build=i686-apple-${os.platform}${os.major}"
+        set merger_configure_args(ppc) "--build=powerpc-apple-${os.platform}${os.major}"
+        set merger_configure_args(ppc64) "--build=powerpc64-apple-${os.platform}${os.major}"
+    } elseif {${build_arch} == "i386"} {
+        configure.args-append \
+            --host=i686-apple-${os.platform}${os.major} \
+            --build=i686-apple-${os.platform}${os.major}
+    } elseif {${build_arch} == "x86_64"} {
+        configure.args-append \
+            --host=x86_64-apple-${os.platform}${os.major} \
+            --build=x86_64-apple-${os.platform}${os.major}
+    } elseif {${build_arch} == "ppc"} {
+        configure.args-append \
+            --host=powerpc-apple-${os.platform}${os.major} \
+            --build=powerpc-apple-${os.platform}${os.major}
+    } elseif {${build_arch} == "ppc64"} {
+        configure.args-append \
+            --host=powerpc64-apple-${os.platform}${os.major} \
+            --build=powerpc64-apple-${os.platform}${os.major}
+    }
+}
+
+livecheck.type      regex
+livecheck.url       ${homepage}ftp/pub/povray/Official/Unix/
+livecheck.regex     {CURRENT-VERSION-IS-([0-9.]+)}

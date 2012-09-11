@@ -1,0 +1,146 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name                wgrib2
+version             1.9.6a
+revision            2
+platforms           darwin
+maintainers         takeshi
+categories          science
+description         program to read atmospheric data files in GRIB2
+master_sites        ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib2/ \
+                    http://www.ftp.cpc.ncep.noaa.gov/wd51we/wgrib2/
+distname            ${name}_nolib.tgz.v${version}
+extract.suffix     
+set version_g2clib  1.2.1
+set iplib           iplib.2012
+worksrcdir          grib2/g2clib-${version_g2clib}
+checksums           md5     c9d383552210070c5df3115a806c0f66 \
+                    sha1    7ce6f34677b73d32f1504f86fac31184c6c611e9 \
+                    rmd160  e7627292152c74251e684d2529adbe382a8c138e
+homepage            http://www.cpc.noaa.gov/products/wesley/wgrib2/
+long_description   \
+    wgrib2 is a swiss army knife for grib2 files. \
+    GRIB-2 has arrived and has begun replacing the the older standard GRIB-1. \
+    GRIB-2 can reduce the file size by up to 80% (NAM, JPEG2000 compression).
+
+depends_lib         port:jasper \
+                    port:libpng \
+                    port:netcdf \
+                    port:hdf5-18
+
+patchfiles          patch-dec_png.c.diff \
+                    patch-enc_png.c.diff
+
+post-patch {
+  set f ${workpath}/grib2/${name}/config.h
+  reinplace "s|#define USE_NETCDF3|//#define USE_NETCDF3|" ${f}
+  reinplace "s|//#define USE_NETCDF4|#define USE_NETCDF4|" ${f}
+  if {![variant_isset g95] && ![variant_isset gcc44] && ![variant_isset gcc45]} {
+      reinplace "s|#define USE_IPOLATES|//#define USE_IPOLATES|" ${f}
+  }
+}
+
+use_configure       no
+use_parallel_build  no
+
+set cppflags ${configure.cppflags}
+if {[variant_isset g95]} {
+    set cppflags "-DG95 ${cppflags}"
+} elseif {[variant_isset gcc44]||[variant_isset gcc45]} {
+    set cppflags "-DGFORTRAN ${cppflags}"
+}
+if {[variant_isset universal]} {
+    set cflags "${configure.cflags} ${configure.universal_cflags}"
+    set ldflags "${configure.ldflags} ${configure.universal_ldflags}"
+} else {
+    set cflags "${configure.cflags} ${configure.cc_archflags}"
+    set ldflags "${configure.ldflags} ${configure.cc_archflags}"
+}
+build.args          "-f makefile CC=\"${configure.cc}\" CPPFLAGS=\"${cppflags}\" CFLAGS=\"${cflags}\""
+
+post-build  { 
+    system "ranlib ${worksrcpath}/libgrib2c.a" 
+    if {[variant_isset g95]} {
+        system "cd ${workpath}/grib2/${iplib}; \
+                make \
+                FC=${prefix}/bin/g95 \
+                FFLAGS=${configure.fflags}"
+        set fsymbol DEFS=-DG95
+        set flibs "-L../${iplib} -lipolate -lf95"
+    } elseif {[variant_isset gcc44]} {
+        system "cd ${workpath}/grib2/${iplib}; \
+                make \
+                FC=${prefix}/bin/gfortran-mp-4.4 \
+                FFLAGS=${configure.fflags}"
+        set fsymbol DEFS=-DGFORTRAN
+        set flibs "-L../${iplib} -lipolate -L${prefix}/lib/gcc44 -lgfortran"
+    } elseif {[variant_isset gcc45]} {
+        system "cd ${workpath}/grib2/${iplib}; \
+                make \
+                FC=${prefix}/bin/gfortran-mp-4.5 \
+                FFLAGS=${configure.fflags}"
+        set fsymbol DEFS=-DGFORTRAN
+        set flibs "-L../${iplib} -lipolate -L${prefix}/lib/gcc45 -lgfortran"
+    } elseif {[variant_isset gcc46]} {
+        system "cd ${workpath}/grib2/${iplib}; \
+                make \
+                FC=${prefix}/bin/gfortran-mp-4.6 \
+                FFLAGS=${configure.fflags}"
+        set fsymbol DEFS=-DGFORTRAN
+        set flibs "-L../${iplib} -lipolate -L${prefix}/lib/gcc46 -lgfortran"
+    } elseif {[variant_isset gcc47]} {
+        system "cd ${workpath}/grib2/${iplib}; \
+                make \
+                FC=${prefix}/bin/gfortran-mp-4.7 \
+                FFLAGS=${configure.fflags}"
+        set fsymbol DEFS=-DGFORTRAN
+        set flibs "-L../${iplib} -lipolate -L${prefix}/lib/gcc47 -lgfortran"
+    } else {
+        set fsymbol ""
+        set flibs ""
+    }
+    system "cd ${workpath}/grib2; \
+            tar zxvf gctpc20.tar.Z; \
+            cd ${workpath}/grib2/gctpc/source; \
+            make -f ${workpath}/grib2/makefile.gctpc \
+            CC=\"${configure.cc}\" \
+            CPPFLAGS=\"${cppflags}\" \
+            CFLAGS=\"${cflags}\" \
+            LDFLAGS=\"-L${prefix}/lib ${ldflags}\"; \
+            cd ${workpath}/grib2/${name}; \
+            make -f makefile ${name} \
+            CC=\"${configure.cc}\" \
+            ${fsymbol} \
+            CFLAGS=\"-I../g2clib-${version_g2clib} -I../gctpc/source ${cppflags} ${cflags}\" \
+            LDFLAGS=\"-L../g2clib-${version_g2clib} -L../gctpc/source ${ldflags} \
+                      -lgeo -lgrib2c -ljasper -lpng -lnetcdf -lhdf5_hl -lhdf5 -lz -lcurl -lidn -lssl -lcrypto ${flibs}\" "
+}
+
+destroot {
+    xinstall -m 644 ${worksrcpath}/grib2.h ${destroot}${prefix}/include
+    xinstall -m 755 ${worksrcpath}/libgrib2c.a ${destroot}${prefix}/lib
+    xinstall -m 755 ${worksrcpath}/../${name}/${name} ${destroot}${prefix}/bin
+}
+
+variant g95 conflicts gcc44 gcc45 gcc46 gcc47 description {build iplib with g95 (alpha)} {
+    depends_build-append port:g95
+}
+
+variant gcc44 conflicts g95 gcc45 gcc46 gcc47 description {build iplib with gcc44 (alpha)} {
+    depends_build-append port:gcc44
+}
+
+variant gcc45 conflicts g95 gcc44 gcc46 gcc47 description {build iplib with gcc45 (alpha)} {
+    depends_build-append port:gcc45
+}
+
+variant gcc46 conflicts g95 gcc44 gcc45 gcc47 description {build iplib with gcc45 (alpha)} {
+    depends_build-append port:gcc46
+}
+
+variant gcc47 conflicts g95 gcc44 gcc45 gcc46 description {build iplib with gcc45 (alpha)} {
+    depends_build-append port:gcc47
+}

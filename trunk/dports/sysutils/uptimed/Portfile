@@ -1,0 +1,35 @@
+# $Id$
+
+PortSystem 1.0
+
+name		uptimed
+version		0.3.12
+revision	1
+categories	sysutils
+platforms	darwin
+maintainers	nomaintainer
+description	uptime record daemon
+long_description	uptimed is an uptime record daemon keeping track of \
+			the highest uptimes a computer system ever had.
+
+homepage	http://podgorny.cz/moin/Uptimed
+master_sites	http://podgorny.cz/uptimed/releases/
+checksums	sha1 753ab59bb99d7b88a35174ce83081ad0bb224e56
+use_bzip2	yes
+patchfiles	patch-Makefile.in
+
+configure.args	--mandir=${prefix}/share/man
+post-configure	{
+	reinplace "s|/var/spool/uptimed|${prefix}/var/spool/uptimed|g" \
+		${worksrcpath}/libuptimed/urec.h
+	reinplace "s|/var/run/uptimed|${prefix}/var/run/uptimed|g" \
+		${worksrcpath}/etc/uptimed.conf-dist
+}
+
+post-destroot	{
+	xinstall -m 755 -d ${destroot}${prefix}/var/spool/uptimed
+	touch ${destroot}${prefix}/var/spool/uptimed/bootid
+}
+
+startupitem.create	yes
+startupitem.executable	${prefix}/sbin/uptimed

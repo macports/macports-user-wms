@@ -1,0 +1,79 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                awesome
+version             3.4.11
+categories          x11 x11-wm
+platforms           darwin
+maintainers         nomaintainer
+license             GPL-2+
+
+description         awesome is a tiling window manager
+
+long_description    awesome is a tiling window manager initially based on a \
+                    dwm code rewriting. It is extremely fast, small, dynamic \
+                    and awesome. Windows can be managed in several layouts: \
+                    tiled, maximized and floating. Each layout can be applied \
+                    on the fly, optimizing the environment for the application \
+                    in use and the task performed. awesome has the following \
+                    features: very stable, no mouse needed, multihead support, \
+                    some real transparency support, some xrandr support, no \
+                    lua integration, no 9P support, no editable tagbars, no \
+                    limits on its source size, key, script and mouse bindings, \
+                    etc.
+
+homepage            http://awesome.naquadah.org/
+master_sites        ${homepage}download/
+use_bzip2           yes
+
+checksums           rmd160  1ceafb96ebe4e5b04c09dee5d6a69266516203b4 \
+                    sha256  83fc42d4ea71914d1b456023ce53b546e22e8ccc11a73c4a39a1152d2f30b628
+
+depends_build       port:cmake \
+                    port:pkgconfig
+
+depends_lib         path:bin/dbus-daemon:dbus \
+                    port:lua \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    path:lib/pkgconfig/pango.pc:pango \
+                    path:lib/pkgconfig/cairo.pc:cairo \
+                    port:xorg-libxcb \
+                    port:xorg-xcb-util-image \
+                    port:xorg-xcb-util-keysyms \
+                    port:xorg-xcb-util-wm \
+                    port:xorg-randrproto \
+                    port:startup-notification \
+                    port:libxdg-basedir \
+                    port:ImageMagick \
+                    port:imlib2 \
+                    port:libev
+
+build.target-append CC=${configure.cc} \
+                    CXX=${configure.cxx} \
+                    CMAKE_ARGS="\
+                    -DCMAKE_INSTALL_PREFIX=${prefix} \
+                    -DPREFIX=${prefix} \
+                    -DAWESOME_DOC_PATH=${prefix}/share/doc/awesome \
+                    -DAWESOME_MAN_PATH=${prefix}/share/man \
+                    -DAWESOME_XSESSION_PATH=${prefix}/share/xsessions \
+                    -DSYSCONFDIR=${prefix}/etc \
+                    -DXDG_CONFIG_HOME=${prefix}/etc/xdg"
+
+patchfiles          patch-CMakeLists.txt.diff \
+                    patch-Makefile.diff \
+                    patch-spawn.c.diff
+
+use_configure       no
+
+variant doc description {Build man pages} {
+    depends_build-append \
+                    port:asciidoc \
+                    port:xmlto \
+                    port:doxygen
+}
+
+variant x11_xcb description {does nothing in this port, but its presence triggers cairo x11_xcb variant} {}
+
+default_variants    +x11_xcb

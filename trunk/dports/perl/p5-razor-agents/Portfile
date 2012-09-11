@@ -1,0 +1,41 @@
+# $Id$
+
+PortSystem		1.0
+PortGroup		perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup		razor-agents 2.84
+revision        3
+maintainers		yahoo.com:compconsultant
+categories-append	mail
+description		A distributed, collaborative, spam detection and filter network
+long_description	Vipul's Razor is a distributed, collaborative, spam \
+			detection and filtering network. Through user \
+			contribution, Razor establishes a distributed and \
+			constantly updating catalogue of spam in propagation \
+			that is consulted by email clients to filter out \
+			known spam.  Detection is done with statistical and \
+			randomized signatures that efficiently spot mutating \
+			spam content. User input is validated through \
+			reputation assignments based on consensus on report \
+			and revoke assertions which in turn is used for \
+			computing confidence values associated with \
+			individual signatures.
+
+homepage		http://razor.sourceforge.net/
+master_sites		sourceforge:razor
+checksums		md5 8b9a11a6ce020383c32c45d1530d77c2 \
+			sha1 53bcf78beeea36d8e20441a506c285ff0ef4b75a \
+			rmd160 204fc2b68ca6f01329676a62b36ca87be659565d
+
+platforms		darwin
+
+if {${perl5.major} != ""} {
+depends_lib-append	port:p${perl5.major}-net-dns \
+			port:p${perl5.major}-digest-sha1 \
+			port:p${perl5.major}-uri
+}
+use_bzip2		yes
+
+livecheck.url		${homepage}
+livecheck.regex		razor-agents-(\\d+(?:\\.\\d+)*)

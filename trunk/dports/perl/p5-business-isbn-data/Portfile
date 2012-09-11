@@ -1,0 +1,24 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup         Business-ISBN-Data 20081208
+revision            3
+maintainers         l2g
+license             Artistic GPL
+description         ISBN data required for use of Business::ISBN
+long_description    This package provides ISBN data used by the \
+                    Business::ISBN family of Perl modules to associate \
+                    countries with ISBN codes.  It has been made a separate \
+                    module so that it can be updated independently of the \
+                    Business::ISBN code.
+
+checksums           md5     e8edb53f04830344e20f61b02b6ed054 \
+                    sha1    0a401fb00864fa6db8c52dcbeb0a59dea7359e9d \
+                    rmd160  4a46921f470abd50e89f8cb23cfb335a64f25413
+
+platforms           darwin
+
+supported_archs     noarch

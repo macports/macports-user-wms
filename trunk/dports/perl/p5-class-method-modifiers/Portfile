@@ -1,0 +1,23 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           Class-Method-Modifiers 1.06
+revision              3
+maintainers           nomaintainer
+description           provides Moose-like method modifiers
+long_description      ${description}
+
+platforms             darwin
+
+checksums             md5 b320014bce41dfdb1f1320a0a5e6e76e \
+                      sha1 634548e83fd57d15f3124e62cae1e21d83ef78d5 \
+                      rmd160 ac0010de02b3fab975c888d0ca471141224c3bbb
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-test-exception
+
+supported_archs       noarch
+}

@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xvinfo
+version             1.1.1
+categories          x11
+maintainers         jeremyhu openmaintainer
+description         Print out X-Video extension adaptor information
+long_description    ${description}
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           md5     c88feb501083951a8f47a21aaeb1529d \
+                    sha1    dc326464748fa608da50386112a89024804c1910 \
+                    rmd160  347419fb77a42e660d16a2c85cedc36d195004c0
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libXv
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

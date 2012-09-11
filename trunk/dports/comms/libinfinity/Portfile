@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name            libinfinity
+version         0.5.2
+revision        1
+description     libinfinity is an implementation of the Infinote protocol written in GObject-based C.
+long_description ${description}
+maintainers     phw openmaintainer
+categories      comms
+license         LGPL-2+
+platforms       darwin
+homepage        http://gobby.0x539.de/trac/wiki/Infinote/Libinfinity
+master_sites    http://releases.0x539.de/libinfinity/
+
+checksums       rmd160  ba5440f0864711944770d67b25ca1a8307072efa \
+                sha256  940c9a4c5ab5925020bac48bd54295cdd1ae3bef7035191da95495ecc9daee9a
+
+depends_build   port:pkgconfig
+
+depends_lib     path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                port:gtk2 \
+                port:libxml2 \
+                port:gnutls \
+                port:libgsasl
+
+if {${configure.compiler} == "clang"} {
+    # libinfinity doesn't build with clang because some functions use g_return_if_fail() where they should use g_return_val_if_fail()
+    configure.compiler llvm-gcc-4.2
+}
+
+# /usr/bin/ranlib: library member: libinftestutil.a(libinfinity-0.5.la) is not an object file (not allowed in a library with multiple architectures)
+universal_variant no
+
+if {${os.platform} == "darwin" && ${os.major} >= 10} {
+    patchfiles-append patch-infinoted-infinoted-pam.c.diff
+}
+
+livecheck.type  regex
+livecheck.url   ${master_sites}
+livecheck.regex "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

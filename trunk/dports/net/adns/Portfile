@@ -1,0 +1,34 @@
+# $Id$
+
+PortSystem 1.0
+
+name             adns
+version          1.4
+categories       net
+maintainers      toby
+description      asynchronous DNS client library
+long_description \
+    adns is a resolver library for C (and C++) programs, and a \
+    collection of useful DNS resolver utilities.
+homepage         http://www.chiark.greenend.org.uk/~ian/adns/
+platforms        darwin
+
+license          GPL-2
+
+master_sites     ${homepage}ftp/ \
+                 ftp://ftp.chiark.greenend.org.uk/users/ian/adns/
+checksums        md5    88bc7bbf3f62a8d4fb186b8f72ead853 \
+                 sha1   87283c3bcd09ceb2e605e91abedfb537a18f1884 \
+                 rmd160 ccff2111bfa3eb99e28d355d48e9e17333f34394
+
+patchfiles       patch-configure \
+                 patch-client__Makefile.in \
+                 patch-dynamic__Makefile.in \
+                 patch-src__Makefile.in \
+                 patch-src__internal.h
+
+test.run         yes
+test.target      check
+
+livecheck.url    [lindex ${master_sites} 0]
+livecheck.regex  HREF=\"adns-(\[0-9\]+\\.\[0-9\]+)\\.tar\\.gz\"

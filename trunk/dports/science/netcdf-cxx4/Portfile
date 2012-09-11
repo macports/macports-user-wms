@@ -1,0 +1,60 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem                  1.0
+
+name                        netcdf-cxx4
+version                     4.2
+distname                    ${name}-${version}
+maintainers                 takeshi openmaintainer
+platforms                   darwin
+categories                  science
+license                     Permissive
+
+description                 NetCDF new C++ library
+long_description \
+    NetCDF (network Common Data Form) is a set of software libraries \
+    and machine-independent data formats that support the creation,  \
+    access, and sharing of array-oriented scientific data.
+
+homepage                    http://www.unidata.ucar.edu/software/netcdf/
+
+master_sites                ftp://ftp.unidata.ucar.edu/pub/netcdf/ \
+                            http://www.gfd-dennou.org/arch/netcdf/unidata-mirror/ \
+                            ftp://www.gfd-dennou.org/arch/netcdf/unidata-mirror/
+checksums           md5     d019853802092cf686254aaba165fc81 \
+                    sha1    59628c9f06c211a47517fc00d8b068da159ffa9d \
+                    rmd160  776927fe4869b5c4b9b4ee8f8b2a6e5643f002fd
+
+depends_lib         port:netcdf
+
+pre-configure {
+    if {[variant_isset openmpi]} {
+        set hdf5cc [exec grep "C Compiler" ${prefix}/lib/libhdf5.settings | awk {BEGIN{FS="/"}{print $NF}}]
+        if {${hdf5cc}!="openmpicc"} {
+            ui_error "Install hdf5-18 +openmpi"
+            return -code error "hdf5-18 +openmpi not installed"
+        }
+    }
+}
+
+configure.cppflags-append   -DNDEBUG
+configure.cxxflags-append   -fno-common
+configure.cflags-append     -fno-common
+
+test.run                    yes
+test.target                 check
+
+destroot.destdir            prefix=${destroot}${prefix}
+
+variant openmpi conflicts mpich2 description {compile with openmpi} {
+    depends_lib-append      port:openmpi
+    configure.cc            openmpicc
+    configure.cxx           openmpicxx
+}
+
+variant mpich2 conflicts openmpi description {compile with mpich2} {
+    depends_lib-append      port:mpich2
+    configure.cc            mpicc
+    configure.cxx           mpicxx
+}

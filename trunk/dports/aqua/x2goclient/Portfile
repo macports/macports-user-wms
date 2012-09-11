@@ -1,0 +1,57 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               qt4 1.0
+
+name                    x2goclient
+version                 3.99.2.1
+
+livecheck.url           http://code.x2go.org/releases/source/x2goclient/
+livecheck.regex         ${name}-(\\d+(?:\\.\\d+)*)\\.tar.gz
+
+categories              aqua net
+platforms               macosx
+license                 GPL-2+
+
+maintainers             cal openmaintainer
+
+description             vnc-like remote desktop software
+long_description        x2go is based on the (now closed source) NX libraries which provide \
+                        terminal server services.
+
+homepage                http://www.x2go.org/
+master_sites            http://code.x2go.org/releases/source/${name}/
+checksums               sha256  7976f653b703a55279d00a6a515a2b1d8c02c781e5e3c6949cb87504aa3de51d \
+                        rmd160  725af49a5bf2abb28de8981de2f46437724cfe07
+
+universal_variant       yes
+supported_archs         ppc i386 x86_64
+
+depends_build           port:qt4-mac
+depends_lib             port:qt4-mac \
+                        port:nxproxy \
+                        port:libssh \
+                        port:xorg-libX11
+
+worksrcdir              ${name}_${version}
+
+patchfiles              patch-x2goclient.pro-do-not-set-archflags.patch \
+                        patch-x2goclient.pro-remove-deployment-target.diff
+
+pre-configure {
+    system -W "${worksrcpath}" "${qt_lrelease_cmd} ${name}.pro"
+}
+
+configure.cmd           ${qt_qmake_cmd}
+configure.pre_args      PREFIX=${prefix}
+
+configure.args-append   CONFIG+=\"${qt_arch_types}\" \
+                        CONFIG-=\"sdk\"
+
+destroot {
+    copy ${worksrcpath}/${name}.app ${destroot}${applications_dir}
+    xinstall -d -m 755 ${destroot}${applications_dir}/${name}.app/Contents/exe
+    ln -s ${prefix}/bin/nxproxy ${destroot}${applications_dir}/${name}.app/Contents/exe/nxproxy
+}
+

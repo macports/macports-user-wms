@@ -1,0 +1,49 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+
+name            argus-clients
+version         3.0.2
+categories      net
+maintainers     googlemail.com:usx303 \
+                openmaintainer
+
+homepage        http://www.qosient.com/argus/
+description     Network Audit Record Generation and Utilization System
+long_description\
+    Argus is a real-time Flow Monitor that is designed to perform \
+    comprehensive IP network traffic auditing.
+
+platforms       darwin
+depends_build   port:flex port:bison
+depends_lib     path:bin/perl:perl5 \
+                port:rrdtool \
+                port:cyrus-sasl2 \
+                port:readline
+
+master_sites    http://qosient.com/argus/src/ \
+                ftp://qosient.com/pub/argus/src/
+checksums       md5 3d3e9f4ce0539f8320c38cd43fcecbc1\
+                sha1 332921e1cfcf1bd765391d27a744d4e731b7bd7d\
+                rmd160 4f698d1404b833c845427c40e9dcccc637f8fc81
+
+configure.cflags-append -std=gnu89
+configure.args  --with-sasl=${prefix}
+
+variant no_ragraph description {Build without ragraph (no dependencies on rrdtool)} {
+    depends_lib-delete port:rrdtool
+}
+
+post-destroot   {
+    move "${destroot}${prefix}/argus" "${destroot}${prefix}/share/argus"
+    delete "${destroot}${prefix}/bin/argusbug"
+    if {[variant_isset no_ragraph]} {
+        delete "${destroot}${prefix}/bin/ragraph"
+    } else {
+        reinplace "s|#! /usr/bin/perl|#! ${prefix}/bin/perl|" ${destroot}${prefix}/bin/ragraph
+    }
+    foreach script {radark rahosts raports} {
+        reinplace "s|#! /usr/bin/perl|#! ${prefix}/bin/perl|" ${destroot}${prefix}/bin/${script}
+    }
+}

@@ -1,0 +1,25 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           Template-Timer 1.00
+revision              3
+license               {Artistic-2 GPL-3}
+maintainers           nomaintainer
+description           Rudimentary profiling for Template Toolkit
+long_description      Template::Timer provides inline timings of the \
+                      template processing througout your code.
+
+platforms             darwin
+
+checksums             md5 b7d488e5a1fd4f8171c5f81183921dc2 \
+                      sha1 909dcec55edc4f6957f74f6db554138849befcc2 \
+                      rmd160 23f4259205563cf4c0133d0c6853127386ff628d
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-template-toolkit
+
+supported_archs noarch
+}

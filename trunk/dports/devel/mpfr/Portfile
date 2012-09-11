@@ -1,0 +1,75 @@
+# $Id$
+
+PortSystem 1.0
+
+# Although mpfr builds without a custom universal variant,
+# it is not the same as builing the archs differently
+# due to the variable HAVE_LDOUBLE_IEEE_EXT_LITTLE.
+PortGroup  muniversal 1.0
+
+name                mpfr
+set base_version    3.1.0
+set patch_level     3
+version             ${base_version}-p${patch_level}
+#version             ${base_version}
+revision            1
+categories          devel math
+platforms           darwin
+license             LGPL-3+
+maintainers         nomaintainer
+
+description     C library for multiple-precision floating-point computations
+long_description \
+    MPFR is a portable C library for arbitrary-precision binary \
+    floating-point computation with correct rounding, based on the GMP \
+    multiple-precision library. The computation is both efficient and \
+    has a well-defined semantics. It copies the good ideas from the \
+    ANSI/IEEE-754 standard for fixed-precision floating-point arithmetic.
+
+distname            ${name}-${base_version}
+homepage            http://www.mpfr.org/
+master_sites        http://www.mpfr.org/${distname}/
+
+use_xz              yes
+
+checksums \
+    patch01 \
+        md5     ec988293368d4988c76f50d6a3460166 \
+        sha1    c9c05e00aee2ff787ca948265aa310fc23dca72d \
+        rmd160  feed44566c2675fe0320e35eb52bed3525cfaf61 \
+    patch02 \
+        md5     0fb8e0f5420638332f7d79c23d84c154 \
+        sha1    70b4669d2e05b1ca72c24ada0334627616b4e82a \
+        rmd160  9b93f7ceab73745e7094ca77e06bb881030f97a7 \
+    patch03 \
+        md5     632b435c8c63b667f0831e39f736614d \
+        sha1    1da101f115cff587422b746a3fdcf6943b841d41 \
+        rmd160  c8f28185a576df037b573701084fda423a84060f \
+    [suffix ${distname}] \
+        md5     6e495841bb026481567006cec0f821c3 \
+        sha1    fae7d5b1e607c9208f0076d6931ff44dc169e143 \
+        rmd160  21bf56fce66a0e3851da069806683061d290c7ab
+
+use_parallel_build  yes
+
+depends_lib     port:gmp
+
+dist_subdir     ${name}/${base_version}
+
+patch_sites     ${master_sites}
+patch.args      -p1
+
+for {set i 1} {${i} <= ${patch_level}} {incr i} {
+    patchfiles-append patch[format %02d ${i}]
+}
+
+# Due to radr://10291355 (llvm.org PR11111), the new tls support enabled in clang with Xcode 4.2
+# miscompiles mpfr. While this was fixed in Xcode 4.2.1, as the ttls support was never used prior to
+# Xcode 4.2, the generic fix is to pass --disable-thread-safe to configure.
+configure.args  --disable-thread-safe
+
+test.run        yes
+test.target     check
+
+livecheck.url    http://www.mpfr.org/mpfr-current/
+livecheck.regex  "mpfr-(\\d+(?:\\.\\d+)*)${extract.suffix}"

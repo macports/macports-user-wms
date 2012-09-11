@@ -1,0 +1,40 @@
+# $Id$
+
+PortSystem          1.0
+
+name                irsim
+version             9.7.74
+license             GPL-2
+categories          science
+maintainers         and.damore openmaintainer
+description         IRSIM, a switch level simulator for digital circuits
+long_description    IRSIM is switch level simulator for digital circuits, it treats \
+                    transistors as ideal switches. Extracted capacitance and lumped \
+                    resistance values are used to make the switch a little bit more \
+                    realistic than the ideal, using the RC time constants to predict the \
+                    relative timing of events.
+
+homepage            http://opencircuitdesign.com/irsim/
+platforms           darwin
+
+master_sites        http://opencircuitdesign.com/irsim/archive
+
+checksums           md5     46fbe2c9b9a7875162318a9ae69e4dd9 \
+                    sha1    c903dcbe3462dabbfc3ef87e9a648d056a2a1ff1 \
+                    rmd160  22002d4caf5e25689370c7dc000d2d3d5aa18b2b
+
+extract.suffix      .tgz
+
+depends_lib         port:tcl \
+                    port:tk \
+                    port:xorg-libXt
+
+build.env-append    LIBS="-L${prefix}/lib"
+configure.args      --mandir=${prefix}/share/man
+
+post-destroot {
+    xinstall -d -m 755 ${destroot}${prefix}/share/doc
+    file rename ${destroot}${prefix}/lib/${name}/doc ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} COPYRIGHT README VERSION ${destroot}${prefix}/share/doc/${name}
+}
+

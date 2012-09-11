@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                qore-uuid-module
+version             1.1
+categories          lang
+license             LGPL-2.1
+maintainers         davidnichols
+description         uuid module for Qore
+long_description    Module providing the ability to generate, manipulate and parse uuids
+homepage            http://qore.org
+platforms           darwin
+master_sites        sourceforge:qore
+
+checksums           md5 1376f7bbc12818e9cecb88520e16729b \
+                    sha1 2568a479dc179a31af4a16a30cf8e4a75a3840ce \
+                    rmd160 159e58d30c4b99574c58bf6daea506e34abc3222
+
+depends_lib         port:qore \
+                    port:ossp-uuid
+
+configure.args      --disable-debug

@@ -1,0 +1,89 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-psycopg2
+version             2.4.5
+python.versions     25 26 27 31 32
+python.default_version  27
+categories          python databases
+maintainers         snc openmaintainer
+license             LGPL-3+
+platforms           darwin freebsd
+
+description         A python DBAPI-2.0-compliant database adapter for postgresql
+
+long_description    Psycopg2 is a postgresql database adapter for python. \
+                    It's fully compliant to python's DBAPI-2.0. psycopg is \
+                    designed for heavily multi-threaded applications \
+                    featuring connection pooling.
+
+homepage            http://www.initd.org/software/initd/psycopg/
+
+set branch          [join [lrange [split ${version} .] 0 1] -]
+master_sites        http://www.psycopg.org/psycopg/tarballs/PSYCOPG-${branch}/
+distname            psycopg2-${version}
+
+checksums           rmd160  4de915ed108a60ccb7f52e67d7d1e3700a38cd28 \
+                    sha256  48b702a7ca479e1bc2c1a7b81875a07d474298132605993e2cb979f5e08277d7
+
+if {$subport != $name} {
+    depends_lib-append  port:openssl
+
+    patchfiles      patch-setup.cfg.diff
+
+    post-patch {
+
+        if {[variant_isset postgresql83]} {
+            reinplace \
+                s|@PG_CONFIG@|${prefix}/lib/postgresql83/bin/pg_config|g \
+                ${worksrcpath}/setup.cfg
+        }
+
+        if {[variant_isset postgresql84]} {
+            reinplace \
+                s|@PG_CONFIG@|${prefix}/lib/postgresql84/bin/pg_config|g \
+                ${worksrcpath}/setup.cfg
+        }
+
+        if {[variant_isset postgresql90]} {
+            reinplace \
+                s|@PG_CONFIG@|${prefix}/lib/postgresql90/bin/pg_config|g \
+                ${worksrcpath}/setup.cfg
+        }
+
+        if {[variant_isset postgresql91]} {
+            reinplace \
+                s|@PG_CONFIG@|${prefix}/lib/postgresql91/bin/pg_config|g \
+                ${worksrcpath}/setup.cfg
+        }
+    }
+
+    livecheck.type      none
+} else {
+    livecheck.url       ${master_sites}
+    livecheck.regex     psycopg2-(\\d+(\\.\\d+)+)${extract.suffix}
+}
+
+
+if {![variant_isset postgresql83] && ![variant_isset postgresql84] && ![variant_isset postgresql90] && ![variant_isset postgresql91]} {
+    default_variants    +postgresql90
+}
+
+variant postgresql83 conflicts postgresql84 postgresql90 postgresql91 description "Build using postgresql v8.3" {
+    depends_lib-append  port:postgresql83
+}
+
+variant postgresql84 conflicts postgresql83 postgresql90 postgresql91 description "Build using postgresql v8.4" {
+    depends_lib-append  port:postgresql84
+}
+
+variant postgresql90 conflicts postgresql83 postgresql84 postgresql91 description "Build using postgresql v9.0" {
+    depends_lib-append  port:postgresql90
+}
+
+variant postgresql91 conflicts postgresql83 postgresql84 postgresql90 description "Build using postgresql v9.1" {
+    depends_lib-append  port:postgresql91
+}

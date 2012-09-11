@@ -1,0 +1,40 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem      1.0
+
+name            folks
+version         0.4.3
+license         LGPL-2.1
+set branch      [join [lrange [split ${version} .] 0 1] .]
+categories      gnome comms
+platforms       darwin
+maintainers     devans openmaintainer
+description     A library that aggregates people from multiple sources to create metacontacts.
+
+long_description \
+                Folks provides  a library (libfolks)  that aggregates people from multiple sources \
+                (eg, Telepathy connection managers and eventually evolution data server, Facebook, etc.) \
+                to create metacontacts. libfolks is under heavy development and not yet API/ABI-stable.
+
+homepage        http://telepathy.freedesktop.org/wiki/Folks
+master_sites    gnome:sources/${name}/${branch}/
+
+use_bzip2       yes
+
+checksums       sha1    f3c08a828bc06282745d57d7d007b9b281a04c76 \
+                rmd160  8afa36c6969393ec11fb6436d463576fac3ab195
+
+depends_build   port:pkgconfig \
+                port:vala \
+                port:intltool
+
+depends_lib     port:libgee \
+                port:telepathy-glib \
+                port:libxml2
+
+configure.args  --enable-vala
+
+livecheck.type  regex
+livecheck.url   ftp://ftp.gnome.org/pub/gnome/sources/$name/$branch/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

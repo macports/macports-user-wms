@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-mock
+set real_name       mock
+version             0.8.0
+python.versions     24 25 26 27 31 32
+categories-append   devel
+platforms           darwin
+license             BSD
+maintainers         singingwolfboy openmaintainer
+description         A Python Mocking and Patching Library for Testing
+long_description  \
+    mock is a Python module that provides a core Mock class. It removes the \
+    need to create a host of stubs throughout your test suite. After \
+    performing an action, you can make assertions about which methods / \
+    attributes were used and arguments they were called with. You can also \
+    specify return values and set needed attributes in the normal way.
+
+homepage            http://www.voidspace.org.uk/python/mock/
+master_sites        http://pypi.python.org/packages/source/m/${real_name}
+distname            ${real_name}-${version}
+checksums           rmd160  1ce268be84b8182331d4fba29b40dfd7d1b60c34 \
+                    sha256  96fa4def4e80200be827c3f51147dd7b3fa8873b9207e3325d47ba45bf29a5c1

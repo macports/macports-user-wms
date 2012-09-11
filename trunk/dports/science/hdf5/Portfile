@@ -1,0 +1,123 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                hdf5
+version             1.6.9
+revision            2
+categories          science
+license             NCSA
+maintainers         nomaintainer
+
+description         HDF5 general purpose library and file format for storing scientific data
+long_description    ${description}
+homepage            http://www.hdfgroup.org/HDF5/
+platforms           darwin
+conflicts           hdf5-18
+master_sites        ftp://ftp.hdfgroup.org/HDF5/current16/src/ \
+                    ftp://ftp.hdfgroup.org/HDF5/prev-releases/hdf5-${version}/src/
+
+checksums           md5 751eb3317a47e7c58978e1c3a13a93fc \
+                    sha1 0481ce8cf2e62b9b10418065901369d4e0dbb4dc \
+                    rmd160 05ca8a3229bdd6e214d0e843afc065d0fe9f47c7
+
+depends_lib         port:zlib
+patchfiles          patch-commence.diff patch-c-commence.diff \
+                    patch-fortran-commence.diff patch-H5f90i.diff \
+                    patch-configure.diff patch-c++_configure.diff \
+                    patch-fortran_configure.diff
+
+universal_variant   no
+
+use_parallel_build  yes
+configure.ccache    no
+
+configure.args      --enable-cxx --with-zlib=yes --with-szlib=no --enable-shared
+configure.ldflags   -L${worksrcpath}/src/.libs -L${prefix}/lib
+
+if {${os.platform} == "darwin" && [string match *64 $build_arch]} {
+    configure.args-append --build=${build_arch}-apple-${os.platform}${os.version}
+}
+
+post-destroot {
+    # remove h5perf, which is pretty useless and would cause a rev-upgrade warning because it links
+    # against libh5test.dylib, which is not being installed
+    file delete ${destroot}${prefix}/bin/h5perf
+}
+
+destroot.destdir    prefix=${destroot}${prefix}
+
+test.run            yes
+test.target         check
+
+
+# variant descriptions
+
+variant fortran description {Include the Fortran interface} {
+    configure.args-delete   --disable-fortran
+    configure.args-append   --enable-fortran
+    pre-fetch {
+        if { ![variant_isset gcc45] && ![variant_isset gcc44] && ![variant_isset gcc43] && ![variant_isset gcc42] && ![variant_isset g95] } {
+            error "You must specify a compiler variant in order to build the Fortran interface"
+        }
+    }
+}
+
+variant szip description {Enable szip compression support} {
+    configure.args-delete       --with-szlib=no
+    configure.args-append       --with-szlib=yes
+    depends_lib-append          port:szip
+}
+
+variant threadsafe description {Enable threadsafety (experimental, fails unit-tests)} {
+    configure.args-delete       --disable-threadsafe
+    configure.args-append       --enable-threadsafe
+}
+
+
+variant gcc42 conflicts g95 gcc43 gcc44 gcc45 description {Compile using GCC 4.2} {
+    depends_lib-append          port:gcc42
+    configure.compiler          macports-gcc-4.2
+}
+
+variant gcc43 conflicts g95 gcc42 gcc44 gcc45 description {Compile using GCC 4.3} {
+    depends_lib-append          port:gcc43
+    configure.compiler          macports-gcc-4.3
+    configure.env-append        LD=${prefix}/bin/g++-mp-4.3
+}
+
+variant gcc44 conflicts g95 gcc42 gcc43 gcc45 description {Compile using GCC 4.4} {
+    depends_lib-append          port:gcc44
+    configure.compiler          macports-gcc-4.4
+    configure.env-append        LD=${prefix}/bin/g++-mp-4.4
+}
+
+variant gcc45 conflicts g95 gcc42 gcc43 gcc44 description {Compile using GCC 4.5} {
+    depends_lib-append          port:gcc45
+    configure.compiler          macports-gcc-4.5
+    configure.env-append        LD=${prefix}/bin/g++-mp-4.5
+}
+
+variant g95 requires fortran conflicts gcc42 gcc43 gcc44 gcc45 description {Use g95 Fortran compiler (unsupported)} {
+    depends_lib-append          port:g95
+    patchfiles-append           patch-powerpc-apple.diff
+    configure.fc                ${prefix}/bin/g95
+}
+
+variant optimized description {Higher compiler optimization for host machine (esp. for gcc43/gcc44)} {
+    configure.optflags-delete     -O2
+    configure.optflags-append     -ftree-vectorize -O3
+    if { [variant_isset gcc43] || [variant_isset gcc44] } {
+        configure.optflags-append     -march=native
+    }
+}
+
+variant mpich2 description {Parallel HDF5 with mpich2 (disables C++)} {
+    depends_lib-append          port:mpich2
+    configure.args-delete       --enable-cxx
+    configure.cc                ${prefix}/bin/mpicc
+    if { [variant_isset fortran] } {
+       configure.fc             ${prefix}/bin/mpif90
+    }
+}

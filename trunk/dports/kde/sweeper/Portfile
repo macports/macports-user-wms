@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           kde4   1.1
+
+name                sweeper
+version             4.8.3
+revision            1
+categories          kde kde4
+license             GPL-2+
+maintainers         nicos openmaintainer
+description         Clean unwanted traces from your system.
+long_description    Sweeper helps to clean unwanted traces the \
+                    user leaves on the system.
+platforms           darwin
+homepage            http://utils.kde.org/projects/sweeper/
+master_sites        kde:stable/${version}/src
+use_xz              yes
+distname            ${name}-${version}
+checksums           rmd160  7b6780cfd8cf711125cf3f8275e266c72cde4b65 \
+                    sha256  08a30e03af4e3baaefeddca46a86e6ec514cbaf76173e59e908947354dae2836
+
+depends_lib-append  port:kdelibs4 \
+                    port:oxygen-icons
+
+if {![variant_isset docs]} {
+    patchfiles      patch-CMakeLists.txt.diff
+}
+
+livecheck.url       http://kde.mirrors.hoobly.com/stable/latest/src
+livecheck.regex     ${name}-(\\d+\\.\\d+\\.\\d+)${extract.suffix}

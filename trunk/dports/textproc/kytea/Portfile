@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                kytea
+version             0.4.2
+categories          textproc japanese
+maintainers         hum openmaintainer
+
+description         a word segmentation/pronunciation estimation tool
+long_description    Kyoto Text Analysis Toolkit (KyTea, pronounced \"cutie\") is \
+                    a general toolkit developed for analyzing text, with a focus \
+                    on Japanese, Chinese and other languages requiring word or \
+                    morpheme segmentation.
+
+homepage            http://www.phontron.com/kytea/
+platforms           darwin
+license             Apache-2
+
+master_sites        ${homepage}download/
+checksums           rmd160  83183f3419bc4c59594acdc3846c9a48d7091b23 \
+                    sha256  53c4f13dd37d40a60dad221b456f0d0dd547219b124855f62402a2e6b013818d
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS COPYING ChangeLog NEWS README \
+        ${docdir}
+}
+
+livecheck.type      regex
+livecheck.url       [lindex ${master_sites} 0]
+livecheck.regex     ${name}-(\[0-9.\]+)\\.tar

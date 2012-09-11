@@ -1,0 +1,125 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                libsvm
+epoch               1
+version             3.12
+categories          math
+maintainers         hum openmaintainer
+license             BSD
+platforms           darwin
+
+description         A free Support Vector Machine implementation.
+
+long_description    ${description} By Chih-Chung Chang and Chih-Jen Lin of       \
+                    National Taiwan University. \"LIBSVM is an integrated        \
+                    software for support vector classification, (C-SVC, nu-SVC), \
+                    regression (epsilon-SVR, nu-SVR) and distribution estimation \
+                    (one-class SVM ). It supports multi-class classification.\"
+
+homepage            http://www.csie.ntu.edu.tw/~cjlin/libsvm/
+master_sites        ${homepage}
+checksums           rmd160  1058df24d9ecca928144425099c69ee268d61330 \
+                    sha256  9dcd7a301665d2cbd8c109bba0e8cc2d47b5cc2a9c46aeb359f2dab67be69f74
+
+patchfiles          patch-Makefile.diff
+
+use_configure       no
+
+set libver          ${version}.0
+build.target        all
+build.args          CXX="${configure.cxx} ${configure.cxx_archflags}" \
+                    PREFIX=${prefix} \
+                    VERSION=${libver}
+
+set libsvm_dir      ${prefix}/share/${name}
+
+destroot {
+    xinstall -m 755 -W ${worksrcpath} svm-train svm-predict svm-scale ${destroot}${prefix}/bin
+    xinstall -m 644 -W ${worksrcpath} libsvm.a libsvm.${libver}.dylib ${destroot}${prefix}/lib
+    xinstall -m 644 -W ${worksrcpath} svm.h ${destroot}${prefix}/include
+
+    ln -sf ${name}.${libver}.dylib ${destroot}${prefix}/lib/${name}.dylib
+
+    xinstall -m 755 -d ${destroot}${libsvm_dir}
+    xinstall -m 644 -W ${worksrcpath} COPYRIGHT README FAQ.html heart_scale ${destroot}${libsvm_dir}
+
+    # install python interface.
+    xinstall -m 755 -d ${destroot}${libsvm_dir}/python
+    xinstall -m 644 -W ${worksrcpath}/python README svm.py svmutil.py ${destroot}${libsvm_dir}/python
+}
+
+variant java description {Install Java JAR files} {
+    depends_lib-append  bin:java:kaffe
+
+    post-destroot {
+        set jdir ${destroot}${prefix}/share/java
+        xinstall -m 755 -d ${jdir}
+        file rename ${worksrcpath}/java ${jdir}/${name}
+    }
+}
+
+variant python24 description {Install Python 2.4 interface} {
+    depends_lib-append  port:python24
+    post-destroot { install_py 2.4 }
+}
+
+variant python25 description {Install Python 2.5 interface} {
+    depends_lib-append  port:python25
+    post-destroot { install_py 2.5 }
+}
+
+variant python26 description {Install Python 2.6 interface} {
+    depends_lib-append  port:python26
+    post-destroot { install_py 2.6 }
+}
+
+variant python27 description {Install Python 2.7 interface} {
+    depends_lib-append  port:python27
+    post-destroot { install_py 2.7 }
+}
+
+variant python31 description {Install Python 3.1 interface} {
+    depends_lib-append  port:python31
+    post-destroot { install_py 3.1 }
+}
+
+variant python32 description {Install Python 3.2 interface} {
+    depends_lib-append  port:python32
+    post-destroot { install_py 3.2 }
+}
+
+proc install_py {branch} {
+    global frameworks_dir destroot worksrcpath
+    set py_prefix  ${frameworks_dir}/Python.framework/Versions/${branch}
+    set dir        ${destroot}${py_prefix}/lib/python${branch}/site-packages
+    xinstall -m 755 -d ${dir}
+    xinstall -m 644 -W ${worksrcpath}/python svm.py svmutil.py ${dir}
+}            
+
+# TODO: matlab and svm-toy.
+
+variant tools description {Install useful tools} {
+    depends_lib-append  port:gnuplot
+
+    # fselect.py, plotroc.py and gridregression.py are taken from
+    # http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/:
+    # fselect/fselect.py, roc/plotroc.py, gridsvr/gridregression.py
+    post-destroot {
+        file rename ${worksrcpath}/tools ${destroot}${libsvm_dir}
+        xinstall -m 755 -W ${filespath} \
+            fselect.py plotroc.py gridregression.py       ${destroot}${libsvm_dir}/tools
+        foreach py {easy.py grid.py fselect.py plotroc.py gridregression.py} {
+            reinplace "s|\"\\.\\./|\"${prefix}/bin/|g"    ${destroot}${libsvm_dir}/tools/${py}
+            reinplace "s|\"\\./|\"${libsvm_dir}/tools/|g" ${destroot}${libsvm_dir}/tools/${py}
+            reinplace "s|\"/usr/bin/|\"${prefix}/bin/|g"  ${destroot}${libsvm_dir}/tools/${py}
+        }
+    }
+}
+
+default_variants    +java +tools
+
+livecheck.type      regex
+livecheck.regex     {Version ([0-9.]+) }

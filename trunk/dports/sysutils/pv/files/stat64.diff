@@ -1,0 +1,100 @@
+--- src/pv/file.c.orig	2012-06-26 04:37:50.000000000 -0500
++++ src/pv/file.c	2012-07-21 11:18:47.000000000 -0500
+@@ -37,27 +37,27 @@
+  */
+ void pv_calc_total_size(opts_t opts)
+ {
+-	struct stat64 sb;
++	struct stat sb;
+ 	int rc, i, j, fd;
+ 
+ 	opts->size = 0;
+ 	rc = 0;
+ 
+ 	if (opts->argc < 1) {
+-		if (fstat64(STDIN_FILENO, &sb) == 0)
++		if (fstat(STDIN_FILENO, &sb) == 0)
+ 			opts->size = sb.st_size;
+ 		return;
+ 	}
+ 
+ 	for (i = 0; i < opts->argc; i++) {
+ 		if (strcmp(opts->argv[i], "-") == 0) {
+-			rc = fstat64(STDIN_FILENO, &sb);
++			rc = fstat(STDIN_FILENO, &sb);
+ 			if (rc != 0) {
+ 				opts->size = 0;
+ 				return;
+ 			}
+ 		} else {
+-			rc = stat64(opts->argv[i], &sb);
++			rc = stat(opts->argv[i], &sb);
+ 			if (rc == 0)
+ 				rc = access(opts->argv[i], R_OK);
+ 		}
+@@ -109,14 +109,14 @@
+ 		fd = -1;
+ 
+ 		if (strcmp(opts->argv[i], "-") == 0) {
+-			rc = fstat64(STDIN_FILENO, &sb);
++			rc = fstat(STDIN_FILENO, &sb);
+ 			if ((rc != 0) || (!S_ISREG(sb.st_mode))) {
+ 				opts->size = 0;
+ 				return;
+ 			}
+ 			fd = dup(STDIN_FILENO);
+ 		} else {
+-			rc = stat64(opts->argv[i], &sb);
++			rc = stat(opts->argv[i], &sb);
+ 			if ((rc != 0) || (!S_ISREG(sb.st_mode))) {
+ 				opts->size = 0;
+ 				return;
+@@ -167,8 +167,8 @@
+  */
+ int pv_next_file(opts_t opts, int filenum, int oldfd)
+ {
+-	struct stat64 isb;
+-	struct stat64 osb;
++	struct stat isb;
++	struct stat osb;
+ 	int fd;
+ 
+ 	if (oldfd > 0) {
+@@ -206,7 +206,7 @@
+ 		}
+ 	}
+ 
+-	if (fstat64(fd, &isb)) {
++	if (fstat(fd, &isb)) {
+ 		fprintf(stderr, "%s: %s: %s: %s\n",
+ 			opts->program_name,
+ 			_("failed to stat file"),
+@@ -216,7 +216,7 @@
+ 		return -1;
+ 	}
+ 
+-	if (fstat64(STDOUT_FILENO, &osb)) {
++	if (fstat(STDOUT_FILENO, &osb)) {
+ 		fprintf(stderr, "%s: %s: %s\n",
+ 			opts->program_name,
+ 			_("failed to stat output file"), strerror(errno));
+--- src/pv/loop.c.orig	2012-06-26 04:37:50.000000000 -0500
++++ src/pv/loop.c	2012-07-21 11:18:47.000000000 -0500
+@@ -63,7 +63,7 @@
+ 	struct timeval start_time, next_update, next_ratecheck, cur_time;
+ 	struct timeval init_time;
+ 	long double elapsed;
+-	struct stat64 sb;
++	struct stat sb;
+ 	int fd, n;
+ 
+ 	/*
+@@ -111,7 +111,7 @@
+ 		return opts->exit_status;
+ 	}
+ 
+-	if (fstat64(fd, &sb) == 0) {
++	if (fstat(fd, &sb) == 0) {
+ 		pv_set_buffer_size(sb.st_blksize * 32, 0);
+ 	}
+ 

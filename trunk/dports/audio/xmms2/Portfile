@@ -1,0 +1,96 @@
+# $Id$
+
+PortSystem              1.0
+
+name                    xmms2
+version                 0.8DrO_o
+revision		1
+categories              audio
+maintainers             nomaintainer
+homepage                http://xmms2.org/
+platforms               darwin
+master_sites            sourceforge:project/xmms2/xmms2/[regsub {^([0-9.]+)} ${version} {\1%20}]
+use_bzip2               yes
+
+description             CrossPlatform Music Multiplexer System
+long_description        Next generation audio player of XMMS
+
+checksums               rmd160  35513d7eddd5f79146cb8aa5c6c0bb35369619ec \
+                        sha256  c77e41e7bd5788889d5a2f78331ca8c748b8721bd2e59f36c36ad4c7cae8694a
+
+depends_build           port:python26 \
+                        port:pkgconfig
+depends_lib             path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                        port:gettext \
+                        port:libiconv \
+                        port:libxml2 \
+                        port:curl \
+                        port:openssl \
+                        port:zlib \
+                        port:sqlite3 \
+                        port:libao \
+                        port:libmad \
+                        port:libogg \
+                        port:libvorbis \
+                        port:flac \
+                        path:lib/libavcodec.dylib:ffmpeg \
+                        port:libdiscid \
+                        port:faad2 \
+                        port:fftw-3 \
+                        port:libmms \
+                        port:libmodplug \
+                        port:libmpcdec \
+                        port:mpg123 \
+                        port:readline \
+                        port:libsamplerate \
+                        path:lib/pkgconfig/sdl.pc:libsdl \
+                        path:lib/libspeex.dylib:speex \
+                        port:wavpack
+
+configure.python        ${prefix}/bin/python2.6
+
+post-patch {
+    foreach f [glob -directory ${worksrcpath} waf waf-light wafadmin/*.py wafadmin/*/*.py waftools/ruby.py] {
+        reinplace "s|^#! */usr/bin/env python\$|#!${configure.python}|" ${f}
+    }
+}
+
+configure.cmd           ./waf configure
+configure.args          --conf-prefix=${prefix} --nocache
+configure.universal_args-delete --disable-dependency-tracking
+
+build.cmd               ./waf
+build.target            build
+
+destroot.destdir        --destdir=${destroot}
+
+variant cpp description {C++ development support} {
+    depends_lib-append port:boost
+}
+if {![variant_isset cpp]} {
+    configure.args-append --without-optionals xmmsclient++,xmmsclient++-glib
+}
+
+variant perl description {Perl development support} {
+    depends_lib-append port:perl5
+}
+if {![variant_isset perl]} {
+    configure.args-append --without-optionals perl
+}
+
+variant ruby description {Ruby development support} {
+    depends_lib-append port:ruby
+}
+if {![variant_isset ruby]} {
+    configure.args-append --without-optionals ruby
+}
+
+# Python is currently undetectable. Disabled temporarily
+#variant python description {Python development support} {
+#    depends_lib-append port:python26 port:py26-pyrex
+#}
+#if {![variant_isset python]} {
+#    configure.args-append --without-optionals python
+#}
+
+livecheck.regex         /${name}-(.+)${extract.suffix}

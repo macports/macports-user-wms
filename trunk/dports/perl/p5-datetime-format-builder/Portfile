@@ -1,0 +1,34 @@
+# $Id$
+
+PortSystem                1.0
+PortGroup                 perl5 1.0
+
+epoch                     1
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup               DateTime-Format-Builder 0.80
+revision                  3
+license                   {Artistic-1 GPL}
+maintainers               nomaintainer
+description               Create DateTime parser classes and objects
+long_description          DateTime::Format::Builder creates DateTime \
+                          parsers. Many string formats of dates and times \
+                          are simple and just require a basic regular \
+                          expression to extract the relevant information. \
+                          Builder provides a simple way to do this without \
+                          writing reams of structural code.
+
+platforms                 darwin
+
+checksums                 md5 f6c5d5a17b5b7478ff555a2d3cce5136 \
+                          sha1 5c0420118aedc68b9dfbafe4c78a993899c31005 \
+                          rmd160 6db6ae1c4c559ff666dc9aeecbb845e435700823
+
+if {${perl5.major} != ""} {
+depends_lib-append        port:p${perl5.major}-class-factory-util \
+                          port:p${perl5.major}-datetime \
+                          port:p${perl5.major}-datetime-format-strptime \
+                          port:p${perl5.major}-params-validate \
+                          port:p${perl5.major}-task-weaken
+
+perl5.use_module_build
+}

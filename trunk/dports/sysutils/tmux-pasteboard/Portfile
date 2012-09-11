@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup   github  1.0
+
+github.setup        ChrisJohnsen tmux-MacOSX-pasteboard 1.1 v
+name                tmux-pasteboard
+license             BSD
+categories          sysutils
+maintainers         and.damore openmaintainer
+platforms           darwin
+description         Wrapper to use pasteboard services in tmux
+long_description    ${description}
+
+checksums           rmd160  8fcb2d2f2f6ed6240e803eff7e07d0efa74a2b50 \
+                    sha256  df83ee5652648cc6f474475f2d39ec07f9860960f7604f4e916bdd46b1b75799
+
+use_configure       no
+
+variant universal {}
+
+build.args          ARCHES="[get_canonical_archs]"
+
+build.env           CC="${configure.cc}" \
+                    CFLAGS="-I${prefix}/include" \
+                    LDFLAGS="-L${prefix}/lib"
+
+build.target        reattach-to-user-namespace
+
+destroot {
+    xinstall -m 755 ${worksrcpath}/reattach-to-user-namespace ${destroot}${prefix}/bin/
+}
+
+notes "To enable tmux-MacOSX-pasteboard add following line to ~/.tmux.conf replacing 'bash' with your actual shell:" \
+    "set-option -g default-command \"${prefix}/bin/reattach-to-user-namespace bash\"" 
+

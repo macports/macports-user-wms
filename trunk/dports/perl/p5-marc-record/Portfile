@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem	1.0
+PortGroup	perl5 1.0
+
+categories	perl
+platforms	darwin
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup	MARC-Record 2.0.1
+revision    3
+license	{Artistic GPL}
+maintainers	nomaintainer
+description	MARC record implementation for perl
+long_description The MARC::* series of modules create a simple \
+		object-oriented abstraction of MARC record handling. \
+		MARC::Record is the core class for representing a \
+		single MARC record.
+
+checksums	md5 84e20228c086b9d0e0334dba93d851d2 \
+		sha1 e6a0a64f053d873a00c306044221c3885daada28 \
+		rmd160 4b22056463d371b10a5b753738173d0f045e2ec8
+
+supported_archs noarch

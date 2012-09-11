@@ -1,0 +1,34 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           ocaml 1.0
+
+name                ocaml-lwt
+version             2.4.1
+distname            lwt-${version}
+categories          devel ml
+maintainers         mww openmaintainer
+license             {LGPL-2.1 OpenSSLException}
+description         Cooperative threading library for OCaml
+long_description    LWT is a lightweight thread library for OCaml to implement \
+                    co-operative concurrency.
+homepage            http://ocsigen.org/lwt
+platforms           darwin
+master_sites        http://ocsigen.org/download/
+
+depends_lib         port:ocaml port:ocaml-findlib port:ocaml-ssl \
+                    port:ocaml-react port:ocaml-text port:libev
+
+checksums           rmd160  5c17467e4ba97f08c4e8a0165f9554e924184227 \
+                    sha256  5c12a311a168d28f19c10e087a846be9548acc8bd038e441112b91dc5b0d231f
+
+use_oasis           yes
+use_oasis_doc       yes
+
+configure.args-append "--enable-react --enable-ssl --override docdir ${destroot}${prefix}/share/doc/${name}"
+
+livecheck.type      regex
+livecheck.url       http://ocsigen.org/download/
+livecheck.version   ${version}
+livecheck.regex     {>lwt-(.*)\.tar\.gz\.asc}
+

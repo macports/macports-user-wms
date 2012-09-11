@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                liboauth
+version             0.9.4
+categories          net
+platforms           darwin
+maintainers         nomaintainer
+
+description         collection of POSIX-c functions implementing the OAuth Core \
+                    RFC 5849 standard
+
+long_description    ${description}
+
+homepage            http://liboauth.sourceforge.net/
+master_sites        sourceforge
+
+checksums           sha1    9c48dcfe9bb2f7b0fa4825e645056bdf77640454 \
+                    rmd160  afe4e2e1266e13c16b501470d41a61e1bcdc2192
+
+depends_build       port:autoconf \
+                    port:libtool \
+                    port:pkgconfig
+
+depends_lib         port:openssl \
+                    port:curl
+
+livecheck.type      regex
+livecheck.url       http://iweb.dl.sourceforge.net/project/liboauth/
+livecheck.regex     "${name}\.(\\d+(?:\\.\\d+)+)\.tar\.gz"

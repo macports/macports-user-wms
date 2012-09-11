@@ -1,0 +1,14 @@
+--- lib/Makefile.orig	2009-09-27 23:44:29.000000000 +0200
++++ lib/Makefile	2011-01-25 11:59:32.000000000 +0100
+@@ -271,9 +271,9 @@
+ 	$(INSTALL) -c -m $(INSTALL_PERM_LIBS) libnetpbm.dll.a $(PKGDIR)/link
+ endif
+ ifeq ($(NETPBMLIBTYPE),dylib)
+-	cd $(PKGDIR)/link/ ; \
++	cd $(PKGDIR)/lib/ ; \
+           rm -f libnetpbm.dylib; \
+-	$(SYMLINK) ../lib/libnetpbm.$(MAJ).$(MIN).dylib libnetpbm.dylib
++	$(SYMLINK) libnetpbm.$(MAJ).$(MIN).dylib libnetpbm.dylib
+ endif
+ 
+ distclean clean: localclean

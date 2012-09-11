@@ -1,0 +1,26 @@
+# $Id$
+
+PortSystem 1.0
+
+name                patchutils
+version             0.3.2
+platforms           darwin
+categories          devel
+license             GPL-2+
+maintainers         nomaintainer
+description         small collection of programs that operate on patch files
+long_description    Patchutils is a small collection of programs that \
+                    operate on  patch files.  They are the following: \
+                    interdiff, combinediff, filterdiff, fixcvsdiff, \
+                    lsdiff, splitdiff, rediff, grepdiff, recountdiff, \
+                    unwrapdiff, dehtmldiff, flipdiff, espdiff
+homepage            http://cyberelk.net/tim/${name}/
+master_sites        http://cyberelk.net/tim/data/${name}/stable/
+use_bzip2           yes
+checksums           md5     74607b4a28c9009c6aeeed0e91098917 \
+                    sha1    00c9d41318240bfae93843abd442adbdc8c4b568 \
+                    rmd160  0eaa1947e2804d393a2971c213e1d08a62047b6b
+
+depends_lib         bin:perl:perl5
+
+configure.args      --mandir="${prefix}/share/man"

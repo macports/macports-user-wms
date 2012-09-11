@@ -1,0 +1,18 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        octcdf 1.0.13
+revision            1
+platforms           darwin
+license             GPL-2
+maintainers         nomaintainer
+description         A NetCDF interface for octave
+long_description    ${description}
+
+checksums           md5     318d8d3a6272ddbfef7f259dd3998013 \
+                    sha1    a74e9233f8309a7e39171aed552e8160eff04090 \
+                    rmd160  570cd84e7ddc833ff6850134c5e661afc2bae55d
+
+depends_lib-append  port:netcdf

@@ -1,0 +1,32 @@
+# $Id$
+
+PortSystem          1.0
+
+name                exif
+version             0.6.19
+categories          graphics
+license             LGPL
+platforms           darwin
+maintainers         nomaintainer
+description         Command line tool to read, write, modify and display \
+                    EXIF data
+long_description    Command line utility to read, write, modify and display \
+                    EXIF data found in digital image files written by \
+                    digital cameras.
+
+homepage            http://libexif.sourceforge.net/
+master_sites        sourceforge:libexif
+
+checksums           md5     c3928b8382b081cec9f5da862b15de9c \
+                    sha1    3cbde4bf858053fc42668d681ccfb618ae1eaac1 \
+                    rmd160  74c4653ad463b49730354e594c8f375b5bcfb31a
+
+depends_build       port:pkgconfig
+depends_lib         port:libexif \
+                    port:popt
+
+configure.args      --with-popt-prefix=${prefix}
+
+livecheck.type      regex
+livecheck.url       http://sourceforge.net/projects/libexif/files/
+livecheck.regex     /${name}-(\[0-9.\]+)\\.tar

@@ -1,0 +1,44 @@
+# $Id$
+
+PortSystem          1.0
+
+name                leiningen
+version             1.6.1.1
+categories          devel java
+maintainers         ieure
+platforms           darwin
+description         A build tool for Clojure designed to not set your hair on fire.
+long_description    ${description}
+
+homepage            http://github.com/technomancy/${name}
+master_sites        https://nodeload.github.com/technomancy/leiningen/tarball 
+distfiles           ${version}
+worksrcdir          technomancy-${name}-0e43e4d
+checksums           md5     dbd6ac1df529e1e3b84814b8c44265ed \
+                    sha1    0c0a0f5ce680c508b4cc3422ec32904cac16fade \
+                    rmd160  513a7a42df88ab0658e3c33115432e74f161a917
+
+depends_build       port:clojure \
+                    port:clojure-contrib \
+                    port:apache-ant \
+                    port:maven2 \
+                    port:maven-ant-tasks
+depends_run         port:jline
+
+post-patch {
+    copy ${filespath}/build.xml ${worksrcpath}
+    reinplace "s|__PREFIX__|${prefix}/share/java|" ${worksrcpath}/build.xml
+}
+
+use_configure       no
+
+build.cmd           ant
+build.target        jar
+
+destroot {
+    set javadir ${prefix}/share/java
+    reinplace "s|__PREFIX__|${javadir}|" ${worksrcpath}/bin/lein
+    xinstall -m 0755 -d ${destroot}${javadir}
+    xinstall -m 0755 ${worksrcpath}/bin/lein ${destroot}${prefix}/bin
+    xinstall -m 0644 ${worksrcpath}/leiningen.jar ${destroot}${javadir}
+}

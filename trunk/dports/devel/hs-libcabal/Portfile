@@ -1,0 +1,34 @@
+# $Id$
+
+PortSystem 1.0
+
+PortGroup	haskell 1.0
+haskell.setup	Cabal 1.8.0.2
+name 		hs-libcabal
+categories	devel haskell
+maintainers	gwright
+platforms	darwin
+
+description	Library for Haskell's Cabal build system (development version).
+long_description	\
+		Cabal is a system for building and packaging Haskell	\
+		libraries and programs It defines a common interface	\
+		for package authors and distributors to easily build	\
+		their applications in a portable way. Cabal is part of	\
+		a larger infrastructure for distributing, organizing,	\
+		and cataloging Haskell libraries and programs.		\
+		    	       	       		     			\
+		This port provides only the library.  The hs-cabal	\
+		port provides the "cabal" installer program.
+
+checksums	md5     3092a2376a370d1041f5e62b2d19ed25 \
+		sha1    3efd0468442d758cd05a04b572c7eb3746dc62af \
+		rmd160  228532221d542051062165080c461be44af2a8f7
+
+universal_variant	no
+
+configure.args-append	-v --enable-library-profiling	\
+			--with-gcc=${configure.cc}
+
+build.args-append	-v
+

@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xlsclients
+version             1.1.2
+categories          x11
+maintainers         jeremyhu openmaintainer
+description         List client applications running on an X11 display
+long_description    ${description}
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           md5     760099f0af112401735801e3b9aa8595 \
+                    sha1    c4051429c190444ae9ba327f0ad776a74eb7b27b \
+                    rmd160  d084896124d564a30b342f09f42ca5a7434f57cb
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libxcb port:xorg-xcb-util
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

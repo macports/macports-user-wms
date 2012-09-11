@@ -1,0 +1,46 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                cppcheck
+version             1.48
+revision            1
+categories          devel
+license             GPL-3
+platforms           darwin
+maintainers         johnsy.com:paj-macports
+
+description         Static analysis of C and C++ code.
+
+long_description    Cppcheck is an analysis tool for C and C++ code. Unlike \
+                    compilers and many other analysis tools, we don't detect \
+                    syntax errors. Cppcheck only detects the types of bugs that \
+                    the compilers normally fail to detect. The goal is no false \
+                    positives.
+
+homepage            http://cppcheck.sourceforge.net/
+master_sites        sourceforge
+
+checksums           sha1    605f7b0cbd5f8d3759db147891098b716f7dab12 \
+                    rmd160  68d00843540732a4de4ee623abdb38798ea7d2ef
+
+depends_build       port:libxslt \
+                    port:docbook-xsl
+
+depends_lib         port:pcre
+
+use_configure       no
+
+build.args          CXX=${configure.cxx} \
+                    DB2MAN=${prefix}/share/xsl/docbook-xsl/manpages/docbook.xsl
+build.target        all man
+
+test.run            yes
+test.target         test
+
+destroot.args       PREFIX=${prefix}
+
+post-destroot {
+    xinstall -m 444 ${worksrcpath}/cppcheck.1 ${destroot}${prefix}/share/man/man1
+}

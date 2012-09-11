@@ -1,0 +1,54 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xmlstarlet
+version             1.3.0
+categories          textproc
+maintainers         nomaintainer
+license             MIT
+
+description         xml command line utilities
+long_description    XMLStarlet is a set of command line utilities (tools) to \
+                    transform, query, validate, and edit XML documents and \
+                    files using simple set of shell commands in similar way it \
+                    is done for text files with UNIX grep, sed, awk, diff, \
+                    patch, join, etc utilities.
+
+homepage            http://xmlstar.sourceforge.net
+platforms           darwin
+master_sites        sourceforge:project/xmlstar/xmlstarlet/${version}
+
+checksums           rmd160  d9f6a458af7b8d6e8c6d964b8260f96fcf70bb9c \
+                    sha256  81ebdcd81cd44f908d85fc5fb3acf9dd174eb48ef866f826fbd6afbf25f31343
+
+depends_lib         port:libxml2 port:libxslt port:libiconv
+
+patchfiles          patch-doc-xmlstarlet.1.diff
+
+configure.args      --with-libxml-prefix=${prefix} \
+                    --with-libxslt-prefix=${prefix} \
+                    --with-libiconv-prefix=${prefix} \
+                    --mandir=${prefix}/share/man \
+                    --program-transform-name=s/xml$/${name}/
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS \
+        COPYING \
+        NEWS \
+        README \
+        TODO \
+        doc/xmlstarlet-ug.pdf \
+        doc/xmlstarlet.pdf \
+        ${docdir}
+}
+
+notes "
+Some ${name} documentation files refer to the program name as \"xml\" but\
+in MacPorts the program is installed as \"${name}\".
+"
+
+livecheck.regex     /${name}-(\[0-9.\]+)${extract.suffix}

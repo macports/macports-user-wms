@@ -1,0 +1,81 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                open_jtalk
+version             1.05
+categories          audio japanese
+platforms           darwin
+maintainers         hum openmaintainer
+license             BSD
+
+description         Japanese text-to-speech synthesis system
+
+long_description    Open JTalk is a Japanese text-to-speech synthesis system.
+
+homepage            http://open-jtalk.sourceforge.net/
+master_sites        sourceforge:project/open-jtalk/Open%20JTalk/open_jtalk-${version} \
+                    sourceforge:project/open-jtalk/HTS%20voice/hts_voice_nitech_jp_atr503_m001-1.04/
+#                    sourceforge:project/open-jtalk/HTS%20voice/hts_voice_nitech_jp_atr503_m001-${version}
+
+checksums           ${distname}${extract.suffix} \
+                    rmd160  9efc44e5b90a2a2f351df18cdadf61d39b26407d \
+                    sha256  42fe7bf95c140200f25ed35994b60aecd464b04de50ce42dd3a90064b8d45557
+
+depends_lib         port:hts_engine_API \
+                    port:libiconv
+
+patchfiles          patch-Makefile.diff
+
+if {[variant_isset universal]} {
+    use_autoreconf  yes
+}
+
+configure.args      --with-hts-engine-header-path=${prefix}/include \
+                    --with-hts-engine-library-path=${prefix}/lib
+
+default_variants    +voice
+
+set voice_nitech    hts_voice_nitech_jp_atr503_m001-1.04
+#set voice_nitech    hts_voice_nitech_jp_atr503_m001-${version}
+set voice_mei       MMDAgent_Example-1.1
+set voice_nitech_dist  ${voice_nitech}${extract.suffix}
+set voice_mei_dist     ${voice_mei}.zip
+
+variant voice description {Add HTS voices and a demo script} {
+    distfiles-append    ${voice_nitech_dist} \
+                        ${voice_mei_dist}:mei
+    master_sites-append sourceforge:project/mmdagent/MMDAgent_Example/${voice_mei}/:mei
+    checksums-append    ${voice_nitech_dist} \
+                        sha1    f389a8cbe5bb9e89d8460b73820740a0ba3175bc \
+                        rmd160  c3629a0b9991dd0cbc2fcb93c3138a93f1c76c24 \
+                        ${voice_mei_dist} \
+                        sha1    b8282b53993068a398c8981cf0d68b02dc17845d \
+                        rmd160  69ef644ceeec042a0aa41d53b5b86e365761c087
+    extract.only-delete ${voice_mei_dist}
+
+    post-extract {
+        ui_debug "Extracting ${voice_mei_dist}"
+        system "unzip -q ${distpath}/${voice_mei_dist} -d ${workpath}"
+    }
+
+    post-destroot {
+        # copy voice data.
+        set voice_dir    ${prefix}/lib/${name}/voice
+        xinstall -d ${destroot}${voice_dir}
+        copy ${workpath}/${voice_nitech} ${destroot}${voice_dir}/nitech
+        foreach dir [glob ${workpath}/${voice_mei}/Voice/*] {
+            copy $dir ${destroot}${voice_dir}
+        }
+        # configure an executable demo script file.
+        set script_name  open_jtalk_demo
+        set script_dest  ${destroot}${prefix}/bin/${script_name}
+        xinstall -m 755 ${filespath}/${script_name} ${script_dest}
+        reinplace "s|@prefix@|${prefix}|g"          ${script_dest}
+    }
+}
+
+livecheck.type      regex
+livecheck.url       http://sourceforge.net/projects/open-jtalk/files/Open%20JTalk/
+livecheck.regex     /${name}-(\[0-9.\]+)/

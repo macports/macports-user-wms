@@ -1,0 +1,33 @@
+# $Id$
+
+PortSystem      1.0
+
+name            bashdb
+version         4.2-0.8
+categories      devel
+maintainers     aecollins1
+description     Debugger for scripts written in BASH
+
+long_description \
+    bashdb is a script debugger for BASH that follows the GNU Project Debugger \
+    (GDB) command syntax. bashdb can run your script, stop it on specified \
+    conditions, help you examine what has happened when it has stopped, and \
+    allow you to modify parts of your script so that you can experiment with \
+    your code and fix problems once they are identified.
+
+homepage        http://bashdb.sourceforge.net/
+platforms       darwin
+
+master_sites    sourceforge
+
+checksums       md5     b4d87adddf2b7fb2738ef2a55e1d95ff \
+                sha1    c2640aa3a35037d08fcd19e8b33002984a3f477c \
+                rmd160  b96c72adfc19505823719c60a5d13f1c819c57d0
+
+depends_lib     port:bash
+
+test.run        yes
+test.target     check
+
+livecheck.type  sourceforge
+

@@ -1,0 +1,30 @@
+--- sudoers.in.orig	2011-08-30 13:11:41.000000000 -0700
++++ sudoers.in	2011-08-30 13:11:47.000000000 -0700
+@@ -62,6 +62,19 @@
+ # Defaults!/usr/local/bin/sudoreplay !log_output
+ # Defaults!/sbin/reboot !log_output
+ 
++Defaults	env_reset
++Defaults	env_keep += "BLOCKSIZE"
++Defaults	env_keep += "COLORFGBG COLORTERM"
++Defaults	env_keep += "__CF_USER_TEXT_ENCODING"
++Defaults	env_keep += "CHARSET LANG LANGUAGE LC_ALL LC_COLLATE LC_CTYPE"
++Defaults	env_keep += "LC_MESSAGES LC_MONETARY LC_NUMERIC LC_TIME"
++Defaults	env_keep += "LINES COLUMNS"
++Defaults	env_keep += "LSCOLORS"
++Defaults	env_keep += "SSH_AUTH_SOCK"
++Defaults	env_keep += "TZ"
++Defaults	env_keep += "DISPLAY XAUTHORIZATION XAUTHORITY"
++Defaults	env_keep += "EDITOR VISUAL"
++
+ ##
+ ## Runas alias specification
+ ##
+@@ -70,6 +83,7 @@
+ ## User privilege specification
+ ##
+ root ALL=(ALL) ALL
++%admin	ALL=(ALL) ALL
+ 
+ ## Uncomment to allow members of group wheel to execute any command
+ # %wheel ALL=(ALL) ALL

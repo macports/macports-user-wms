@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+PortGroup               php 1.1
+
+name                    php-xdebug
+version                 2.2.1
+categories-append       net devel
+platforms               darwin freebsd openbsd
+maintainers             ryandesign openmaintainer
+license                 Xdebug-1.01
+
+homepage                http://www.xdebug.org/
+master_sites            ${homepage}files/
+
+php.branches            5.3 5.4
+php.extensions.zend     xdebug
+
+description             php5 extension for php debugging
+
+long_description        Xdebug is a php extension that helps you debug your \
+                        scripts. It provides valuable debug information, \
+                        including error stack traces and memory allocation \
+                        summaries. It can generate profiling information \
+                        about your php scripts, to be used for script \
+                        execution analysis and optimization. It also supports \
+                        debugging interactively using the dbg debug client.
+
+checksums               rmd160  1eed41f589588938329c864bbc24dfd545415c69 \
+                        sha256  11d340eb7f87909a596bac054cc927df757dc2fc7c90b50a832c30e9bf84c9ad
+
+extract.suffix          .tgz
+
+if {${name} != ${subport}} {
+    configure.args      --enable-xdebug
+    
+    set xdebug_docs     ${homepage}docs/
+    notes "
+You can get a list of the available configuration settings for xdebug\
+with the following command:
+
+    ${php} --ri xdebug
+
+For more information and details about configuration settings, see\
+${xdebug_docs}
+"
+}
+
+livecheck.type          regex
+livecheck.url           http://www.xdebug.org/updates.php
+livecheck.regex         {Xdebug (\d+(\.\d+)*)<}

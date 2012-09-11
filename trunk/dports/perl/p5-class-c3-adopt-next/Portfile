@@ -1,0 +1,24 @@
+# $Id$
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.branches      5.8 5.10 5.12 5.14 5.16
+perl5.setup           Class-C3-Adopt-NEXT 0.13
+revision              3
+license               {Artistic-1 GPL}
+maintainers           nomaintainer
+description           make NEXT suck less
+long_description      ${description}
+
+platforms             darwin
+
+checksums             md5 4b4a59b5004ab7e715315e3131773e04 \
+                      sha1 51994b5ae4903f84f5d9baa374a1ec0216f93b1f \
+                      rmd160 1d06bd6daffbd342f3a78fcf474cff33870be799
+
+if {${perl5.major} != ""} {
+depends_lib-append    port:p${perl5.major}-test-exception \
+                      port:p${perl5.major}-list-moreutils \
+                      port:p${perl5.major}-mro-compat
+}

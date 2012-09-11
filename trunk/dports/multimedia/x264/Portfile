@@ -1,0 +1,85 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+PortGroup               muniversal 1.0
+PortGroup               xcodeversion 1.0
+
+name		x264
+version		20111210
+categories	multimedia
+license		GPL-2+
+platforms	darwin
+maintainers	devans openmaintainer
+description	x264 - a free h264/avc encoder
+long_description x264 is a free library for encoding H264/AVC video streams. \
+		The code is written by Laurent Aimar, Eric Petit(OS X), Min \
+		Chen (vfw/nasm), Justin Clay(vfw), Måns Rullgård and Loren \
+		Merritt from scratch. It is released under the terms of the \
+		GPL license.
+homepage	http://www.videolan.org/x264.html
+master_sites	http://download.videolan.org/pub/videolan/x264/snapshots/ \
+                ftp://ftp.videolan.org/pub/videolan/x264/snapshots/
+distname	${name}-snapshot-${version}-2245-stable
+
+checksums       rmd160  5ca30189423d95e9bb4da595279861ab23c77434 \
+                sha256  cacbb2c3f5fbdb60aeec8d2db9e4c52b1b9699de12c8a64dda3139c3a146498d
+
+use_bzip2	yes
+
+minimum_xcodeversions {9 3.1}
+
+configure.args   --enable-pic \
+                 --enable-shared \
+                 --enable-static \
+                 --disable-asm
+
+# asm works with a 64-bit snow leopard build
+
+if {[variant_isset asm] || ("darwin" == ${os.platform} && 10 == ${os.major} && "x86_64" == $build_arch && ![variant_isset universal])} {
+        depends_build-append    port:yasm
+        configure.args-delete   --disable-asm
+}
+if {${os.platform} == "darwin" && $build_arch != "" && ![variant_isset universal]} {
+    if {$build_arch == "i386"} {
+        configure.args-append   --host=i686-apple-darwin${os.major}
+    } else {
+        configure.args-append   --host=${build_arch}-apple-darwin${os.major}
+    }
+    eval configure.ldflags-append ${configure.cc_archflags}
+}
+foreach arch ${universal_archs} {
+    if {$arch == "i386"} {
+        set merger_configure_args(${arch}) --host=i686-apple-darwin${os.major}
+    } else {
+        set merger_configure_args(${arch}) --host=${arch}-apple-darwin${os.major}
+    }
+}
+configure.universal_args-delete --disable-dependency-tracking
+
+platform darwin 8 {
+    # https://trac.macports.org/ticket/24893
+    if {$build_arch == "i386" && ![variant_isset universal]} {
+        configure.cflags-append -msse2
+    }
+    set merger_configure_cflags(i386) -msse2
+}
+
+# sets its own optflags
+configure.optflags
+configure.cflags-append -I. -fno-common -read_only_relocs suppress
+
+destroot.args	DIR_INSTALL=${destroot}${prefix}
+
+build.target	default
+
+#
+# intel assembler optimizations using yasm continue
+# to exhibit problems in some cases (see #19835)
+# disable by default but can be enabled using +asm variant for the adventurous
+#
+
+variant asm description {enable intel assembler optimizations (experimental)} {
+}
+
+livecheck.type  none

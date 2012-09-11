@@ -1,0 +1,31 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xcursorgen
+version             1.0.5
+revision            1
+categories          x11
+maintainers         jeremyhu openmaintainer
+description         Create an X11 cursor file from a collection of PNG images
+long_description \
+   xcursorgen takes a list of images, hotspot, and size information and \
+   converts them to Xcursor format.
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           sha1    1d0ca82422d328522b06b218f86b5901a7d5521b \
+                    rmd160  a118d0f4191ad3073b5e0e401a9ca547907460a5 \
+                    sha256  bc7171a0fa212da866fca2301241630e2009aea8c4ddb75f21b51a31c2e4c581
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libXcursor port:libpng
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

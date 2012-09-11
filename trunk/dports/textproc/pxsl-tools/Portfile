@@ -1,0 +1,46 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                pxsl-tools
+version             1.0
+categories          textproc
+maintainers         snc openmaintainer
+license             GPL-2
+description         A convenient shorthand for writing markup-heavy XML \
+                    documents.
+long_description    PXSL ("pixel") is a convenient shorthand for writing \
+                    markup-heavy XML documents. It provides XML authors and \
+                    programmers with a simple, concise syntax that they can \
+                    use to create XML documents. For more advanced users, PXSL \
+                    offers customizable shortcuts and sophisticated \
+                    refactoring tools like functional macros that can markedly \
+                    reduce the size and complexity of markup-dense XML \
+                    documents.
+
+platforms           darwin freebsd
+use_parallel_build  yes
+homepage            http://community.moertel.com/ss/space/PXSL
+master_sites        http://community.moertel.com/pxsl/sources/
+
+checksums           rmd160 fd4727cbb6255f8b7c6da9005042ea75c3df4586 \
+                    sha256  e8fabea11e75947b32a4397de0c6ca6985a1512a3325aa6e87bccdaf5ceb5eca
+
+depends_build       port:ghc
+
+configure {
+    system -W ${worksrcpath} "runhaskell Setup.lhs configure --prefix=${destroot}${prefix}"
+}
+
+build {
+    system -W ${worksrcpath} "runhaskell Setup.lhs build"
+}
+
+destroot {
+    system -W ${worksrcpath} "runhaskell Setup.lhs install"
+}
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "${name}-(\\d+\\.\\d+(\\.\\d+)?)${extract.suffix}"

@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                gnonlin
+version             0.10.17
+revision            1
+description         A set of non-linear editing plugins for GStreamer.
+long_description    GNonLin contains a set of plug-ins for GStreamer to ease the creation of multimedia editors, or any other application where a timeline-oriented use of GStreamer makes sense.
+maintainers         rmstonecipher openmaintainer
+license             LGPL-2+
+categories          gnome
+platforms           darwin
+homepage            http://gstreamer.freedesktop.org/modules/gnonlin.html
+
+master_sites        http://gstreamer.freedesktop.org/src/${name}/
+
+checksums           md5     0c9e5a8f771b087fac9afa459399112e \
+                    sha1    5d3fb27b2590b5a5b8c35e459db6d4cfe489ee15 \
+                    rmd160  784809028a59f05bba59835fa3b2ff112d9e565d
+
+use_bzip2           yes
+
+depends_build   \
+    port:pkgconfig
+depends_lib \
+    port:gst-plugins-base
+
+configure.cflags-append -funroll-loops -fstrict-aliasing
+
+post-patch {
+    reinplace "s|-flat_namespace -undefined suppress|-undefined define_a_way|g" \
+        ${worksrcpath}/configure
+}
+
+livecheck.type      regex
+livecheck.url       http://gstreamer.freedesktop.org/src/${name}/
+livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

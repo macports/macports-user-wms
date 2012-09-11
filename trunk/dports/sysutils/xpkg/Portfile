@@ -1,0 +1,22 @@
+# $Id$
+
+PortSystem 1.0
+
+name			xpkg
+version			0.1.3a
+categories		sysutils
+platforms		darwin
+maintainers		nomaintainer
+description		xpkg package manager alpha release
+long_description	${description}
+
+homepage		http://web.archive.org/web/http://www.xpkg.org/
+master_sites	${homepage}files/
+checksums		sha1 5ba46247546bf8e9318dfad79a6d04b307feadfe
+use_bzip2		yes
+
+depends_build	port:bison
+depends_lib		port:xar port:sqlite3
+
+configure.args	--mandir=${prefix}/share/man
+configure.cflags-append	"-I${prefix}/include"

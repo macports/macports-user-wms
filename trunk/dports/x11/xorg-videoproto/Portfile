@@ -1,0 +1,25 @@
+# $Id$
+
+PortSystem 1.0
+
+name		xorg-videoproto
+version		2.3.1
+categories	x11 devel
+license		X11
+maintainers	jeremyhu openmaintainer
+description	X.org videoproto
+homepage	http://www.x.org
+platforms	darwin
+supported_archs	noarch
+long_description Prototype headers for the XVideo extension to X11
+master_sites 	xorg:individual/proto/
+
+distname	videoproto-${version}
+checksums           md5     c3b348c6e2031b72b11ae63fc7f805c2 \
+                    sha1    bb8b366687a7f345e3a8697bac516cb436cbf4b2 \
+                    rmd160  c86504e542312852debf01466f3860e97d3ccb8d
+use_bzip2	yes
+
+livecheck.type  regex
+livecheck.url   http://xorg.freedesktop.org/archive/individual/proto/?C=M&O=D
+livecheck.regex videoproto-(\\d+(?:\\.\\d+)*)

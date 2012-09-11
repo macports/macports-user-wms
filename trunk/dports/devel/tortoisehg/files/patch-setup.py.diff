@@ -1,0 +1,11 @@
+--- setup.py.orig	2011-07-03 15:54:51.000000000 -0500
++++ setup.py	2011-08-15 14:33:16.000000000 -0500
+@@ -154,7 +154,7 @@
+         pyqtfolder = os.path.dirname(PyQt4.__file__)
+         path.append(os.path.join(pyqtfolder, 'bin'))
+         os.putenv('PATH', os.pathsep.join(path))
+-        if os.system('pyrcc4 "%s" -o "%s"' % (qrc_file, py_file)) > 0:
++        if os.system('pyrcc4-2.7 "%s" -o "%s"' % (qrc_file, py_file)) > 0:
+             self.warn("Unable to generate python module %s for resource file %s"
+                       % (py_file, qrc_file))
+             if not exists(py_file) or not file(py_file).read():

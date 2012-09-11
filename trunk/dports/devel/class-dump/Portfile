@@ -1,0 +1,45 @@
+# $Id$
+
+PortSystem  1.0
+PortGroup   xcode 1.0
+
+name		class-dump
+version		3.3.4
+license		GPL-2
+categories	devel
+maintainers	nomaintainer
+description	Utility for examining the Objective-C segment of Mach-O files.
+long_description	\
+	It generates declarations for the classes, categories and 	\
+	protocols. This is the same information provided by using 	\
+	'otool -ov', but presented as normal Objective-C declarations.
+
+homepage	http://www.codethecode.com/projects/class-dump/
+master_sites	http://www.codethecode.com/download/
+use_bzip2		yes
+
+checksums           sha1    1e43a3cab522565b0773aab18c40b232f231c46c \
+                    rmd160  7ed74aaadafb59215ac0cb92064073f871d3d919
+
+worksrcdir	${distname}/src
+
+xcode.target    all
+
+xcode.configuration Release
+xcode.destroot.path ${prefix}/bin
+
+if {${os.major} < 9} {
+    pre-fetch {
+        return -code error "$name requires Mac OS X 10.5 or later."
+    }
+}
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 ${worksrcpath}/../README.md ${destroot}${docdir}
+}
+
+livecheck.type  regex
+livecheck.url   ${homepage}changes/
+livecheck.regex {Version (\d+(?:\.\d+)*) -}

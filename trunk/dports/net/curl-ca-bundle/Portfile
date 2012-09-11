@@ -1,0 +1,91 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem              1.0
+
+name                    curl-ca-bundle
+# keep the version in sync with the curl port
+version                 7.27.0
+set curl_name           curl
+categories              net
+license                 {MPL-2 LGPL-2.1+}
+maintainers             ryandesign
+homepage                http://curl.haxx.se/
+platforms               darwin freebsd
+use_bzip2               yes
+use_parallel_build      no
+use_configure           no
+supported_archs         noarch
+installs_libs           no
+distname                ${curl_name}-${version}
+dist_subdir             ${curl_name}
+set curl_source         ${distname}${extract.suffix}
+set certdata_file       certdata.txt
+set certdata_version    1.85
+set certdata_date       2012-06-28
+set certdata_distfile   certdata-${certdata_version}.txt
+set certdata_path       security/nss/lib/ckfw/builtins/${certdata_file}
+build.target            ca-bundle
+extract.only            ${curl_source}
+extract.post_args-append ${worksrcdir}/Makefile ${worksrcdir}/lib/mk-ca-bundle.pl
+
+description \
+    CA certificate bundle for curl
+
+long_description \
+    Installs a bundle of certification authority certificates (CA certs) \
+    which curl (when linked with OpenSSL) uses to verify the authenticity \
+    of secure web and FTP servers.
+
+# keep the master_sites in sync with the curl port
+master_sites \
+    http://curl.haxx.se/download/ \
+    ftp://ftp.sunet.se/pub/www/utilities/curl/ \
+    http://www.execve.net/curl/
+
+# Avoid most of the checksum errors that inevitably occur whenever upstream
+# updates certdata.txt by only using the upstream site if it's within a few
+# days of the latest update. After that time, use only our mirrors, which
+# should have copied the file by then. The success of this strategy relies
+# on me noticing new versions within that time and updating the port, and
+# on upstream not updating the file again within that time.
+set days_since_update [expr {[expr {[clock seconds] - [clock format [clock scan ${certdata_date}] -format %s]}] / 86400}]
+if {${days_since_update} > 0} {
+    master_sites-append http://distfiles.macports.org/curl/:certdata
+} else {
+    master_sites-append http://mxr.mozilla.org/mozilla/source/${certdata_path}?raw=1&dummy=:certdata
+}
+
+distfiles \
+    ${curl_source} \
+    ${certdata_distfile}:certdata
+
+checksums                   ${curl_source} \
+                            rmd160  b9ce785cae06911577b5654bb32f55fd2e6b712a \
+                            sha256  aba5582135c28470b46084da9747470c1c680485fc91f9f0d3f7928df8169398 \
+                            ${certdata_distfile} \
+                            rmd160  d5ca22f5a97947d68d289569652153851bacb298 \
+                            sha256  cb3969ac5f62599714b3b97ccaa7f8b9b65cbd954dffb4b03cae0f6a3b42e3ea
+
+depends_build \
+    path:bin/perl:perl5
+
+patchfiles \
+    patch-no-autodownload.diff
+
+post-extract {
+    xinstall ${distpath}/${certdata_distfile} ${worksrcpath}/${certdata_file}
+}
+
+destroot {
+    set ca_bundle_dir ${prefix}/share/curl
+    set openssl_dir ${prefix}/etc/openssl
+    xinstall -d ${destroot}${ca_bundle_dir} ${destroot}${openssl_dir}
+    xinstall -m 644 ${worksrcpath}/lib/ca-bundle.crt ${destroot}${ca_bundle_dir}/curl-ca-bundle.crt
+    ln -s ${ca_bundle_dir}/curl-ca-bundle.crt ${destroot}${openssl_dir}/cert.pem
+}
+
+livecheck.type          regex
+livecheck.url           http://bonsai.mozilla.org/cvsquery.cgi?file=mozilla/${certdata_path}&date=explicit&mindate=${certdata_date}
+livecheck.version       ${certdata_version}
+livecheck.regex         '${certdata_file}','(\[0-9.\]+)'

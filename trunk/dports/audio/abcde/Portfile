@@ -1,0 +1,55 @@
+# $Id$
+
+PortSystem              1.0
+
+name                    abcde
+version                 2.4.2
+revision                1
+categories              audio
+platforms               darwin
+maintainers             nomaintainer
+license                 GPL-2
+supported_archs         noarch
+
+description             A Better CD Encoder
+
+long_description        abcde is a frontend command-line utility (actually, a \
+                        shell script) that grabs tracks off a CD, encodes \
+                        them to Ogg/Vorbis, MP3, FLAC, Ogg/Speex and/or \
+                        MPP/MP+(Musepack) format, and tags them, all in one go.
+
+homepage                http://code.google.com/p/abcde/
+master_sites            googlecode
+
+checksums               sha1    6b91cce8315174500f134133c10d8c9ab233c8a2 \
+                        rmd160  1110ab9a2dd0424076d196fc7b6432fc5c752c28
+
+depends_lib             port:vorbis-tools \
+                        port:lame \
+                        port:flac \
+                        port:cd-discid \
+                        port:cdparanoia \
+                        port:id3v2 \
+                        port:normalize
+
+patchfiles              patch-Makefile \
+                        patch-abcde.diff \
+                        bash.diff
+
+use_configure           no
+
+destroot.destdir        prefix=${destroot}${prefix}
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        COPYING \
+        FAQ \
+        KNOWN.BUGS \
+        README \
+        TODO \
+        USEPIPES \
+        changelog \
+        ${docdir}
+}

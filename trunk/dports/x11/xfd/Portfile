@@ -1,0 +1,28 @@
+# $Id$
+
+PortSystem          1.0
+
+name                xfd
+version             1.1.1
+categories          x11
+maintainers         jeremyhu openmaintainer
+description         Display all the characters in an X11 font
+long_description    ${description}
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           sha1    b8662c6c6821f1f82995bcb98bb986b56716b787 \
+                    rmd160  2470161a2083535a15ca82a746236cfda7d0f9ee \
+                    sha256  3fbef0d5ed6dc088017df156e748d187b2d1aaedc3de7ea96e505ea6d1af7b73
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libXaw port:Xft2
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

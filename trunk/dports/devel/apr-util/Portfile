@@ -1,0 +1,128 @@
+# $Id$
+
+PortSystem 1.0
+
+name		apr-util
+version		1.4.1
+categories	devel
+maintainers	geeklair.net:dluke
+platforms	darwin
+description	utilities built with the apache group's portability library
+license		Apache-2
+
+long_description	apr-util is a library of useful utilities built with \
+			and intended to be used with the Apache Portable Runtime.
+
+homepage	http://apr.apache.org/
+master_sites	apache:apr
+use_bzip2	yes
+checksums	md5	52b31b33fb1aa16e65ddaefc76e41151 \
+		sha1	229a1df48822e3048ae90e2467a5c078474e99a6 \
+		rmd160	a16ca2c192e82ff811570e84b88f9b6b60141ca6
+
+depends_lib	port:apr port:expat \
+		port:libiconv port:db46 \
+		port:sqlite3
+
+use_parallel_build	yes
+configure.ccache	no
+configure.args	--with-apr=${prefix}/bin/apr-1-config --with-expat=${prefix} \
+		--with-iconv=${prefix} --with-berkeley-db=${prefix}/include:${prefix}/lib/db46 \
+		--without-mysql --without-pgsql --with-sqlite3=${prefix}
+
+test.run	yes
+test.target	check
+test.env	DYLD_LIBRARY_PATH=${worksrcpath}/.libs
+pre-test	{
+	use_parallel_build	no
+}
+
+
+variant no_bdb	description {Build without BerkeleyDB support} {
+			depends_lib-delete port:db46
+			configure.args-delete --with-berkeley-db=${prefix}/include:${prefix}/lib/db46
+			configure.args-append --without-berkeley-db
+		}
+
+variant no_sqlite	description {Build without sqlite support} {
+				depends_lib-delete port:sqlite3
+				configure.args-delete --with-sqlite3=${prefix}
+				configure.args-append --without-sqlite2 \
+					--without-sqlite3
+			}
+
+variant openldap	description {Build with OpenLDAP support} {
+				depends_lib-append port:openldap
+				configure.args-append --with-ldap \
+					--with-ldap-include=${prefix}/include \
+					--with-ldap-lib=${prefix}/lib
+			}
+
+set extralibs	"-L${prefix}/lib/db46"
+
+pre-configure	{
+			reinplace "s|^Libs: |Libs: ${extralibs} |" $worksrcpath/apr-util.pc.in
+		}
+
+if {[variant_isset universal]} { 
+	pre-build {
+		build.args	EXTRA_CFLAGS='${configure.universal_cflags}' \
+				EXTRA_LDFLAGS='${configure.universal_ldflags}' 
+	}
+}
+
+variant postgresql84	description {Build with postgres support (using postgresql v8.4)} conflicts postgresql82 postgresql83 {
+				depends_lib-append port:postgresql84
+				configure.args-delete --without-pgsql
+				configure.args-append --with-pgsql=yes
+				configure.cppflags-append "-I${prefix}/include/postgresql84"
+				configure.ldflags-append "-L${prefix}/lib/postgresql84"
+				post-patch      {
+					set extralibs "${extralibs} -L${prefix}/lib/postgresql84"
+					reinplace "s|^INCLUDES = |INCLUDES = -I@prefix@/include/postgresql84 |" \
+						$worksrcpath/Makefile.in
+					reinplace "s|^APRUTIL_LDFLAGS = |APRUTIL_LDFLAGS = -L@prefix@/lib/postgresql84 |" \
+						$worksrcpath/Makefile.in
+				}
+			}
+
+variant postgresql83	description {Build with postgres support (using postgresql v8.3)} conflicts postgresql82 postgresql84 {
+				depends_lib-append port:postgresql83
+				configure.args-delete --without-pgsql
+				configure.args-append --with-pgsql=yes
+				configure.cppflags-append "-I${prefix}/include/postgresql83"
+				configure.ldflags-append "-L${prefix}/lib/postgresql83"
+				post-patch	{
+					set extralibs "${extralibs} -L${prefix}/lib/postgresql83"
+					reinplace "s|^INCLUDES = |INCLUDES = -I@prefix@/include/postgresql83 |" \
+						$worksrcpath/Makefile.in
+					reinplace "s|^APRUTIL_LDFLAGS = |APRUTIL_LDFLAGS = -L@prefix@/lib/postgresql83 |" \
+						$worksrcpath/Makefile.in
+				}
+			}
+
+variant postgresql82	description {Build with postgres support (using postgresql v8.2)} conflicts postgresql83 postgresql84 {
+				depends_lib-append port:postgresql82
+				configure.args-delete --without-pgsql
+				configure.args-append --with-pgsql=yes
+				configure.cppflags-append "-I${prefix}/include/postgresql82"
+				configure.ldflags-append "-L${prefix}/lib/postgresql82"
+				post-patch	{
+					set extralibs "${extralibs} -L${prefix}/lib/postgresql82"
+					reinplace "s|^INCLUDES = |INCLUDES = -I@prefix@/include/postgresql82 |" \
+						$worksrcpath/Makefile.in
+					reinplace "s|^APRUTIL_LDFLAGS = |APRUTIL_LDFLAGS = -L@prefix@/lib/postgresql82 |" \
+						$worksrcpath/Makefile.in
+				}
+			}
+
+variant mysql5	description {Build with MySQL5 suppoprt} {
+		depends_lib-append path:bin/mysql_config5:mysql5
+		configure.args-delete --without-mysql
+		configure.args-append --with-mysql=yes
+		configure.env-append MYSQL_CONFIG=${prefix}/bin/mysql_config5
+		}
+
+livecheck.type  regex
+livecheck.url   http://apache.org/dist/apr/
+livecheck.regex {APR-util (\d+(?:\.\d+)*) is the latest available version}

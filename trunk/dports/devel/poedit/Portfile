@@ -1,0 +1,68 @@
+# $Id$
+
+PortSystem 1.0
+
+name            poedit
+version         1.4.6.1
+categories      devel aqua
+platforms       darwin
+license         MIT
+maintainers     raimue \
+                openmaintainer
+
+description     poEdit is a cross-platform gettext catalogs (.po files) editor.
+long_description \
+    poEdit is a cross-platform gettext catalogs (.po files) editor. It aims to \
+    provide more convenient approach to editing catalogs than editing the file by \
+    hand. This port installs poEdit.app.
+
+homepage        http://www.poedit.net/
+master_sites    sourceforge
+
+checksums       sha1    8c4d61aef7695aa48607e9367df4c5899ad3bf83 \
+                rmd160  7b4fbb3f4632b53a46382f9f4b875d375c5c54b8
+
+depends_build   bin:grep:grep \
+                port:pkgconfig
+depends_lib     port:wxWidgets \
+                port:gettext
+
+# wxWidgets is not universal and 32-bit only
+universal_variant   no
+supported_archs     i386 ppc
+
+# remove some additional features, especially sparkle because macports handles updates
+configure.args  --disable-transmem --disable-spellchecking --without-sparkle
+
+build.dir           ${build.dir}/src
+build.target        bundle
+build.env-append    GETTEXT_BINARIES=${prefix}/bin
+
+variant transmem description {Enables translation memory for often used phrases} {
+    depends_lib-append      port:db44
+    configure.args-delete   --disable-transmem
+    configure.args-append   --enable-transmem
+}
+
+variant spellcheck description {Enables spellchecking} {
+    depends_lib-append      port:gtkspell2
+    configure.args-delete   --disable-spellchecking
+    configure.args-append   --enable-spellchecking
+}
+
+destroot {
+    # the gettext binaries are copied into poedit.app during build,
+    # but we rather delete and symlink them to get updates to gettext automatically {
+    foreach extra { msgfmt msgmerge msgunfmt xgettext } {
+        file delete ${worksrcpath}/src/Poedit.app/Contents/MacOS/${extra}
+        ln -s ${prefix}/bin/${extra} ${worksrcpath}/src/Poedit.app/Contents/MacOS/${extra}
+    }
+    file delete ${worksrcpath}/src/Poedit.app/Contents/MacOS/gnu_gettext.COPYING
+    # }
+
+    file copy ${worksrcpath}/src/Poedit.app ${destroot}${applications_dir}/poEdit.app
+}
+
+livecheck.type regex
+livecheck.url http://sourceforge.net/projects/poedit/files/poedit/
+livecheck.regex ${name}-(\\d+(?:\\.\\d+)+)\\.tar

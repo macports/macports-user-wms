@@ -1,0 +1,56 @@
+# $Id$
+
+PortSystem		1.0
+
+name			fping
+epoch			1
+version			2.4b2
+revision		1
+categories		net
+license			X11
+maintainers		nomaintainer
+platforms		darwin
+homepage		http://unfix.org/projects/ipv6/
+master_sites	http://unfix.org/projects/ipv6/
+distname	${name}-${version}_to-ipv6
+
+checksums  		md5     b1f10f88afd35b94846bfb0844d7a834 \
+				sha1    9b540b5fe81feffa5096f10f011d56f0c4dc0c09 \
+				rmd160  f838382136977e74fe610e06437a2ee0185f66f8
+
+description		A scriptable ping program to check if multiple hosts are up
+long_description	fping is different from ping in that you can specify \
+					any number of hosts on the command line, or specify \
+					a file containing the lists of hosts to ping. \
+					Instead of trying one host until it timeouts or \
+					replies, fping will send out a ping packet and move \
+					on to the next host in a round-robin fashion. If a \
+					host replies, it is noted and removed from the list \
+					of hosts to check. If a host does not respond within \
+					a certain time limit and/or retry limit it will be \
+					considered unreachable. 
+
+patchfiles		patch-Makefile.am.diff
+
+# Ensure UsingTheRightCompiler, fix universal variant, use build_arch, fix mandir
+use_autoreconf	yes
+autoreconf.args	-fvi
+
+post-destroot {
+	system "ln -s fping.8 ${destroot}${prefix}/share/man/man8/fping6.8"
+	# Check if user is running as root
+	if {[geteuid] == 0} {
+		system "chmod 4511 ${destroot}${prefix}/sbin/fping"
+		system "chmod 4511 ${destroot}${prefix}/sbin/fping6"
+	} else {
+		ui_msg "-----------------------------------------------------------"
+		ui_msg "Note that you are not running as root, so ${name} cannot"
+		ui_msg "be installed setuid root. Therefore, it will only be able"
+		ui_msg "to be executed by root."
+		ui_msg "-----------------------------------------------------------"
+		system "chmod 0511 ${destroot}${prefix}/sbin/fping"
+		system "chmod 0511 ${destroot}${prefix}/sbin/fping6"
+	}
+}
+
+livecheck.type	none

@@ -1,0 +1,17 @@
+# $Id$
+PortSystem 1.0
+PortGroup zope 1.0
+
+zope.setup		ZopeZen 0.5
+revision		1
+maintainers		nomaintainer
+description		ZopeZen skin for Plone
+long_description	${description}
+homepage		http://www.zopezen.org/
+master_sites	sourceforge:collective
+distname		${zope.product}.${version}
+checksums		md5 b48c44128a44b273f2e411234404ac65
+platforms		darwin freebsd
+
+depends_lib-append		port:zope-cmfplone
+

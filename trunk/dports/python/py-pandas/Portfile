@@ -1,0 +1,53 @@
+# -*- coding: utf-8; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-pandas
+version             0.8.1
+revision            0
+categories-append   science
+license             BSD
+platforms           darwin
+
+maintainers         stromnov openmaintainer
+
+description         Powerful data structures for data analysis and statistics
+
+long_description    ${description}
+
+homepage            http://pandas.sourceforge.net/
+master_sites        http://pypi.python.org/packages/source/p/pandas/
+
+distname            pandas-${version}
+
+checksums           rmd160  44e2505f062e01012c7b176d4e0bb980f04a809c \
+                    sha256  696698ff132f60d136f4c6f02751d3c7907bcaba6ca7f341a0efe4ac0d98d52f
+
+python.default_version  27
+python.versions     26 27 32
+
+if {$subport != $name} {
+    depends_lib-append  \
+                    port:py${python.version}-numpy \
+                    port:py${python.version}-dateutil \
+                    port:py${python.version}-distribute \
+                    port:py${python.version}-scipy \
+                    port:py${python.version}-tz
+
+    if {$subport == "py26-pandas" || $subport == "py27-pandas" } {
+        depends_lib-append  \
+                    port:py${python.version}-tables \
+                    port:py${python.version}-matplotlib
+    }
+
+    post-destroot {
+        # scikits/__init__.py is provided by scikits-module
+        file delete ${destroot}${python.pkgd}/scikits/__init__.py
+    }
+}
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "pandas-(\\d+(?:\\.\\d+)*)${extract.suffix}"

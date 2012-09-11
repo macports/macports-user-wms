@@ -1,0 +1,15 @@
+# $Id$
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        sockets 1.0.5
+platforms           darwin
+license             GPL-2
+maintainers         nomaintainer
+description         Socket functions
+long_description    ${description}
+
+checksums           md5     5272355a695a34f1ebffbeda701c2f0e \
+                    sha1    328356dfbb14557a774e905b446ba53688e123cd \
+                    rmd160  97e616b36b8c61649e65ecac6eb590a6c52469d1

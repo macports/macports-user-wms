@@ -1,0 +1,85 @@
+# $Id$
+
+PortSystem 1.0
+PortGroup xcode 1.0
+
+name		osxutils
+version		1.7
+revision	1
+categories	sysutils
+
+maintainers	nomaintainer
+description	Command line utilities for Finder commands
+long_description	\
+	osxutils is a package of potentially useful Mac-oriented 	\
+	command line utilities for Mac OS X version 10.0 or later. 	\
+	These tools represent an effort in bringing command line 	\
+	control over certain aspects of the Mac OS, in particular 	\
+	file meta-data such as Finder flags, heritage file Type and 	\
+	Creator codes, comments and suffixes/file extensions.
+homepage        http://sourceforge.net/projects/osxutils
+master_sites    sourceforge
+use_zip		yes
+
+distname	${name}-${version}-src-xcode
+worksrcdir	${name}
+checksums	md5 7f404befd8909fa4b06adcd71c5afe22			\
+		sha1 5cbd1badf4cd7fe36431baf5e1358a68f9967eac		\
+		rmd160 b91fa4644ee8348c0013f55aaa9d0d8f2e46dafe
+
+# upgrade to "native" targets so modern Xcode doesn't complain
+patchfiles	patch-xcodeprojs
+
+post-patch {
+    foreach item [concat [glob ${worksrcpath}/*/*.1] ${worksrcpath}/rcmac/rcmac] {
+        reinplace "s|/usr/local|${prefix}|g" ${item}
+    }
+}
+
+# all but one of these tools use 32-bit-only carbon bits
+supported_archs	i386 ppc
+
+set bt {getfcomment geticon hfsdata lsmac mkalias setfcomment setfctypes setfflags seticon setlabel setsuffix wsupdate}
+
+# Mostly clagged from xcode portgroup. Not pretty, but the portgroup doesn't
+# support multiple projects.
+build {
+    # set some arguments.
+    set xcode_configuration_arg [xcode::get_configuration_arg ${xcode.configuration}]
+    set xcode_build_args [xcode::get_build_args]
+
+    foreach item ${bt} {
+        xcode.project ${item}/${item}.xcodeproj
+        set xcode_project_arg [xcode::get_project_arg ${xcode.project}]
+        xcode::build_one_target \
+            "$xcode_project_arg -alltargets $xcode_configuration_arg" \
+            "$xcode_build_args ${xcode.build.settings}"
+    }
+}
+
+xcode.destroot.path ${prefix}/bin
+destroot {
+    # set some arguments.
+    set xcode_configuration_arg [xcode::get_configuration_arg ${xcode.configuration}]
+    set xcode_install_path_setting [xcode::get_install_path_setting \
+                                        ${xcode.destroot.path} ${xcode.destroot.type}]
+    set xcode_build_args [xcode::get_build_args]
+
+    foreach item ${bt} {
+        xcode.project ${item}/${item}.xcodeproj
+        # let Xcode 2.1+ find resources.
+        xcode::fix_resource_dependencies
+        set xcode_project_arg [xcode::get_project_arg ${xcode.project}]
+        xcode::destroot_one_target \
+            "$xcode_project_arg -alltargets $xcode_configuration_arg" \
+            "$xcode_install_path_setting $xcode_build_args ${xcode.destroot.settings}"
+        copy ${worksrcpath}/${item}/${item}.1 ${destroot}${prefix}/share/man/man1
+    }
+
+    foreach item {cpath google rcmac setvolume trash wiki} {
+		copy ${worksrcpath}/${item}/${item} ${destroot}${prefix}/bin
+		copy ${worksrcpath}/${item}/${item}.1 ${destroot}${prefix}/share/man/man1
+	}
+	copy ${worksrcpath}/osxutils/osxutils ${destroot}${prefix}/bin
+	delete ${destroot}/usr
+}

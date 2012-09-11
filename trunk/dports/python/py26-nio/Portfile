@@ -1,0 +1,86 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup python26  1.0
+
+name                py26-nio
+version             1.3.0b1
+platforms           darwin
+maintainers         nomaintainer
+license             PyNIO
+categories          python science
+description         I/O library for scientific data formats 
+homepage            http://www.pyngl.ucar.edu/Nio.shtml
+master_sites        http://www.pyngl.ucar.edu/Download/
+distname            PyNIO-${version}
+checksums           md5     c881b552cf914549f46d65a61f2d8cb0 \
+                    sha1    288b70d83828e1cb99d3d7c61bd32b5c406c8b1a \
+                    rmd160  b33d00041783ba259ae95f772c7fde0cf37d7303
+
+long_description \
+    PyNIO is a Python package that allows read and/or write access to \
+    a variety of data formats using an interface modeled on netCDF. \
+    PyNIO is composed of a C library called libnio along with a Python module \
+    based on and with an interface similar to the Scientific.IO.NetCDF module \
+    written by Konrad Hinsen.
+
+fetch {
+    if {![file exists ${distpath}/${distfiles}]} {
+        xinstall -d ${distpath}
+        ui_error "Download ${distfiles} manually and place it in ${distpath}.\n \
+            See instructions on ${master_sites}"
+    }
+}
+
+patch {
+    reinplace "s|__init__(obj)|__init__()|" ${worksrcpath}/Nio.py
+}
+
+depends_lib-append  port:ncarg \
+                    port:py26-numpy
+
+build.env-append    HAS_GRIB2=1  GRIB2_PREFIX=${prefix} \
+                    HAS_HDFEOS=1 HDFEOS_PREFIX=${prefix} \
+                    HAS_NETCDF4=1 NETCDF4_PREFIX=${prefix} \
+                    NCARG_ROOT=${prefix}
+destroot.env        NCARG_ROOT=${prefix}
+
+if {![variant_isset g95] && ![variant_isset gcc43] && ![variant_isset gcc44] && ![variant_isset universal]} {
+    default_variants +gcc45
+}
+
+variant gcc43 conflicts g95 gcc44 gcc45 universal description {link to libraries build with gfortran 4.3} {
+    depends_build-append       port:gcc43
+    configure.compiler  macports-gcc-4.3
+    build.env-append    F2CLIBS=gfortran \
+                        F2CLIBS_PREFIX=${prefix}/lib/gcc43 \
+                        CC=${configure.cc}
+}
+
+variant gcc44 conflicts g95 gcc43 gcc45 universal description {link to libraries build with gfortran 4.4} {
+    depends_build-append       port:gcc44
+    configure.compiler  macports-gcc-4.4
+    build.env-append    F2CLIBS=gfortran \
+                        F2CLIBS_PREFIX=${prefix}/lib/gcc44 \
+                        CC=${configure.cc}
+}
+
+variant gcc45 conflicts g95 gcc43 gcc44 universal description {link to libraries build with gfortran 4.5} {
+    depends_build-append       port:gcc45
+    configure.compiler  macports-gcc-4.5
+    build.env-append    F2CLIBS=gfortran \
+                        F2CLIBS_PREFIX=${prefix}/lib/gcc45 \
+                        CC=${configure.cc}
+}
+
+variant g95 conflicts gcc43 gcc44 gcc45 universal description {link to libraries build with g95} {
+    depends_build-append       port:g95
+    build.env-append    F2CLIBS=f95 \
+                        F2CLIBS_PREFIX=${prefix}/lib \
+                        CC=${configure.cc}
+}
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     {The current version of PyNGL and PyNIO is ([0-9]\.[0-9]\.[0-9][a-z]+[0-9]+)}

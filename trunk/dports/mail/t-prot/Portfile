@@ -1,0 +1,64 @@
+# $Id$
+
+PortSystem          1.0
+
+name                t-prot
+version             2.5
+revision            1
+categories          mail
+license             BSD-old
+platforms           darwin
+maintainers         nomaintainer
+description         TOFU protection script (MUA display filter)
+long_description    You know these misformatted mail or news messages, with \
+                    full quotes, too long signatures, and lots of \
+                    exclamation marks? They get on your nerves day by day? \
+                    That's what this script is for.
+
+homepage            http://www.escape.de/~tolot/mutt/
+master_sites        ${homepage}t-prot/downloads/
+checksums           md5 2ff61e5a823c9eea9f04f4e6a1e5e8ed \
+                    sha1 c0987d1bbcb0c8ca1156204510ae68765f5e7588 \
+                    rmd160 8568da171a75510af309a0375a626bbfc910c9a9
+
+depends_lib         port:p5.12-getopt-mixed \
+                    port:p5.12-locale-gettext
+
+use_configure       no
+
+build {
+    reinplace -locale C "s|/usr|${prefix}|g" ${worksrcpath}/t-prot
+}
+
+destroot {
+    # install t-prot and its man page:
+    xinstall -m 755 ${worksrcpath}/t-prot ${destroot}${prefix}/bin
+    xinstall -m 644 ${worksrcpath}/t-prot.1 ${destroot}${prefix}/share/man/man1
+
+    # install additional files:
+    xinstall -d ${destroot}${prefix}/share/${name}
+    foreach file [glob ${worksrcpath}/contrib/*] {
+        xinstall -m 644 $file ${destroot}${prefix}/share/${name}
+    }
+}
+
+post-install {
+    ui_msg "***************************************************************"
+    ui_msg "* To use t-prot with mutt, add this to your ~/.muttrc:        *"
+    ui_msg "* source ${prefix}/share/${name}/muttrc.t-prot                *"
+    ui_msg "*                                                             *"
+    ui_msg "* You can switch it off and on with Esc-0 and Esc-1.          *"
+    ui_msg "*                                                             *"
+    ui_msg "* If you use muttrc.t-prot you have to make sure the          *"
+    ui_msg "* following directories exist (they can be empty):            *"
+    ui_msg "* ~/.mutt/mlfooters                                           *"
+    ui_msg "* ~/.mutt/adfooters                                           *"
+    ui_msg "***************************************************************"
+}
+
+platform darwin {
+    post-patch {
+        reinplace -locale C "s|use strict;|use strict; use Locale\:\:gettext;|g" \
+            ${worksrcpath}/t-prot
+    }
+}

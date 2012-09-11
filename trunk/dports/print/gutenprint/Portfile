@@ -1,0 +1,55 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name            gutenprint
+version         5.2.7
+license         GPL-2+
+set branch      [join [lrange [split ${version} .] 0 1] .]
+categories      print
+maintainers     devans
+homepage        http://gimp-print.sourceforge.net/
+platforms       darwin
+
+description     Gimp Print Plugin
+long_description \
+    Gutenprint plugin for the Gimp.
+
+universal_variant no
+
+master_sites    sourceforge:gimp-print
+use_bzip2       yes
+
+checksums       md5     b19029972bf28f6efd693270daf8f5de \
+                sha1    e49c259607dc6372d4f6316a26fb146715c437c8 \
+                rmd160  63c6dbc136ac7095c06accf48979a379a923b7de
+
+depends_lib     path:lib/pkgconfig/gimp-2.0.pc:gimp2
+
+pre-fetch {
+    ui_msg "
+            This port only installs the Gutenprint plugin for GIMP.
+            You can get the complete Gutenprint drivers and utilities - except the gimp plugin - from
+            http://gimp-print.sourceforge.net
+            "
+}
+
+configure.args  --disable-escputil \
+                --disable-samples \
+                --disable-test \
+                --without-cups \
+                --without-readline \
+                --with-gimp2-as-gutenprint
+
+post-configure {
+    foreach i {iconv intl} {
+        reinplace "s|${prefix}/lib/lib${i}.dylib|-l${i}|g" \
+            ${worksrcpath}/src/main/Makefile
+    }
+}
+
+livecheck.type          regex
+livecheck.url           ${homepage}
+livecheck.regex         >Gutenprint (\[0-9.\]+) is released!<
+

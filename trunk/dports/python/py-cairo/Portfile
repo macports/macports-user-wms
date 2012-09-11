@@ -1,0 +1,65 @@
+# $Id$
+
+PortSystem      1.0
+
+name            py-cairo
+set my_name     pycairo
+# pycairo 1.6.4 does not support Python 2.4
+version         1.4.12
+revision        5
+categories      python x11
+license         {LGPL-2.1 MPL-1.1}
+platforms       darwin
+maintainers     nomaintainer
+description     Pycairo is set of Python bindings for the cairo graphics library
+
+long_description \
+    ${description}
+
+homepage        http://cairographics.org/pycairo/
+master_sites    http://cairographics.org/releases/
+distname        ${my_name}-${version}
+
+checksums       md5 c63199d35b1e1d3c5133509f315f70d7 \
+                sha1 580255db6f3ab4c44ac44dfe0a9f7d1f598c2ab3 \
+                rmd160 f44bb6bcc6b366568e0297689164537dc891b278 
+
+depends_build   port:pkgconfig
+depends_lib     port:python24 \
+                path:lib/pkgconfig/cairo.pc:cairo \
+                port:libpng
+
+# depends_test
+depends_build-append port:py24-numpy
+
+configure.python    ${prefix}/bin/python2.4
+
+set python_prefix  ${frameworks_dir}/Python.framework/Versions/2.4
+# change default includedir to avoid conflict with other python pycairo packages
+configure.args-append      --includedir=${prefix}/include/python2.4
+
+platform darwin 9 { 
+    post-patch { 
+        reinplace "s| -export-symbols-regex.*||g" ${worksrcpath}/cairo/Makefile.in 
+    } 
+} 
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${name}-${version}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} AUTHORS COPYING NEWS doc/NOTES doc/FAQ README \
+        ${destroot}${docdir}
+
+    # avoid conflict with other python pycairo packages
+    # pkg-config based ports will have to set configure.pkg_config_path to find this package
+    xinstall -d -m 0755 ${destroot}${python_prefix}/lib
+    move ${destroot}${prefix}/lib/pkgconfig ${destroot}${python_prefix}/lib
+}
+
+post-patch      { reinplace "s/python /python2.4 /" ${worksrcpath}/test/test.test }
+test.run         yes
+test.cmd         "cd test && python2.4"
+test.target      test.py
+
+livecheck.type  regex
+livecheck.regex ${my_name}-(1\\.4\\.\\d+)

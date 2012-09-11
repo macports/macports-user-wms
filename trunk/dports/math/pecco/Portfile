@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                pecco
+version             2012-08-31
+epoch               1
+categories          math
+platforms           darwin
+maintainers         hum openmaintainer
+license             {GPL-2 LGPL-2.1}
+
+homepage            http://www.tkl.iis.u-tokyo.ac.jp/~ynaga/pecco/
+description         simple C++ library for linear classification with conjunctive features
+long_description    ${name} is a ${description}.
+
+master_sites        ${homepage}
+checksums           rmd160  cff0a5112c93ddbe8cbbbe4cc7e55bce41e3e04c \
+                    sha256  51fa5cc3faa388cc63007f189a70cd3138f97a50aebc8747a16f9647cbcd16b7
+
+post-destroot {
+    file mkdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS COPYING GPL LGPL README \
+        ${destroot}${prefix}/share/doc/${name}
+    copy ${worksrcpath}/test ${destroot}${prefix}/share/${name}
+}
+
+variant dartsclone description {Use darts-clone} {
+    depends_build-append       port:darts-clone
+    configure.args-append      --with-trie-impl=darts-clone
+}
+
+variant float description {Use float as the type of weights} {
+    configure.args-append      --enable-float
+}
+
+variant trie description {Encode weights into a trie in kernel_model} {
+    configure.args-append      --enable-abuse-trie
+}
+
+default_variants    +dartsclone
+    
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     {pecco-(\d+-\d+-\d+)\.tar}

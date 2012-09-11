@@ -1,0 +1,31 @@
+# $Id$
+
+PortSystem		1.0
+name			jpilot
+version			0.99.9
+revision		2
+description		A Palm Pilot desktop for Unix
+long_description	J-Pilot is a desktop organizer application for the palm pilot and other\
+			Palm OS devices.  It is similar in functionality to the one that\
+			3Com/Palm distributes.
+categories		palm
+homepage		http://www.jpilot.org/
+platforms		darwin
+maintainers		korseby.net:kristian.peters
+master_sites 		http://www.jpilot.org/
+checksums		md5 c39df29aeed57b84a674524856ebc290
+patchfiles		patch-plugins.c \
+			patch-weekday.c
+configure.args  	--with-libiconv-prefix=${prefix} \
+			--with-pilot-prefix=${prefix} \
+			--mandir=${prefix}/share/man
+depends_build		port:intltool port:pkgconfig
+depends_lib		port:libiconv port:gtk2 port:pilot-link
+
+# enable gtk1 support
+variant	gtk1 {
+	configure.args-append	--disable-gtk2
+	depends_lib-delete	port:gtk2
+	depends_lib-append	port:gtk1
+}
+

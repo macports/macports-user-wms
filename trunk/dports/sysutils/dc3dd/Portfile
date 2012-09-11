@@ -1,0 +1,40 @@
+# $Id$
+
+PortSystem 1.0
+
+name                dc3dd
+version             7.1.614
+revision            0
+categories          sysutils
+maintainers         ricci
+description         Enhanced GNU dd
+long_description    Enhanced GNU dd
+homepage            http://dc3dd.sourceforge.net/
+platforms           darwin
+master_sites        sourceforge
+
+use_xz              yes
+
+checksums           md5    c4882cc2ede14049a7dbf33dcd4e4506 \
+                    sha1   f0de9696486ea4f99a283cf9916b02804a718ad6 \
+                    rmd160 f9588caae231361635db70bfcfc5534685d972da
+
+post-patch {
+    # stop the makefile trying to run autotools
+    touch ${worksrcpath}/configure.ac ${worksrcpath}/aclocal.m4 \
+          ${worksrcpath}/configure ${worksrcpath}/Makefile.in \
+          ${worksrcpath}/lib/Makefile.in ${worksrcpath}/lib/config.hin
+}
+
+configure.args      --mandir=${prefix}/share/man
+if {${os.major} >= 11 && ${os.platform} == "darwin"} {
+    # check for stpncpy is broken
+    configure.args-append gl_cv_func_stpncpy=yes
+}
+
+depends_lib         port:gettext \
+                    port:libiconv
+
+
+#
+##EOF

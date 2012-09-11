@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                libnotify
+version             0.5.2
+revision            3
+set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          devel gnome
+maintainers         nomaintainer
+description         pop-up notification library
+long_description \
+   The Desktop Notifications framework provides a standard way of doing \
+   passive pop-up notifications.
+
+platforms           darwin
+license             LGPL-2.1+
+
+homepage            http://library.gnome.org/devel/libnotify/
+master_sites        gnome:sources/${name}/${branch}
+
+use_bzip2           yes
+
+checksums           sha1    bb088a318cfccb4261674065838860fa940fc04a \
+                    rmd160  97c7d295683d6a093e46611d354fe8bfd799fb7d
+
+depends_build       port:pkgconfig
+
+depends_lib         port:dbus-glib \
+                    port:gtk2 \
+                    port:libpng
+
+variant quartz {
+    patchfiles-append   patch-libnotify-notification-c.diff
+}
+
+pre-activate {
+	if {${os.major} == 11 && [lindex [split ${os.version} .] 1] < 2 && ${os.platform} == "darwin"} {
+		ui_error "You must first update to OS X 10.7.2."
+		return -code error "You must first update to OS X 10.7.2."
+	}
+}
+
+livecheck.type      regex
+livecheck.url       http://ftp.gnome.org/pub/GNOME/sources/${name}/${branch}/
+livecheck.regex     ${name}-(\[0-9.\]+)\\.tar
